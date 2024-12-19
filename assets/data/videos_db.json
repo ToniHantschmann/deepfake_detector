@@ -1,0 +1,18 @@
+{
+    "videos": [
+        {
+            "id": "001",
+            "title": "Video1",
+            "description": "description 1",
+            "videoURL": "assets/videos/video1.mp4",
+            "thumbnailURL": "assets/thumbnails/video1.jpg",
+            "isDeepfake": false,
+            "deepfakeIndicators": [
+                "Reason 1: ...",
+                "Reason 2: ...",
+                "Reason 3: ..."
+            ]
+        
+        }
+    ]
+}
