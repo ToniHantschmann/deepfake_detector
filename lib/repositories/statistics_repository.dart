@@ -1,8 +1,9 @@
 import '../models/statistics_model.dart';
+import '../storage/json_storage.dart';
 
 /// repository class for player statistics
 class StatisticsRepository {
-  Statistics _currentStats = Statistics.initial();
+  late final JsonStorage _storage;
 
   static final StatisticsRepository _instance =
       StatisticsRepository._internal();
@@ -11,56 +12,56 @@ class StatisticsRepository {
     return _instance;
   }
 
-  StatisticsRepository._internal();
+  StatisticsRepository._internal() {
+    _initStorage();
+  }
 
-  Future<Statistics> getStatistics() async {
+  Future<void> _initStorage() async {
+    _storage = await JsonStorage.getInstance();
+  }
+
+  Future<UserStatistics> getStatistics(String username) async {
     try {
-      /*
-      TODO:
-        get statistics database and parse data to [list] of statistics
-      */
-      return _currentStats;
+      final data = await _storage.readJsonFile(JsonStorage.statsFileName);
+      final userStats = data[username] as Map<String, dynamic>?;
+
+      if (userStats == null) {
+        return UserStatistics.initial(username);
+      }
+
+      return UserStatistics.fromJson(userStats);
     } catch (e) {
       throw Exception("Failed to load statistics $e");
     }
   }
 
-  /*
-  TODO:
-    add helper methods for Statistics class
-    addAttempt()
-    _saveStatistics()
-    resetStatistics()??
-  */
-
   /// add new attempt to existing statistic
-  Future<void> addAttempt(GameAttempt attempt) async {
+  Future<void> addAttempt(String username, GameAttempt attempt) async {
     try {
-      // get copy of list recentAttempts and add new attempt
-      final updatedAttempts =
-          List<GameAttempt>.from(_currentStats.recentAttempts);
-      updatedAttempts.add(attempt);
+      final data = await _storage.readJsonFile(JsonStorage.statsFileName);
+      final stats = await getStatistics(username);
 
-      _currentStats = _currentStats.copyWith(
-        totalAttempts: _currentStats.totalAttempts + 1,
-        correctGuesses:
-            _currentStats.correctGuesses + (attempt.wasCorrect ? 1 : 0),
-        recentAttempts: updatedAttempts,
+      final updatedStats = stats.copyWith(
+        totalAttempts: stats.totalAttempts + 1,
+        correctGuesses: stats.correctGuesses + (attempt.wasCorrect ? 1 : 0),
+        recentAttempts: [
+          ...stats.recentAttempts,
+          attempt,
+        ].toList(),
       );
-      await _saveStatistics();
+
+      data[username] = updatedStats.toJson();
+      await _storage.writeJsonFile(JsonStorage.statsFileName, data);
     } catch (e) {
       throw Exception("Failed to add attempt: $e");
     }
   }
 
-  Future<void> _saveStatistics() async {
-    //todo: implement database or json
-  }
-
-  Future<void> resetStatistics() async {
+  Future<void> resetStatistics(String username) async {
     try {
-      _currentStats = Statistics.initial();
-      await _saveStatistics();
+      final data = await _storage.readJsonFile(JsonStorage.statsFileName);
+      data[username] = UserStatistics.initial(username).toJson();
+      await _storage.writeJsonFile(JsonStorage.statsFileName, data);
     } catch (e) {
       throw Exception("Failed to reset statistics $e");
     }
