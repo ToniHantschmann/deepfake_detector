@@ -103,7 +103,8 @@ class VideoRepository {
       return _videos.firstWhere((video) => video.id == id,
           orElse: () => throw VideoException('Video id $id not found'));
     } catch (e) {
-      throw Exception("Video not found $e");
+      if (e is VideoException) rethrow;
+      throw VideoException("Video not found $e");
     }
   }
 }

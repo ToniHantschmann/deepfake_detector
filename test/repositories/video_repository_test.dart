@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:deepfake_detector/repositories/video_repository.dart';
-import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 
 import 'video_repository_test.mocks.dart';
@@ -84,6 +83,95 @@ void main() {
       await videoRepository.initialize();
       await videoRepository.initialize();
       verify(mockStorage.readJsonFile(JsonStorage.videosFileName)).called(1);
+    });
+  });
+
+  group('VideoRepository Tests - getRandomVideoPair', () {
+    test('should initialize repository if not initialized', () async {
+      await videoRepository.getRandomVideoPair();
+      verify(mockStorage.readJsonFile(JsonStorage.videosFileName)).called(1);
+    });
+
+    test('should return one real and one fake video', () async {
+      await videoRepository.initialize();
+      final videoPair = await videoRepository.getRandomVideoPair();
+
+      expect(videoPair.length, 2);
+      expect(videoPair.where((v) => v.isDeepfake).length, 1);
+      expect(videoPair.where((v) => !v.isDeepfake).length, 1);
+    });
+
+    /*
+    test('should return different pairs on multiple calls', () async {
+      await videoRepository.initialize();
+      final firstPair = await videoRepository.getRandomVideoPair();
+      final secondPair = await videoRepository.getRandomVideoPair();
+
+      // Da wir nur 3 Test-Videos haben und immer ein echtes und ein gefälschtes
+      // zurückgegeben werden müssen, können wir auf Unterschiede prüfen
+      expect(
+        firstPair
+            .map((v) => v.id)
+            .toSet()
+            .intersection(
+              secondPair.map((v) => v.id).toSet(),
+            )
+            .length,
+        lessThan(2),
+      );
+    });
+    */
+
+    test('should throw when no fake videos are available', () async {
+      when(mockStorage.readJsonFile(JsonStorage.videosFileName))
+          .thenAnswer((_) async => {
+                'videos': testVideos['videos']!
+                    .where((v) => !(v['isDeepfake'] as bool))
+                    .toList()
+              });
+
+      expect(
+        () => videoRepository.getRandomVideoPair(),
+        throwsA(isA<VideoException>()),
+      );
+    });
+
+    test('should throw when no real videos are available', () async {
+      when(mockStorage.readJsonFile(JsonStorage.videosFileName)).thenAnswer(
+          (_) async => {
+                'videos': testVideos['videos']!
+                    .where((v) => v['isDeepfake'] as bool)
+                    .toList()
+              });
+
+      expect(
+        () => videoRepository.getRandomVideoPair(),
+        throwsA(isA<VideoException>()),
+      );
+    });
+  });
+
+  group('VideoRepository Tests - getVideoById', () {
+    test('should initialize repository if not initialized', () async {
+      await videoRepository.getVideoById('1');
+      verify(mockStorage.readJsonFile(JsonStorage.videosFileName)).called(1);
+    });
+
+    test('should return correct video for existing id', () async {
+      await videoRepository.initialize();
+      final video = await videoRepository.getVideoById('1');
+
+      expect(video.id, '1');
+      expect(video.isDeepfake, false);
+      expect(video.title, 'Real Video');
+    });
+
+    test('should throw exception for non-existing id', () async {
+      await videoRepository.initialize();
+      expect(
+        () => videoRepository.getVideoById('non_existing_id'),
+        throwsA(isA<VideoException>()),
+      );
     });
   });
 }
