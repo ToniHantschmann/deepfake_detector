@@ -21,3 +21,11 @@ class StorageException implements Exception {
   @override
   String toString() => message;
 }
+
+class VideoException implements Exception {
+  final String message;
+  VideoException(this.message);
+
+  @override
+  String toString() => message;
+}
