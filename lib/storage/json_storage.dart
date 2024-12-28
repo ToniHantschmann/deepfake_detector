@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 class JsonStorage {
   static const String statsFileName = 'stats.json';
   static const String usersFileName = 'users.json';
+  static const String videosFileName = 'videos_db.json';
 
   static JsonStorage? _instance;
   late final Directory _directory;

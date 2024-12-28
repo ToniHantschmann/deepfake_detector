@@ -4,7 +4,6 @@ import '../storage/json_storage.dart';
 /// repository class for player statistics
 class StatisticsRepository {
   late final JsonStorage _storage;
-
   static final StatisticsRepository _instance =
       StatisticsRepository._internal();
 

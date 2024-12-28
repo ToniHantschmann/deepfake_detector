@@ -1,34 +1,51 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/storage/json_storage.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 /// repository class to manage the videos
 class VideoRepository {
-  late final JsonStorage _storage;
-  late final List<Video> _videos;
-  static final VideoRepository _instance = VideoRepository._internal();
+  JsonStorage? _storage;
+  List<Video> _videos = [];
+  bool _isInitialized = false;
 
+  // Singleton instance
+  static final VideoRepository _instance = VideoRepository._internal();
+  static VideoRepository get instance => _instance;
+
+  // Factory constructor
   factory VideoRepository() => _instance;
 
-  VideoRepository._internal() {
-    //load videos to _videos
-    _initStorage();
-    _loadVideos();
+  // Test constructor
+  @visibleForTesting
+  VideoRepository.withStorage(JsonStorage storage) {
+    _storage = storage;
+  }
+
+  // Private constructor
+  VideoRepository._internal();
+
+  // Initialization method
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    try {
+      // Initialize storage if not injected
+      _storage ??= await JsonStorage.getInstance();
+      await _loadVideos();
+      _isInitialized = true;
+    } catch (e) {
+      throw VideoException('Failed to initialize repository: $e');
+    }
   }
 
   Future<void> _loadVideos() async {
-    _videos = await _getAllVideos();
-  }
+    if (_storage == null) {
+      throw VideoException('Storage not initialized');
+    }
 
-  Future<void> _initStorage() async {
-    _storage = await JsonStorage.getInstance();
-  }
-
-  Future<List<Video>> _getAllVideos() async {
     try {
-      final data = await _storage.readJsonFile(JsonStorage.videosFileName);
+      final data = await _storage!.readJsonFile(JsonStorage.videosFileName);
       final videosList = (data['videos'] as List?)
               ?.map((json) => Video.fromJson(json as Map<String, dynamic>))
               .toList() ??
@@ -38,10 +55,17 @@ class VideoRepository {
         throw VideoException('No videos in database');
       }
 
-      return videosList;
+      _videos = videosList;
     } catch (e) {
       if (e is VideoException) rethrow;
       throw VideoException('Error when loading videos: $e');
+    }
+  }
+
+  /// Ensures the repository is initialized before performing operations
+  Future<void> _ensureInitialized() async {
+    if (!_isInitialized) {
+      await initialize();
     }
   }
 
@@ -49,6 +73,7 @@ class VideoRepository {
   /// returns a [list] of two [video] objects
   /// throws exeption when loading the videos failed
   Future<List<Video>> getRandomVideoPair() async {
+    await _ensureInitialized();
     try {
       // sort _videos for only real/deepfakes and add them to list
       final realVideos = _videos.where((e) => !e.isDeepfake).toList();
@@ -73,6 +98,7 @@ class VideoRepository {
   /// get specific video by [id]
   /// throws exception when video was not found
   Future<Video> getVideoById(String id) async {
+    await _ensureInitialized();
     try {
       return _videos.firstWhere((video) => video.id == id,
           orElse: () => throw VideoException('Video id $id not found'));
