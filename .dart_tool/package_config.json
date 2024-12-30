@@ -146,6 +146,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "csslib",
+      "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/csslib-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.1"
+    },
+    {
       "name": "cupertino_icons",
       "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8",
       "packageUri": "lib/",
@@ -212,6 +218,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "flutter_web_plugins",
+      "rootUri": "file:///D:/Docs/coding/flutter/packages/flutter_web_plugins",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "frontend_server_client",
       "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/frontend_server_client-4.0.0",
       "packageUri": "lib/",
@@ -228,6 +240,12 @@
       "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/graphs-2.3.2",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "html",
+      "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/html-0.15.5",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
     },
     {
       "name": "http_multi_server",
@@ -548,6 +566,36 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "video_player",
+      "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/video_player-2.9.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "video_player_android",
+      "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_android-2.7.16",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
+      "name": "video_player_avfoundation",
+      "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_avfoundation-2.6.5",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "video_player_platform_interface",
+      "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_platform_interface-6.2.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "video_player_web",
+      "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_web-2.3.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "vm_service",
       "rootUri": "file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.3.0",
       "packageUri": "lib/",
@@ -602,7 +650,7 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2024-12-29T21:18:59.891098Z",
+  "generated": "2024-12-30T08:51:40.659394Z",
   "generator": "pub",
   "generatorVersion": "3.6.0",
   "flutterRoot": "file:///D:/Docs/coding/flutter",

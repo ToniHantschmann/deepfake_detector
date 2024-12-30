@@ -1,5 +1,6 @@
 import 'package:deepfake_detector/blocs/game/game_bloc.dart';
 import 'package:deepfake_detector/screens/introduction_screen.dart';
+import 'package:deepfake_detector/screens/video_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +20,7 @@ class DeepfakeDetectorApp extends StatelessWidget {
             visualDensity: VisualDensity.adaptivePlatformDensity),
         home: BlocProvider(
           create: (context) => GameBloc(),
-          child: const IntroductionScreen(),
+          child: VideoScreen(),
         ));
   }
 }
