@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../screens/introduction_screen.dart';
 
-import '../blocs/game_bloc.dart';
-import '../blocs/game_event.dart';
+import '../blocs/game/game_bloc.dart';
+import '../blocs/game/game_event.dart';
 
 /// wrapper class to manage gameStates and data for all screens
 ///

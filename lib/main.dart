@@ -1,4 +1,4 @@
-import 'package:deepfake_detector/blocs/game_bloc.dart';
+import 'package:deepfake_detector/blocs/game/game_bloc.dart';
 import 'package:deepfake_detector/screens/introduction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
