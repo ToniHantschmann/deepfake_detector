@@ -6,19 +6,18 @@ import 'package:video_player/video_player.dart';
 import '../models/video_model.dart';
 
 class VideoScreen extends StatefulWidget {
-  final Video video = Video(
-      id: '001',
-      title: 'test',
-      description: 'test',
-      videoUrl: "assets/videos/video1.mp4",
-      thumbnailUrl: "assets/thumbnails/video1.mp4",
-      isDeepfake: true,
-      deepfakeIndicators: ['bla', 'bla']);
+  final Video video;
+  final VoidCallback onNext;
+  final bool isFirstVideo;
+
   //final VoidCallback onNext;
   // TODO: get video from GameState
 
-  VideoScreen({
+  const VideoScreen({
     Key? key,
+    required this.video,
+    required this.onNext,
+    required this.isFirstVideo,
   }) : super(key: key);
 
   @override
@@ -238,14 +237,13 @@ class VideoScreenState extends State<VideoScreen> {
               right: 16,
               top: MediaQuery.of(context).size.height / 2 - 28,
               child: IconButton(
-                  icon: const Icon(
-                    Icons.chevron_right,
-                    color: Colors.white,
-                    size: 56,
-                  ),
-                  onPressed: null
-                  // context.read<GameBloc>().add(NextScreen());,
-                  ),
+                icon: const Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                  size: 56,
+                ),
+                onPressed: widget.onNext,
+              ),
             ),
           ],
         ),

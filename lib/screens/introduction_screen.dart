@@ -6,57 +6,64 @@ import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 
 class IntroductionScreen extends StatelessWidget {
-  const IntroductionScreen({Key? key}) : super(key: key);
+  final VoidCallback onStart;
+  const IntroductionScreen({
+    Key? key,
+    required this.onStart,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Headline
-                const Text(
-                  'Deepfake Detector',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+        child: GestureDetector(
+          onTap: onStart,
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Headline
+                  const Text(
+                    'Deepfake Detector',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
-                // Content Grid
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth > 800) {
-                      // Desktop Layout
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: _buildLeftColumn()),
-                          const SizedBox(width: 32),
-                          Expanded(child: _buildRightColumn(context)),
-                        ],
-                      );
-                    } else {
-                      // Mobile Layout
-                      return Column(
-                        children: [
-                          _buildLeftColumn(),
-                          const SizedBox(height: 32),
-                          _buildRightColumn(context),
-                        ],
-                      );
-                    }
-                  },
-                ),
-              ],
+                  // Content Grid
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      if (constraints.maxWidth > 800) {
+                        // Desktop Layout
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: _buildLeftColumn()),
+                            const SizedBox(width: 32),
+                            Expanded(child: _buildRightColumn(context)),
+                          ],
+                        );
+                      } else {
+                        // Mobile Layout
+                        return Column(
+                          children: [
+                            _buildLeftColumn(),
+                            const SizedBox(height: 32),
+                            _buildRightColumn(context),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
