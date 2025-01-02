@@ -34,7 +34,6 @@ class GameWrapperView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
-      // TODO: implement switch logic for different screens
       switch (state.currentScreen) {
         case GameScreen.introduction:
           return IntroductionScreen(
@@ -49,8 +48,9 @@ class GameWrapperView extends StatelessWidget {
               video: state.videos.last,
               onNext: () => context.read<GameBloc>().add(const NextScreen()),
               isFirstVideo: false);
-
-        default:
+        case GameScreen.comparison:
+        case GameScreen.result:
+        case GameScreen.statistics:
           return const Center(
             child: Text('Unknown state'),
           );
