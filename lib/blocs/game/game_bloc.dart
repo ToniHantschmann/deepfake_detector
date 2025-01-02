@@ -204,7 +204,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       ));
       add(const StartGame());
     } else {
-      add(InitializeGame());
+      add(const InitializeGame());
     }
   }
 }
