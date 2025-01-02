@@ -63,13 +63,11 @@ class GameAttempt {
   final DateTime timestamp;
   final bool wasCorrect;
   final List<String> videoIds;
-  final String selectedVideoId;
 
   GameAttempt({
     required this.timestamp,
     required this.wasCorrect,
     required this.videoIds,
-    required this.selectedVideoId,
   }) {
     _validateAttempt();
   }
@@ -86,9 +84,6 @@ class GameAttempt {
     if (videoIds[0] == videoIds[1]) {
       throw StatisticsException('Video IDs must be different');
     }
-    if (!videoIds.contains(selectedVideoId)) {
-      throw StatisticsException('Selected video must be in video list');
-    }
   }
 
   Map<String, dynamic> toJson() {
@@ -96,7 +91,6 @@ class GameAttempt {
       'timestamp': timestamp.toIso8601String(),
       'wasCorrect': wasCorrect,
       'videoIds': videoIds,
-      'selectedVideoId': selectedVideoId,
     };
   }
 
@@ -105,16 +99,14 @@ class GameAttempt {
       //check if all fields exist
       if (!json.containsKey('timestamp') ||
           !json.containsKey('wasCorrect') ||
-          !json.containsKey('videoIds') ||
-          !json.containsKey('selectedVideoId')) {
+          !json.containsKey('videoIds')) {
         throw StatisticsException('Missing required field in JSON');
       }
 
       //check if all fields contain correct datatypes
       if (json['timestamp'] is! String ||
           json['wasCorrect'] is! bool ||
-          json['videoIds'] is! List ||
-          json['selectedVideoId'] is! String) {
+          json['videoIds'] is! List) {
         throw StatisticsException('Invalid data types in JSON');
       }
 
@@ -130,7 +122,6 @@ class GameAttempt {
         timestamp: DateTime.parse(json['timestamp'] as String),
         wasCorrect: json['wasCorrect'] as bool,
         videoIds: videoIds,
-        selectedVideoId: json['selectedVideoId'] as String,
       );
     } catch (e) {
       if (e is StatisticsException) {
