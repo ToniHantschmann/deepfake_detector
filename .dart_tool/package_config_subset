@@ -14,6 +14,10 @@ async
 2.18
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.11.0/
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.11.0/lib/
+bloc
+2.12
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/bloc-8.1.4/
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/bloc-8.1.4/lib/
 boolean_selector
 2.17
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.1/
@@ -102,6 +106,10 @@ fixnum
 3.1
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/fixnum-1.1.1/
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/fixnum-1.1.1/lib/
+flutter_bloc
+2.12
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_bloc-8.1.6/
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_bloc-8.1.6/lib/
 flutter_lints
 2.19
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-2.0.3/
@@ -182,6 +190,10 @@ mockito
 3.6
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/mockito-5.4.5/
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/mockito-5.4.5/lib/
+nested
+2.12
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/lib/
 package_config
 3.4
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/package_config-2.1.1/
@@ -226,6 +238,10 @@ pool
 2.12
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/pool-1.5.1/
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/pool-1.5.1/lib/
+provider
+2.12
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/
+file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/lib/
 pub_semver
 3.4
 file:///C:/Users/anton/AppData/Local/Pub/Cache/hosted/pub.dev/pub_semver-2.1.5/
