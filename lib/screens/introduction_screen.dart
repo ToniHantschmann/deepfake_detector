@@ -17,53 +17,50 @@ class IntroductionScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
       body: SafeArea(
-        child: GestureDetector(
-          onTap: onStart,
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Headline
-                  const Text(
-                    'Deepfake Detector',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Headline
+                const Text(
+                  'Deepfake Detector',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                  const SizedBox(height: 32),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
 
-                  // Content Grid
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      if (constraints.maxWidth > 800) {
-                        // Desktop Layout
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(child: _buildLeftColumn()),
-                            const SizedBox(width: 32),
-                            Expanded(child: _buildRightColumn(context)),
-                          ],
-                        );
-                      } else {
-                        // Mobile Layout
-                        return Column(
-                          children: [
-                            _buildLeftColumn(),
-                            const SizedBox(height: 32),
-                            _buildRightColumn(context),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
+                // Content Grid
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth > 800) {
+                      // Desktop Layout
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: _buildLeftColumn()),
+                          const SizedBox(width: 32),
+                          Expanded(child: _buildRightColumn(context)),
+                        ],
+                      );
+                    } else {
+                      // Mobile Layout
+                      return Column(
+                        children: [
+                          _buildLeftColumn(),
+                          const SizedBox(height: 32),
+                          _buildRightColumn(context),
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -143,7 +140,7 @@ class IntroductionScreen extends StatelessWidget {
           height: 64,
           child: ElevatedButton(
             onPressed: () {
-              //context.read<GameBloc>().add(NextScreen());
+              onStart;
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.grey[800],

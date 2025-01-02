@@ -38,16 +38,16 @@ class GameWrapperView extends StatelessWidget {
       switch (state.currentScreen) {
         case GameScreen.introduction:
           return IntroductionScreen(
-              onStart: () => context.read<GameBloc>().add(NextScreen()));
+              onStart: () => context.read<GameBloc>().add(const NextScreen()));
         case GameScreen.firstVideo:
           return VideoScreen(
-              onNext: () => context.read<GameBloc>().add(NextScreen()),
+              onNext: () => context.read<GameBloc>().add(const NextScreen()),
               video: state.videos.first,
               isFirstVideo: true);
         case GameScreen.secondVideo:
           return VideoScreen(
               video: state.videos.last,
-              onNext: () => context.read<GameBloc>().add(NextScreen()),
+              onNext: () => context.read<GameBloc>().add(const NextScreen()),
               isFirstVideo: false);
 
         default:
