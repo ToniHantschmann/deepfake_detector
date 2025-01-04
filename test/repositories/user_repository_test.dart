@@ -7,13 +7,8 @@ import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 
 import 'user_repository_test.mocks.dart';
 
-void initializeTestBinding() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-}
-
 @GenerateNiceMocks([MockSpec<JsonStorage>()])
 void main() {
-  initializeTestBinding();
   late UserRepository userRepository;
   late MockJsonStorage mockStorage;
 
@@ -24,15 +19,17 @@ void main() {
   /// Setup mockStorage and userRepository
   setUp(() async {
     mockStorage = MockJsonStorage();
-    //reset(mockStorage);
-    // Standard-Mock-Verhalten für Storage
-    when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-        .thenAnswer((_) async => testUsers);
-
+    reset(mockStorage);
     userRepository = UserRepository.withStorage(mockStorage);
   });
 
   group('UserRepository Tests - Initialization', () {
+    setUp(() async {
+      UserRepository.resetInstance();
+      // Standard-Mock-Verhalten für Storage
+      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
+          .thenAnswer((_) async => testUsers);
+    });
     test('should load users on initialization', () async {
       await userRepository.initialize();
       verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
@@ -46,6 +43,12 @@ void main() {
   });
 
   group('UserRepository Tests - getUsers', () {
+    setUp(() async {
+      UserRepository.resetInstance();
+      // Standard-Mock-Verhalten für Storage
+      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
+          .thenAnswer((_) async => testUsers);
+    });
     test('should initialize repository if not initialized', () async {
       await userRepository.getUsers();
       verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
@@ -78,6 +81,12 @@ void main() {
   });
 
   group('UserRepository Tests - addUser', () {
+    setUp(() async {
+      UserRepository.resetInstance();
+      // Standard-Mock-Verhalten für Storage
+      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
+          .thenAnswer((_) async => testUsers);
+    });
     test('should initialize repository if not initialized', () async {
       when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
@@ -164,6 +173,12 @@ void main() {
   });
 
   group('UserRepository Tests - removeUser', () {
+    setUp(() async {
+      UserRepository.resetInstance();
+      // Standard-Mock-Verhalten für Storage
+      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
+          .thenAnswer((_) async => testUsers);
+    });
     test('should initialize repository if not initialized', () async {
       // Mock für das initiale Lesen
       when(mockStorage.readJsonFile(JsonStorage.usersFileName))
@@ -194,6 +209,17 @@ void main() {
     });
 
     test('should remove existing user', () async {
+      reset(mockStorage);
+
+      // Mock für das Lesen klar definieren
+      // aus irgendeinem Grund besteht testUsers aus dem Zustand von der 'add user'
+      // group und wird hier auch so wieder eingefügt. Deswegen explizite Liste
+      // mitgegeben.
+      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
+          .thenAnswer((_) async => {
+                'users': ['user1', 'user2', 'user3']
+              });
+
       when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
       await userRepository.initialize();
@@ -247,6 +273,12 @@ void main() {
   });
 
   group('UserRepository Tests - userExists', () {
+    setUp(() async {
+      UserRepository.resetInstance();
+      // Standard-Mock-Verhalten für Storage
+      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
+          .thenAnswer((_) async => testUsers);
+    });
     test('should initialize repository if not initialized', () async {
       await userRepository.userExists('user1');
       verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
