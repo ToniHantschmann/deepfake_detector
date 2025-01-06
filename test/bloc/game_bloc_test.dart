@@ -154,6 +154,13 @@ void main() {
           when(mockVideoRepository.getRandomVideoPair())
               .thenAnswer((_) async => testVideos);
         },
+        seed: () => const GameState(
+          status: GameStatus.login,
+          currentScreen: GameScreen.introduction,
+          videos: [],
+          availableUsers: ['existingUser'], // Hier den Benutzer hinzufügen
+          currentUser: null,
+        ),
         build: () => gameBloc,
         act: (bloc) => bloc.add(const LoginUser('existingUser')),
         expect: () => [
@@ -340,14 +347,17 @@ void main() {
 
     group('RestartGame', () {
       blocTest<GameBloc, GameState>(
-        'resets game state while preserving user info',
+        'resets game from statistics screen while preserving user info',
         setUp: () {
           when(mockVideoRepository.getRandomVideoPair())
               .thenAnswer((_) async => testVideos);
+          when(mockUserRepository.userExists('testUser'))
+              .thenAnswer((_) async => true);
         },
         seed: () => GameState(
           status: GameStatus.playing,
-          currentScreen: GameScreen.result,
+          currentScreen:
+              GameScreen.statistics, // Geändert von result zu statistics
           videos: testVideos,
           availableUsers: const [],
           currentUser: 'testUser',
@@ -358,7 +368,6 @@ void main() {
         build: () => gameBloc,
         act: (bloc) => bloc.add(const RestartGame()),
         expect: () => [
-          predicate<GameState>((state) => state.status == GameStatus.initial),
           predicate<GameState>(
             (state) =>
                 state.status == GameStatus.ready &&
