@@ -97,6 +97,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         status: GameStatus.playing,
         videos: _currentVideos,
         currentScreen: GameScreen.introduction,
+        selectedVideoIndex: null, // Reset selection
+        isCorrectGuess: null, // Reset result
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -107,7 +109,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Future<void> _onNextScreen(NextScreen event, Emitter<GameState> emit) async {
-    if (state.status != GameStatus.playing) return;
+    if (state.status != GameStatus.playing || _currentVideos.isEmpty) return;
 
     switch (state.currentScreen) {
       case GameScreen.introduction:
@@ -129,7 +131,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.result:
-        // Load updated statistics before showing statistics screen
         if (_currentUser != null) {
           try {
             final updatedStats =
@@ -148,7 +149,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.statistics:
-        // Do nothing or restart game
         break;
     }
   }
@@ -157,7 +157,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       SelectDeepfake event, Emitter<GameState> emit) async {
     if (state.status != GameStatus.playing ||
         state.currentScreen != GameScreen.comparison ||
-        _currentUser == null) {
+        _currentUser == null ||
+        event.videoIndex >= _currentVideos.length) {
       return;
     }
 
@@ -165,7 +166,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final isCorrect = selectedVideo.isDeepfake;
 
     try {
-      // Record the attempt in statistics
       final attempt = GameAttempt(
         timestamp: DateTime.now(),
         wasCorrect: isCorrect,
@@ -175,7 +175,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       await _statisticsRepository.addAttempt(_currentUser!, attempt);
 
-      // Update state with selection and result
       emit(state.copyWith(
         selectedVideoIndex: event.videoIndex,
         isCorrectGuess: isCorrect,
@@ -190,20 +189,41 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onRestartGame(
       RestartGame event, Emitter<GameState> emit) async {
-    // Keep user logged in but reset game state
     final currentUser = _currentUser;
     final currentStats = state.userStatistics;
 
-    emit(const GameState.initial());
+    // Reset internal state
+    _currentVideos = [];
 
     if (currentUser != null && currentStats != null) {
-      emit(state.copyWith(
-        currentUser: currentUser,
-        userStatistics: currentStats,
-        status: GameStatus.ready,
-      ));
-      add(const StartGame());
+      // Verify user still exists
+      try {
+        final exists = await _userRepository.userExists(currentUser);
+        if (!exists) {
+          emit(const GameState.initial());
+          add(const InitializeGame());
+          return;
+        }
+
+        emit(state.copyWith(
+          status: GameStatus.ready,
+          currentUser: currentUser,
+          userStatistics: currentStats,
+          videos: const [],
+          selectedVideoIndex: null,
+          isCorrectGuess: null,
+          errorMessage: null,
+        ));
+
+        add(const StartGame());
+      } catch (e) {
+        emit(state.copyWith(
+          status: GameStatus.error,
+          errorMessage: 'Failed to verify user: ${e.toString()}',
+        ));
+      }
     } else {
+      emit(const GameState.initial());
       add(const InitializeGame());
     }
   }
