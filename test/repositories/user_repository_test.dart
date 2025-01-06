@@ -5,7 +5,7 @@ import 'package:mockito/mockito.dart';
 import 'package:deepfake_detector/repositories/user_repository.dart';
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 
-import 'user_repository_test.mocks.dart';
+import '../mocks/user_repository_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<JsonStorage>()])
 void main() {
