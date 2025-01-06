@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../models/video_model.dart';
+//import '../../models/video_model.dart';
 import '../../repositories/video_repository.dart';
 import '../../repositories/statistics_repository.dart';
 import '../../repositories/user_repository.dart';
@@ -12,8 +12,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   final VideoRepository _videoRepository;
   final StatisticsRepository _statisticsRepository;
   final UserRepository _userRepository;
-  List<Video> _currentVideos = [];
-  String? _currentUser;
 
   GameBloc({
     required VideoRepository videoRepository,
@@ -57,8 +55,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         await _userRepository.addUser(event.username);
       }
 
-      _currentUser = event.username;
-
       // Load user statistics
       final statistics =
           await _statisticsRepository.getStatistics(event.username);
@@ -80,7 +76,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Future<void> _onStartGame(StartGame event, Emitter<GameState> emit) async {
-    if (_currentUser == null) {
+    if (state.currentUser == null) {
       emit(state.copyWith(
         status: GameStatus.error,
         errorMessage: 'No user logged in',
@@ -91,11 +87,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
-      _currentVideos = await _videoRepository.getRandomVideoPair();
+      final videos = await _videoRepository.getRandomVideoPair();
 
       emit(state.copyWith(
         status: GameStatus.playing,
-        videos: _currentVideos,
+        videos: videos,
         currentScreen: GameScreen.introduction,
         selectedVideoIndex: null, // Reset selection
         isCorrectGuess: null, // Reset result
@@ -109,7 +105,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Future<void> _onNextScreen(NextScreen event, Emitter<GameState> emit) async {
-    if (state.status != GameStatus.playing || _currentVideos.isEmpty) return;
+    if (state.status != GameStatus.playing || state.videos.isEmpty) return;
 
     switch (state.currentScreen) {
       case GameScreen.introduction:
@@ -131,10 +127,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.result:
-        if (_currentUser != null) {
+        if (state.currentUser != null) {
           try {
             final updatedStats =
-                await _statisticsRepository.getStatistics(_currentUser!);
+                await _statisticsRepository.getStatistics(state.currentUser!);
             emit(state.copyWith(
               currentScreen: GameScreen.statistics,
               userStatistics: updatedStats,
@@ -157,23 +153,23 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       SelectDeepfake event, Emitter<GameState> emit) async {
     if (state.status != GameStatus.playing ||
         state.currentScreen != GameScreen.comparison ||
-        _currentUser == null ||
-        event.videoIndex >= _currentVideos.length) {
+        state.currentUser == null ||
+        event.videoIndex >= state.videos.length) {
       return;
     }
 
-    final selectedVideo = _currentVideos[event.videoIndex];
+    final selectedVideo = state.videos[event.videoIndex];
     final isCorrect = selectedVideo.isDeepfake;
 
     try {
       final attempt = GameAttempt(
         timestamp: DateTime.now(),
         wasCorrect: isCorrect,
-        videoIds: _currentVideos.map((video) => video.id).toList(),
+        videoIds: state.videos.map((video) => video.id).toList(),
         selectedVideoId: selectedVideo.id,
       );
 
-      await _statisticsRepository.addAttempt(_currentUser!, attempt);
+      await _statisticsRepository.addAttempt(state.currentUser!, attempt);
 
       emit(state.copyWith(
         selectedVideoIndex: event.videoIndex,
@@ -189,11 +185,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onRestartGame(
       RestartGame event, Emitter<GameState> emit) async {
-    final currentUser = _currentUser;
+    final currentUser = state.currentUser;
     final currentStats = state.userStatistics;
-
-    // Reset internal state
-    _currentVideos = [];
 
     if (currentUser != null && currentStats != null) {
       // Verify user still exists
