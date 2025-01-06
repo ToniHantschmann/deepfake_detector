@@ -1,43 +1,79 @@
-import '../models/statistics_model.dart';
-import '../storage/json_storage.dart';
+import 'package:deepfake_detector/exceptions/app_exceptions.dart';
+import 'package:deepfake_detector/models/statistics_model.dart';
+import 'package:deepfake_detector/storage/json_storage.dart';
+import 'package:flutter/foundation.dart';
 
-/// repository class for player statistics
+/// Repository class to manage user statistics
 class StatisticsRepository {
   late final JsonStorage _storage;
+  final Map<String, UserStatistics> _statistics = {};
+  bool _isInitialized = false;
+  bool _isStorageProvided = false;
+
   static final StatisticsRepository _instance =
       StatisticsRepository._internal();
 
-  factory StatisticsRepository() {
-    return _instance;
+  factory StatisticsRepository() => _instance;
+
+  StatisticsRepository._internal();
+
+  /// Constructor for testing purposes that allows injecting a mock storage
+  @visibleForTesting
+  factory StatisticsRepository.withStorage(JsonStorage storage) {
+    final repository = StatisticsRepository._internal();
+    repository._storage = storage;
+    repository._isStorageProvided = true;
+    repository._isInitialized = false;
+    repository._statistics.clear();
+    return repository;
   }
 
-  StatisticsRepository._internal() {
-    _initStorage();
+  /// Initialize the repository
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    await _initStorage();
+    await _loadStatistics();
+    _isInitialized = true;
   }
 
   Future<void> _initStorage() async {
-    _storage = await JsonStorage.getInstance();
-  }
-
-  Future<UserStatistics> getStatistics(String username) async {
-    try {
-      final data = await _storage.readJsonFile(JsonStorage.statsFileName);
-      final userStats = data[username] as Map<String, dynamic>?;
-
-      if (userStats == null) {
-        return UserStatistics.initial(username);
-      }
-
-      return UserStatistics.fromJson(userStats);
-    } catch (e) {
-      throw Exception("Failed to load statistics $e");
+    if (!_isStorageProvided) {
+      _storage = await JsonStorage.getInstance();
     }
   }
 
-  /// add new attempt to existing statistic
-  Future<void> addAttempt(String username, GameAttempt attempt) async {
+  Future<void> _loadStatistics() async {
     try {
       final data = await _storage.readJsonFile(JsonStorage.statsFileName);
+      _statistics.clear();
+
+      for (final entry in data.entries) {
+        if (entry.value is Map<String, dynamic>) {
+          _statistics[entry.key] =
+              UserStatistics.fromJson(entry.value as Map<String, dynamic>);
+        }
+      }
+    } catch (e) {
+      throw StatisticsException('Error when loading statistics: $e');
+    }
+  }
+
+  /// Get statistics for a specific user
+  /// Returns [UserStatistics] for the given username
+  /// Creates new statistics if none exist
+  Future<UserStatistics> getStatistics(String username) async {
+    if (!_isInitialized) await initialize();
+
+    return _statistics[username] ?? UserStatistics.initial(username);
+  }
+
+  /// Add a new attempt to a user's statistics
+  /// Throws [StatisticsException] if the operation fails
+  Future<void> addAttempt(String username, GameAttempt attempt) async {
+    if (!_isInitialized) await initialize();
+
+    try {
       final stats = await getStatistics(username);
 
       final updatedStats = stats.copyWith(
@@ -46,23 +82,41 @@ class StatisticsRepository {
         recentAttempts: [
           ...stats.recentAttempts,
           attempt,
-        ].toList(),
+        ].take(10).toList(), // Keep only last 10 attempts
       );
 
-      data[username] = updatedStats.toJson();
-      await _storage.writeJsonFile(JsonStorage.statsFileName, data);
+      _statistics[username] = updatedStats;
+
+      await _saveStatistics();
     } catch (e) {
-      throw Exception("Failed to add attempt: $e");
+      throw StatisticsException('Failed to add attempt: $e');
     }
   }
 
+  /// Reset statistics for a specific user
+  /// Throws [StatisticsException] if the operation fails
   Future<void> resetStatistics(String username) async {
+    if (!_isInitialized) await initialize();
+
     try {
-      final data = await _storage.readJsonFile(JsonStorage.statsFileName);
-      data[username] = UserStatistics.initial(username).toJson();
+      _statistics[username] = UserStatistics.initial(username);
+      await _saveStatistics();
+    } catch (e) {
+      throw StatisticsException('Failed to reset statistics: $e');
+    }
+  }
+
+  /// Save all statistics to storage
+  Future<void> _saveStatistics() async {
+    try {
+      final data = Map<String, dynamic>.fromEntries(
+        _statistics.entries
+            .map((entry) => MapEntry(entry.key, entry.value.toJson())),
+      );
+
       await _storage.writeJsonFile(JsonStorage.statsFileName, data);
     } catch (e) {
-      throw Exception("Failed to reset statistics $e");
+      throw StatisticsException('Failed to save statistics: $e');
     }
   }
 }
