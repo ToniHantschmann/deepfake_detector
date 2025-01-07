@@ -139,9 +139,7 @@ class IntroductionScreen extends StatelessWidget {
           width: double.infinity,
           height: 64,
           child: ElevatedButton(
-            onPressed: () {
-              onStart;
-            },
+            onPressed: onStart,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.grey[800],
               shape: RoundedRectangleBorder(
