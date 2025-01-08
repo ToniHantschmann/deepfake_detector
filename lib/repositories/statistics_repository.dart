@@ -119,4 +119,35 @@ class StatisticsRepository {
       throw StatisticsException('Failed to save statistics: $e');
     }
   }
+
+  /// Kopiert die Statistiken von einem User zu einem anderen
+  /// [fromUsername]: Quell-Username
+  /// [toUsername]: Ziel-Username
+  /// Throws [StatisticsException] wenn einer der User nicht existiert
+  Future<void> copyStatistics(String fromUsername, String toUsername) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      // Prüfe ob Source-Statistiken existieren
+      final sourceStats = _statistics[fromUsername];
+      if (sourceStats == null) {
+        throw StatisticsException('Source user statistics not found');
+      }
+
+      // Erstelle neue Statistiken für den Ziel-User
+      final newStats = UserStatistics(
+        username: toUsername,
+        totalAttempts: sourceStats.totalAttempts,
+        correctGuesses: sourceStats.correctGuesses,
+        recentAttempts: List.from(sourceStats.recentAttempts),
+      );
+
+      // Speichere die neuen Statistiken
+      _statistics[toUsername] = newStats;
+      await _saveStatistics();
+    } catch (e) {
+      if (e is StatisticsException) rethrow;
+      throw StatisticsException('Failed to copy statistics: $e');
+    }
+  }
 }
