@@ -2,17 +2,18 @@ abstract class GameEvent {
   const GameEvent();
 }
 
-class InitializeGame extends GameEvent {
-  const InitializeGame();
-}
-
-class LoginUser extends GameEvent {
+class LoginExistingUser extends GameEvent {
   final String username;
-  const LoginUser(this.username);
+  const LoginExistingUser(this.username);
 }
 
-class StartGame extends GameEvent {
-  const StartGame();
+class RegisterNewUser extends GameEvent {
+  final String username;
+  const RegisterNewUser(this.username);
+}
+
+class ShowLogin extends GameEvent {
+  const ShowLogin();
 }
 
 class NextScreen extends GameEvent {
@@ -26,4 +27,13 @@ class SelectDeepfake extends GameEvent {
 
 class RestartGame extends GameEvent {
   const RestartGame();
+}
+
+class QuickStartGame extends GameEvent {
+  const QuickStartGame();
+}
+
+class SaveTempUser extends GameEvent {
+  final String username;
+  const SaveTempUser(this.username);
 }

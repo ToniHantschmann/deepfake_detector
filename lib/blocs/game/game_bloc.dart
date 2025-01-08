@@ -5,6 +5,7 @@ import '../../repositories/statistics_repository.dart';
 import '../../repositories/user_repository.dart';
 import '../../models/statistics_model.dart';
 import '../../exceptions/app_exceptions.dart';
+import '../../services/temp_user_service.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
@@ -21,85 +22,159 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         _statisticsRepository = statisticsRepository,
         _userRepository = userRepository,
         super(const GameState.initial()) {
-    on<InitializeGame>(_onInitializeGame);
-    on<LoginUser>(_onLoginUser);
-    on<StartGame>(_onStartGame);
+    on<QuickStartGame>(_onQuickStartGame);
+    on<LoginExistingUser>(_onLoginExistingUser);
+    on<RegisterNewUser>(_onRegisterNewUser);
+    on<ShowLogin>(_onShowLogin);
     on<NextScreen>(_onNextScreen);
     on<SelectDeepfake>(_onSelectDeepfake);
     on<RestartGame>(_onRestartGame);
+    on<SaveTempUser>(_onSaveTempUser);
   }
 
-  Future<void> _onInitializeGame(
-      InitializeGame event, Emitter<GameState> emit) async {
+  Future<void> _onQuickStartGame(
+      QuickStartGame event, Emitter<GameState> emit) async {
     emit(state.copyWith(status: GameStatus.loading));
     try {
-      final users = await _userRepository.getUsers();
+      final tempUsername = TempUserService.generateTempUsername();
+
+      // Temporären User anlegen
+      await _userRepository.addUser(tempUsername);
+
+      // Statistiken initialisieren
+      final statistics =
+          await _statisticsRepository.getStatistics(tempUsername);
+
+      final videos = await _videoRepository.getRandomVideoPair();
+
       emit(state.copyWith(
-        status: GameStatus.login,
-        availableUsers: users,
+        status: GameStatus.playing,
+        currentScreen: GameScreen.firstVideo,
+        currentUser: tempUsername,
+        userStatistics: statistics,
+        isTemporaryUser: true,
+        videos: videos,
       ));
     } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
-        errorMessage: e is UserException ? e.message : 'Failed to load users',
+        errorMessage: 'Failed to create temporary user: $e',
       ));
     }
   }
 
-  Future<void> _onLoginUser(LoginUser event, Emitter<GameState> emit) async {
+  /// Handler zum Anzeigen des Login-Dialogs
+  void _onShowLogin(ShowLogin event, Emitter<GameState> emit) {
+    emit(state.copyWith(
+      status: GameStatus.showLogin,
+      currentScreen: GameScreen.login,
+    ));
+  }
+
+  /// Handler für Login eines existierenden Users
+  Future<void> _onLoginExistingUser(
+    LoginExistingUser event,
+    Emitter<GameState> emit,
+  ) async {
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
-      // If user doesn't exist, create new user
-      if (!state.availableUsers.contains(event.username)) {
-        await _userRepository.addUser(event.username);
+      // Prüfe ob User existiert
+      final exists = await _userRepository.userExists(event.username);
+      if (!exists) {
+        throw UserException('User does not exist');
       }
 
-      // Load user statistics
+      // Lade Statistiken
       final statistics =
           await _statisticsRepository.getStatistics(event.username);
 
+      // Hole Videos für das Spiel
+      final videos = await _videoRepository.getRandomVideoPair();
+
       emit(state.copyWith(
-        status: GameStatus.ready,
+        status: GameStatus.playing,
+        currentScreen: GameScreen.firstVideo,
         currentUser: event.username,
         userStatistics: statistics,
+        isTemporaryUser: false,
+        videos: videos,
       ));
-
-      // Automatically start the game after successful login
-      add(const StartGame());
     } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
-        errorMessage: e is UserException ? e.message : 'Failed to login user',
+        errorMessage: 'Login failed: ${e.toString()}',
       ));
     }
   }
 
-  Future<void> _onStartGame(StartGame event, Emitter<GameState> emit) async {
-    if (state.currentUser == null) {
+  /// Handler für Registrierung eines neuen Users
+  Future<void> _onRegisterNewUser(
+    RegisterNewUser event,
+    Emitter<GameState> emit,
+  ) async {
+    emit(state.copyWith(status: GameStatus.loading));
+
+    try {
+      // Erstelle neuen User
+      await _userRepository.addUser(event.username);
+
+      // Initialisiere Statistiken
+      final statistics =
+          await _statisticsRepository.getStatistics(event.username);
+
+      // Hole Videos für das Spiel
+      final videos = await _videoRepository.getRandomVideoPair();
+
+      emit(state.copyWith(
+        status: GameStatus.playing,
+        currentScreen: GameScreen.firstVideo,
+        currentUser: event.username,
+        userStatistics: statistics,
+        isTemporaryUser: false,
+        videos: videos,
+      ));
+    } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
-        errorMessage: 'No user logged in',
+        errorMessage: 'Registration failed: ${e.toString()}',
       ));
+    }
+  }
+
+  /// Handler zum Konvertieren eines temporären Users in einen permanenten
+  Future<void> _onSaveTempUser(
+    SaveTempUser event,
+    Emitter<GameState> emit,
+  ) async {
+    if (!state.isTemporaryUser || state.currentUser == null) {
       return;
     }
 
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
-      final videos = await _videoRepository.getRandomVideoPair();
+      final oldUsername = state.currentUser!;
+
+      // Erstelle neuen permanenten User
+      await _userRepository.addUser(event.username);
+
+      // Kopiere Statistiken vom temporären zum permanenten User
+      final oldStats = await _statisticsRepository.getStatistics(oldUsername);
+      await _statisticsRepository.copyStatistics(oldUsername, event.username);
+
+      // Lösche temporären User
+      await _userRepository.removeUser(oldUsername);
 
       emit(state.copyWith(
-        status: GameStatus.playing,
-        videos: videos,
-        currentScreen: GameScreen.introduction,
-        selectedVideoIndex: null, // Reset selection
-        isCorrectGuess: null, // Reset result
+        currentUser: event.username,
+        userStatistics: oldStats,
+        isTemporaryUser: false,
       ));
     } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
-        errorMessage: e is VideoException ? e.message : 'Failed to load videos',
+        errorMessage: 'Failed to convert temporary user: ${e.toString()}',
       ));
     }
   }
@@ -110,6 +185,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     switch (state.currentScreen) {
       case GameScreen.introduction:
         emit(state.copyWith(currentScreen: GameScreen.firstVideo));
+        break;
+      case GameScreen.login:
+        emit(state.copyWith(currentScreen: GameScreen.login));
         break;
 
       case GameScreen.firstVideo:
@@ -125,7 +203,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           emit(state.copyWith(currentScreen: GameScreen.result));
         }
         break;
-
       case GameScreen.result:
         if (state.currentUser != null) {
           try {
@@ -145,6 +222,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.statistics:
+        add(const RestartGame());
         break;
     }
   }
@@ -183,41 +261,50 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
+  /// Handler für den Neustart des Spiels
   Future<void> _onRestartGame(
       RestartGame event, Emitter<GameState> emit) async {
     final currentUser = state.currentUser;
-    final currentStats = state.userStatistics;
+    final isTemp = state.isTemporaryUser;
 
-    if (currentUser != null && currentStats != null) {
-      // Verify user still exists
-      try {
-        final exists = await _userRepository.userExists(currentUser);
-        if (!exists) {
-          emit(const GameState.initial());
-          add(const InitializeGame());
-          return;
-        }
-
-        emit(state.copyWith(
-          status: GameStatus.ready,
-          currentUser: currentUser,
-          userStatistics: currentStats,
-          videos: const [],
-          selectedVideoIndex: null,
-          isCorrectGuess: null,
-          errorMessage: null,
-        ));
-
-        add(const StartGame());
-      } catch (e) {
-        emit(state.copyWith(
-          status: GameStatus.error,
-          errorMessage: 'Failed to verify user: ${e.toString()}',
-        ));
-      }
-    } else {
+    if (currentUser == null) {
+      // Kein User vorhanden - zurück zum Start
       emit(const GameState.initial());
-      add(const InitializeGame());
+      return;
+    }
+
+    emit(state.copyWith(status: GameStatus.loading));
+
+    try {
+      // Prüfe ob User noch existiert
+      final exists = await _userRepository.userExists(currentUser);
+      if (!exists) {
+        emit(const GameState.initial());
+        return;
+      }
+
+      // Hole aktuelle Statistiken
+      final statistics = await _statisticsRepository.getStatistics(currentUser);
+
+      // Hole neue Videos für die nächste Runde
+      final videos = await _videoRepository.getRandomVideoPair();
+
+      // Setze Spiel zurück und behalte User-Informationen
+      emit(state.copyWith(
+        status: GameStatus.playing,
+        currentScreen: GameScreen.firstVideo,
+        videos: videos,
+        userStatistics: statistics,
+        selectedVideoIndex: null,
+        isCorrectGuess: null,
+        errorMessage: null,
+        isTemporaryUser: isTemp,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: GameStatus.error,
+        errorMessage: 'Failed to restart game: ${e.toString()}',
+      ));
     }
   }
 }

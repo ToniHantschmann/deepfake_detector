@@ -3,6 +3,7 @@ import 'package:deepfake_detector/models/statistics_model.dart';
 
 enum GameScreen {
   introduction,
+  login,
   firstVideo,
   secondVideo,
   comparison,
@@ -14,8 +15,7 @@ enum GameStatus {
   initial,
   loading,
   error,
-  login,
-  ready,
+  showLogin,
   playing,
 }
 
@@ -29,6 +29,10 @@ class GameState {
   final int? selectedVideoIndex;
   final bool? isCorrectGuess;
   final String? errorMessage;
+  final bool isTemporaryUser;
+  final bool showLoginOverlay;
+
+  static const _sentinel = Object();
 
   const GameState({
     required this.status,
@@ -40,6 +44,8 @@ class GameState {
     this.selectedVideoIndex,
     this.isCorrectGuess,
     this.errorMessage,
+    this.isTemporaryUser = false,
+    this.showLoginOverlay = false,
   });
 
   const GameState.initial()
@@ -51,29 +57,44 @@ class GameState {
         userStatistics = null,
         selectedVideoIndex = null,
         isCorrectGuess = null,
-        errorMessage = null;
+        errorMessage = null,
+        isTemporaryUser = false,
+        showLoginOverlay = false;
 
   GameState copyWith({
     GameStatus? status,
     GameScreen? currentScreen,
     List<Video>? videos,
     List<String>? availableUsers,
-    String? currentUser,
-    UserStatistics? userStatistics,
-    int? selectedVideoIndex,
-    bool? isCorrectGuess,
-    String? errorMessage,
+    Object? currentUser = _sentinel,
+    Object? userStatistics = _sentinel,
+    Object? selectedVideoIndex = _sentinel,
+    Object? isCorrectGuess = _sentinel,
+    Object? errorMessage = _sentinel,
+    bool? isTemporaryUser,
+    bool? showLoginOverlay,
   }) {
     return GameState(
       status: status ?? this.status,
       currentScreen: currentScreen ?? this.currentScreen,
       videos: videos ?? this.videos,
       availableUsers: availableUsers ?? this.availableUsers,
-      currentUser: currentUser ?? this.currentUser,
-      userStatistics: userStatistics ?? this.userStatistics,
-      selectedVideoIndex: selectedVideoIndex ?? this.selectedVideoIndex,
-      isCorrectGuess: isCorrectGuess ?? this.isCorrectGuess,
-      errorMessage: errorMessage ?? this.errorMessage,
+      currentUser:
+          currentUser == _sentinel ? this.currentUser : currentUser as String?,
+      userStatistics: userStatistics == _sentinel
+          ? this.userStatistics
+          : userStatistics as UserStatistics?,
+      selectedVideoIndex: selectedVideoIndex == _sentinel
+          ? this.selectedVideoIndex
+          : selectedVideoIndex as int?,
+      isCorrectGuess: isCorrectGuess == _sentinel
+          ? this.isCorrectGuess
+          : isCorrectGuess as bool?,
+      errorMessage: errorMessage == _sentinel
+          ? this.errorMessage
+          : errorMessage as String?,
+      isTemporaryUser: isTemporaryUser ?? this.isTemporaryUser,
+      showLoginOverlay: showLoginOverlay ?? this.showLoginOverlay,
     );
   }
 }
