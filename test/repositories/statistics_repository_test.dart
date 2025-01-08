@@ -6,7 +6,7 @@ import 'package:deepfake_detector/repositories/statistics_repository.dart';
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
 
-import '../mocks/statistics_repository_test.mocks.dart';
+import 'statistics_repository_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<JsonStorage>()])
 void main() {
