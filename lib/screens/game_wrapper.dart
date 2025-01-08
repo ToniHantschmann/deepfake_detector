@@ -33,28 +33,39 @@ class GameWrapperView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
-      switch (state.currentScreen) {
-        case GameScreen.introduction:
-          return IntroductionScreen(
-              onStart: () => context.read<GameBloc>().add(const NextScreen()));
-        case GameScreen.firstVideo:
-          return VideoScreen(
-              onNext: () => context.read<GameBloc>().add(const NextScreen()),
-              video: state.videos.first,
-              isFirstVideo: true);
-        case GameScreen.secondVideo:
-          return VideoScreen(
-              video: state.videos.last,
-              onNext: () => context.read<GameBloc>().add(const NextScreen()),
-              isFirstVideo: false);
-        case GameScreen.comparison:
-        case GameScreen.result:
-        case GameScreen.statistics:
-          return const Center(
-            child: Text('Unknown state'),
-          );
-      }
-    });
+    return BlocBuilder<GameBloc, GameState>(
+      builder: (context, state) {
+        return _buildCurrentScreen(state);
+      },
+    );
+  }
+
+  Widget _buildCurrentScreen(GameState state) {
+    switch (state.currentScreen) {
+      case GameScreen.introduction:
+        return const IntroductionScreen();
+
+      case GameScreen.firstVideo:
+        if (state.videos.isEmpty) {
+          throw Exception('No videos available');
+        }
+        return VideoScreen(
+          video: state.videos.first,
+          isFirstVideo: true,
+        );
+
+      case GameScreen.secondVideo:
+        if (state.videos.length < 2) {
+          throw Exception('Second video not available');
+        }
+        return VideoScreen(
+          video: state.videos.last,
+          isFirstVideo: false,
+        );
+
+      // Weitere Screens hier...
+      default:
+        throw Exception('Unknown screen state');
+    }
   }
 }
