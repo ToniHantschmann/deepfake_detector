@@ -126,6 +126,15 @@ class MockStatisticsRepository extends _i1.Mock
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> copyStatistics(String? fromUsername, String? toUsername) =>
+      (super.noSuchMethod(
+            Invocation.method(#copyStatistics, [fromUsername, toUsername]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 }
 
 /// A class which mocks [UserRepository].
