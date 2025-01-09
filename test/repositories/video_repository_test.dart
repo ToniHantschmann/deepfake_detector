@@ -69,9 +69,9 @@ void main() {
       verify(mockStorage.readJsonFile(JsonStorage.videosFileName)).called(1);
     });
 
-    test('should throw VideoException when no videos are available', () async {
+    test('throws VideoException when storage fails', () async {
       when(mockStorage.readJsonFile(JsonStorage.videosFileName))
-          .thenAnswer((_) async => {'videos': []});
+          .thenThrow(Exception('Storage error'));
 
       expect(
         () => videoRepository.initialize(),
