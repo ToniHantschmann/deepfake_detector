@@ -4,8 +4,8 @@
             "id": "001",
             "title": "Video1",
             "description": "description 1",
-            "videoURL": "assets/videos/video1.mp4",
-            "thumbnailURL": "assets/thumbnails/video1.jpg",
+            "videoUrl": "assets/videos/video1.mp4",
+            "thumbnailUrl": "assets/thumbnails/video1.jpg",
             "isDeepfake": false,
             "deepfakeIndicators": [
                 "Reason 1: ...",
@@ -18,8 +18,8 @@
             "id": "002",
             "title": "Video2",
             "description": "description 2",
-            "videoURL": "assets/videos/video2.mp4",
-            "thumbnailURL": "assets/thumbnails/video2.jpg",
+            "videoUrl": "assets/videos/video2.mp4",
+            "thumbnailUrl": "assets/thumbnails/video2.jpg",
             "isDeepfake": true,
             "deepfakeIndicators": [
                 "Reason 1: ...",
@@ -32,8 +32,8 @@
             "id": "003",
             "title": "Video3",
             "description": "description 3",
-            "videoURL": "assets/videos/video3.mp4",
-            "thumbnailURL": "assets/thumbnails/video3.jpg",
+            "videoUrl": "assets/videos/video3.mp4",
+            "thumbnailUrl": "assets/thumbnails/video3.jpg",
             "isDeepfake": false,
             "deepfakeIndicators": [
                 "Reason 1: ...",
@@ -46,92 +46,8 @@
             "id": "004",
             "title": "Video4",
             "description": "description 4",
-            "videoURL": "assets/videos/video4.mp4",
-            "thumbnailURL": "assets/thumbnails/video4.jpg",
-            "isDeepfake": true,
-            "deepfakeIndicators": [
-                "Reason 1: ...",
-                "Reason 2: ...",
-                "Reason 3: ..."
-            ]
-        
-        },
-        {
-            "id": "005",
-            "title": "Video5",
-            "description": "description 5",
-            "videoURL": "assets/videos/video5.mp4",
-            "thumbnailURL": "assets/thumbnails/video5.jpg",
-            "isDeepfake": false,
-            "deepfakeIndicators": [
-                "Reason 1: ...",
-                "Reason 2: ...",
-                "Reason 3: ..."
-            ]
-        
-        },
-        {
-            "id": "006",
-            "title": "Video6",
-            "description": "description 6",
-            "videoURL": "assets/videos/video6.mp4",
-            "thumbnailURL": "assets/thumbnails/video6.jpg",
-            "isDeepfake": true,
-            "deepfakeIndicators": [
-                "Reason 1: ...",
-                "Reason 2: ...",
-                "Reason 3: ..."
-            ]
-        
-        },
-        {
-            "id": "007",
-            "title": "Video7",
-            "description": "description 7",
-            "videoURL": "assets/videos/video7.mp4",
-            "thumbnailURL": "assets/thumbnails/video7.jpg",
-            "isDeepfake": false,
-            "deepfakeIndicators": [
-                "Reason 1: ...",
-                "Reason 2: ...",
-                "Reason 3: ..."
-            ]
-        
-        },
-        {
-            "id": "008",
-            "title": "Video8",
-            "description": "description 8",
-            "videoURL": "assets/videos/video8.mp4",
-            "thumbnailURL": "assets/thumbnails/video8.jpg",
-            "isDeepfake": true,
-            "deepfakeIndicators": [
-                "Reason 1: ...",
-                "Reason 2: ...",
-                "Reason 3: ..."
-            ]
-        
-        },
-        {
-            "id": "009",
-            "title": "Video9",
-            "description": "description 9",
-            "videoURL": "assets/videos/video9.mp4",
-            "thumbnailURL": "assets/thumbnails/video9.jpg",
-            "isDeepfake": false,
-            "deepfakeIndicators": [
-                "Reason 1: ...",
-                "Reason 2: ...",
-                "Reason 3: ..."
-            ]
-        
-        },
-        {
-            "id": "010",
-            "title": "Video10",
-            "description": "description 10",
-            "videoURL": "assets/videos/video10.mp4",
-            "thumbnailURL": "assets/thumbnails/video10.jpg",
+            "videoUrl": "assets/videos/video4.mp4",
+            "thumbnailUrl": "assets/thumbnails/video4.jpg",
             "isDeepfake": true,
             "deepfakeIndicators": [
                 "Reason 1: ...",

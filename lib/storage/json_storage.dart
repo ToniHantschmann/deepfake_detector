@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../exceptions/app_exceptions.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class JsonStorage {
   static const String statsFileName = 'stats';
   static const String usersFileName = 'users';
-  static const String videosFileName = 'videos_db';
+  static const String videosFileName = 'assets/data/videos_db.json';
 
   static JsonStorage? _instance;
   late SharedPreferences _prefs;
@@ -31,6 +32,11 @@ class JsonStorage {
 
   Future<Map<String, dynamic>> readJsonFile(String fileName) async {
     try {
+      if (fileName == videosFileName) {
+        final String jsonString = await rootBundle.loadString(fileName);
+        return json.decode(jsonString) as Map<String, dynamic>;
+      }
+
       final jsonStr = _prefs.getString('${fileName}_data');
 
       if (jsonStr == null) {
@@ -45,6 +51,10 @@ class JsonStorage {
 
   Future<void> writeJsonFile(String fileName, Map<String, dynamic> data) async {
     try {
+      if (fileName == videosFileName) {
+        throw StorageException('Cannot write to asset file');
+      }
+
       final jsonStr = jsonEncode(data);
       await _prefs.setString('${fileName}_data', jsonStr);
     } catch (e) {
