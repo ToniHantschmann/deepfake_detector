@@ -1,38 +1,43 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:deepfake_detector/exceptions/app_exceptions.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../exceptions/app_exceptions.dart';
 
 class JsonStorage {
-  static const String statsFileName = 'stats.json';
-  static const String usersFileName = 'users.json';
-  static const String videosFileName = 'videos_db.json';
+  static const String statsFileName = 'stats';
+  static const String usersFileName = 'users';
+  static const String videosFileName = 'videos_db';
 
   static JsonStorage? _instance;
-  late final Directory _directory;
+  late SharedPreferences _prefs;
+  bool _initialized = false;
 
   static Future<JsonStorage> getInstance() async {
     if (_instance == null) {
-      final directory = await getApplicationDocumentsDirectory();
-      _instance = JsonStorage._internal(directory);
+      final instance = JsonStorage._internal();
+      await instance._init();
+      _instance = instance;
     }
     return _instance!;
   }
 
-  JsonStorage._internal(this._directory);
+  JsonStorage._internal();
 
-  Future<File> _getFile(String fileName) async {
-    return File('${_directory.path}/$fileName');
+  Future<void> _init() async {
+    if (!_initialized) {
+      _prefs = await SharedPreferences.getInstance();
+      _initialized = true;
+    }
   }
 
   Future<Map<String, dynamic>> readJsonFile(String fileName) async {
     try {
-      final file = await _getFile(fileName);
-      if (!await file.exists()) {
+      final jsonStr = _prefs.getString('${fileName}_data');
+
+      if (jsonStr == null) {
         return {};
       }
-      final content = await file.readAsString();
-      return jsonDecode(content) as Map<String, dynamic>;
+
+      return jsonDecode(jsonStr) as Map<String, dynamic>;
     } catch (e) {
       throw StorageException('Failed to read $fileName: $e');
     }
@@ -40,10 +45,10 @@ class JsonStorage {
 
   Future<void> writeJsonFile(String fileName, Map<String, dynamic> data) async {
     try {
-      final file = await _getFile(fileName);
-      await file.writeAsString(jsonEncode(data));
+      final jsonStr = jsonEncode(data);
+      await _prefs.setString('${fileName}_data', jsonStr);
     } catch (e) {
-      throw StorageException('Failed to write $fileName $e');
+      throw StorageException('Failed to write $fileName: $e');
     }
   }
 }
