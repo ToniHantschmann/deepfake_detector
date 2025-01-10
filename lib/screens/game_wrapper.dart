@@ -65,8 +65,7 @@ class GameWrapperView extends StatelessWidget {
         );
 
       case GameScreen.comparison:
-        throw UnimplementedError('Comparison screen not implemented yet');
-      //return const ComparisonScreen();
+        return const ComparisonScreen();
 
       case GameScreen.result:
         // TODO: Implement ResultScreen
