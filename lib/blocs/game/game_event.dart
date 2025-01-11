@@ -20,6 +20,10 @@ class NextScreen extends GameEvent {
   const NextScreen();
 }
 
+class PreviousScreen extends GameEvent {
+  const PreviousScreen();
+}
+
 class SelectDeepfake extends GameEvent {
   final int videoIndex;
   const SelectDeepfake(this.videoIndex);

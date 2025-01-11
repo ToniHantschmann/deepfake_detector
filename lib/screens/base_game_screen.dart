@@ -68,4 +68,13 @@ abstract class BaseGameScreen extends StatelessWidget {
   void dispatchGameEvent(BuildContext context, GameEvent event) {
     context.read<GameBloc>().add(event);
   }
+
+  /// Helper methods for navigation
+  void handleBackNavigation(BuildContext context) {
+    dispatchGameEvent(context, const PreviousScreen());
+  }
+
+  void handleNextNavigation(BuildContext context) {
+    dispatchGameEvent(context, const NextScreen());
+  }
 }

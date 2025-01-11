@@ -26,7 +26,8 @@ class VideoScreen extends BaseGameScreen {
     return _VideoScreenContent(
       video: video,
       isFirstVideo: isFirstVideo,
-      onNext: () => dispatchGameEvent(context, const NextScreen()),
+      onNext: () => handleNextNavigation(context),
+      onBack: () => handleBackNavigation(context),
     );
   }
 }
@@ -35,12 +36,14 @@ class _VideoScreenContent extends StatefulWidget {
   final Video video;
   final bool isFirstVideo;
   final VoidCallback onNext;
+  final VoidCallback onBack;
 
   const _VideoScreenContent({
     Key? key,
     required this.video,
     required this.isFirstVideo,
     required this.onNext,
+    required this.onBack,
   }) : super(key: key);
 
   @override
@@ -63,17 +66,18 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   Future<void> _initializeVideo() async {
     try {
       _controller = VideoPlayerController.asset(widget.video.videoUrl);
-
       await _controller.initialize();
-
       _controller.addListener(_videoListener);
 
-      setState(() {
-        _isInitialized = true;
-        _duration = _controller.value.duration;
-      });
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+          _duration = _controller.value.duration;
+        });
+      }
     } catch (e) {
       debugPrint('Error initializing video: $e');
+      // We don't need to handle the error here as BaseGameScreen will handle it
     }
   }
 
@@ -105,113 +109,100 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: LayoutBuilder(builder: (context, constraints) {
-          return Stack(
-            children: [
-              // Info Card
-              Positioned(
-                top: 16,
-                left: 16,
-                right: 16,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[900]?.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    widget.video.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-
-              // Video Player and Controls
-              Padding(
-                padding: const EdgeInsets.only(top: 64),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: constraints.maxHeight -
-                              200, // Berücksichtige Platz für Controls
-                        ),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              if (_isInitialized)
-                                VideoPlayer(_controller)
-                              else
-                                Container(
-                                  color: Colors.black,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              if (_isBuffering && _isInitialized)
-                                const CircularProgressIndicator(
-                                  color: Colors.white,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (_isInitialized) ...[
-                        const SizedBox(height: 8),
-                        _buildProgressBar(),
-                        const SizedBox(height: 16),
-                        _buildControlButtons(),
-                        const SizedBox(height: 16),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-
-              // Navigation Buttons
-              if (_isInitialized) ...[
-                if (!widget.isFirstVideo)
-                  Positioned(
-                    left: 16,
-                    top: constraints.maxHeight / 2 - 28,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.chevron_left,
-                        color: Colors.white,
-                        size: 56,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Stack(
+              children: [
+                // Video Title Card
                 Positioned(
+                  top: 16,
+                  left: 16,
                   right: 16,
-                  top: constraints.maxHeight / 2 - 28,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white,
-                      size: 56,
-                    ),
-                    onPressed: widget.onNext,
+                  child: _buildTitleCard(),
+                ),
+
+                // Main Video Content
+                _buildMainContent(constraints),
+
+                // Navigation Arrows
+                if (_isInitialized) ...[
+                  _buildBackButton(constraints),
+                  _buildNextButton(constraints),
+                ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitleCard() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xCC212121), // grey[900] with 80% opacity
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        widget.video.title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainContent(BoxConstraints constraints) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 64),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildVideoPlayer(constraints),
+            if (_isInitialized) ...[
+              const SizedBox(height: 8),
+              _buildProgressBar(),
+              const SizedBox(height: 16),
+              _buildControlButtons(),
+              const SizedBox(height: 16),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoPlayer(BoxConstraints constraints) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: constraints.maxHeight - 200,
+      ),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            if (_isInitialized)
+              VideoPlayer(_controller)
+            else
+              Container(
+                color: Colors.black,
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
                   ),
                 ),
-              ],
-            ],
-          );
-        }),
+              ),
+            if (_isBuffering && _isInitialized)
+              const CircularProgressIndicator(
+                color: Colors.white,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -219,7 +210,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   Widget _buildProgressBar() {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width * 0.8,
           child: SliderTheme(
             data: SliderTheme.of(context).copyWith(
@@ -229,7 +220,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
               activeTrackColor: Colors.blue,
               inactiveTrackColor: Colors.grey[800],
               thumbColor: Colors.blue,
-              overlayColor: Colors.blue.withOpacity(0.3),
+              overlayColor: const Color(0x4D2196F3),
             ),
             child: Slider(
               value: _position.inMilliseconds.toDouble(),
@@ -297,6 +288,36 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildBackButton(BoxConstraints constraints) {
+    return Positioned(
+      left: 16,
+      top: constraints.maxHeight / 2 - 28,
+      child: IconButton(
+        icon: const Icon(
+          Icons.chevron_left,
+          color: Colors.white,
+          size: 56,
+        ),
+        onPressed: widget.onBack,
+      ),
+    );
+  }
+
+  Widget _buildNextButton(BoxConstraints constraints) {
+    return Positioned(
+      right: 16,
+      top: constraints.maxHeight / 2 - 28,
+      child: IconButton(
+        icon: const Icon(
+          Icons.chevron_right,
+          color: Colors.white,
+          size: 56,
+        ),
+        onPressed: widget.onNext,
+      ),
     );
   }
 }

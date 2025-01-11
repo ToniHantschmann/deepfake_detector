@@ -113,7 +113,7 @@ class ComparisonScreen extends BaseGameScreen {
                     color: Colors.white,
                     size: 56,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => handleBackNavigation(context),
                 ),
               ),
             ),
@@ -132,9 +132,7 @@ class ComparisonScreen extends BaseGameScreen {
                         : Colors.grey[700],
                     size: 56,
                   ),
-                  onPressed: state.selectedVideoIndex != null
-                      ? () => dispatchGameEvent(context, const NextScreen())
-                      : null,
+                  onPressed: () => handleNextNavigation(context),
                 ),
               ),
             ),
