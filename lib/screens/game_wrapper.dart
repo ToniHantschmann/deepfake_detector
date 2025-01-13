@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../screens/introduction_screen.dart';
 import '../screens/comparison_screen.dart';
+import '../screens/result_screen.dart';
 
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
@@ -68,8 +69,7 @@ class GameWrapperView extends StatelessWidget {
         return const ComparisonScreen();
 
       case GameScreen.result:
-        // TODO: Implement ResultScreen
-        throw UnimplementedError('Result screen not implemented yet');
+        return const ResultScreen();
 
       case GameScreen.statistics:
         // TODO: Implement StatisticsScreen
