@@ -29,3 +29,11 @@ class VideoException implements Exception {
   @override
   String toString() => message;
 }
+
+class PinException implements Exception {
+  final String message;
+  PinException(this.message);
+
+  @override
+  String toString() => 'PinException: $message';
+}
