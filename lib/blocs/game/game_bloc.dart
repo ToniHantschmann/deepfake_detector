@@ -207,11 +207,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       case GameScreen.result:
         if (state.currentUser != null) {
           try {
-            final updatedStats =
-                await _statisticsRepository.getStatistics(state.currentUser!);
             emit(state.copyWith(
               currentScreen: GameScreen.statistics,
-              userStatistics: updatedStats,
             ));
           } catch (e) {
             emit(state.copyWith(
@@ -292,10 +289,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       );
 
       await _statisticsRepository.addAttempt(state.currentUser!, attempt);
+      final updatedStats =
+          await _statisticsRepository.getStatistics(state.currentUser!);
 
       emit(state.copyWith(
         selectedVideoIndex: event.videoIndex,
         isCorrectGuess: isCorrect,
+        userStatistics: updatedStats,
       ));
     } catch (e) {
       emit(state.copyWith(
