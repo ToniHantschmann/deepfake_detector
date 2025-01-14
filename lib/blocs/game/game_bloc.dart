@@ -26,11 +26,54 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<LoginExistingUser>(_onLoginExistingUser);
     on<RegisterNewUser>(_onRegisterNewUser);
     on<ShowLogin>(_onShowLogin);
+    on<CancelLogin>(_onCancelLogin);
     on<NextScreen>(_onNextScreen);
-    on<PreviousScreen>(_onPreviousScreen);
     on<SelectDeepfake>(_onSelectDeepfake);
     on<RestartGame>(_onRestartGame);
     on<SaveTempUser>(_onSaveTempUser);
+    on<CheckPin>(_onCheckPin);
+    on<SetPinCheckResult>(_onSetPinCheckResult);
+  }
+
+  /// Handler zum Anzeigen des Login-Dialogs
+  void _onShowLogin(ShowLogin event, Emitter<GameState> emit) {
+    emit(state.copyWith(
+      status: GameStatus.showLogin,
+      showLoginOverlay: true,
+    ));
+  }
+
+  void _onCancelLogin(CancelLogin event, Emitter<GameState> emit) {
+    emit(state.copyWith(
+      status: GameStatus.initial,
+      showLoginOverlay: false,
+      pinMatchingUsernames: [],
+      isPinChecking: false,
+    ));
+  }
+
+  Future<void> _onCheckPin(CheckPin event, Emitter<GameState> emit) async {
+    emit(state.copyWith(isPinChecking: true));
+
+    try {
+      final users = await _userRepository.getUsersByPin(event.pin);
+      final usernames = users.map((u) => u.username).toList();
+
+      emit(state.copyWith(
+        isPinChecking: false,
+        pinMatchingUsernames: usernames,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isPinChecking: false,
+        status: GameStatus.error,
+        errorMessage: 'Failed to check PIN: ${e.toString()}',
+      ));
+    }
+  }
+
+  void _onSetPinCheckResult(SetPinCheckResult event, Emitter<GameState> emit) {
+    emit(state.copyWith(pinMatchingUsernames: event.matchingUsernames));
   }
 
   Future<void> _onQuickStartGame(
@@ -64,19 +107,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  /// Handler zum Anzeigen des Login-Dialogs
-  void _onShowLogin(ShowLogin event, Emitter<GameState> emit) {
-    emit(state.copyWith(
-      status: GameStatus.showLogin,
-      currentScreen: GameScreen.login,
-    ));
-  }
-
-  /// Handler für Login eines existierenden Users
   Future<void> _onLoginExistingUser(
-    LoginExistingUser event,
-    Emitter<GameState> emit,
-  ) async {
+      LoginExistingUser event, Emitter<GameState> emit) async {
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
@@ -100,6 +132,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         userStatistics: statistics,
         isTemporaryUser: false,
         videos: videos,
+        showLoginOverlay: false,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -109,11 +142,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  /// Handler für Registrierung eines neuen Users
   Future<void> _onRegisterNewUser(
-    RegisterNewUser event,
-    Emitter<GameState> emit,
-  ) async {
+      RegisterNewUser event, Emitter<GameState> emit) async {
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
@@ -143,11 +173,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  /// Handler zum Konvertieren eines temporären Users in einen permanenten
   Future<void> _onSaveTempUser(
-    SaveTempUser event,
-    Emitter<GameState> emit,
-  ) async {
+      SaveTempUser event, Emitter<GameState> emit) async {
     if (!state.isTemporaryUser || state.currentUser == null) {
       return;
     }
@@ -207,8 +234,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       case GameScreen.result:
         if (state.currentUser != null) {
           try {
+            final updatedStats =
+                await _statisticsRepository.getStatistics(state.currentUser!);
             emit(state.copyWith(
               currentScreen: GameScreen.statistics,
+              userStatistics: updatedStats,
             ));
           } catch (e) {
             emit(state.copyWith(
@@ -223,49 +253,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         add(const RestartGame());
         break;
     }
-  }
-
-  /// Handler für die Zurück-Navigation
-  Future<void> _onPreviousScreen(
-    PreviousScreen event,
-    Emitter<GameState> emit,
-  ) async {
-    if (state.status != GameStatus.playing) return;
-
-    GameScreen previousScreen;
-    switch (state.currentScreen) {
-      case GameScreen.firstVideo:
-        previousScreen = GameScreen.introduction;
-        break;
-
-      case GameScreen.secondVideo:
-        previousScreen = GameScreen.firstVideo;
-        break;
-
-      case GameScreen.comparison:
-        previousScreen = GameScreen.secondVideo;
-        break;
-
-      case GameScreen.result:
-        previousScreen = GameScreen.comparison;
-        // Reset selection when going back from result
-        emit(state.copyWith(
-          currentScreen: previousScreen,
-          selectedVideoIndex: null,
-          isCorrectGuess: null,
-        ));
-        return;
-
-      case GameScreen.statistics:
-        previousScreen = GameScreen.result;
-        break;
-
-      default:
-        // For introduction and login screens, do nothing
-        return;
-    }
-
-    emit(state.copyWith(currentScreen: previousScreen));
   }
 
   Future<void> _onSelectDeepfake(
@@ -289,13 +276,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       );
 
       await _statisticsRepository.addAttempt(state.currentUser!, attempt);
-      final updatedStats =
-          await _statisticsRepository.getStatistics(state.currentUser!);
 
       emit(state.copyWith(
         selectedVideoIndex: event.videoIndex,
         isCorrectGuess: isCorrect,
-        userStatistics: updatedStats,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -305,7 +289,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  /// Handler für den Neustart des Spiels
   Future<void> _onRestartGame(
       RestartGame event, Emitter<GameState> emit) async {
     final currentUser = state.currentUser;
