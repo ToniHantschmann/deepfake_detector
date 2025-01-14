@@ -16,6 +16,10 @@ class ShowLogin extends GameEvent {
   const ShowLogin();
 }
 
+class CancelLogin extends GameEvent {
+  const CancelLogin();
+}
+
 class NextScreen extends GameEvent {
   const NextScreen();
 }
@@ -40,4 +44,14 @@ class QuickStartGame extends GameEvent {
 class SaveTempUser extends GameEvent {
   final String username;
   const SaveTempUser(this.username);
+}
+
+class CheckPin extends GameEvent {
+  final String pin;
+  const CheckPin(this.pin);
+}
+
+class SetPinCheckResult extends GameEvent {
+  final List<String> matchingUsernames;
+  const SetPinCheckResult(this.matchingUsernames);
 }
