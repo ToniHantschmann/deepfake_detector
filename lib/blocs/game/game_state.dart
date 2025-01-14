@@ -31,6 +31,8 @@ class GameState {
   final String? errorMessage;
   final bool isTemporaryUser;
   final bool showLoginOverlay;
+  final List<String> pinMatchingUsernames;
+  final bool isPinChecking;
 
   static const _sentinel = Object();
 
@@ -46,6 +48,8 @@ class GameState {
     this.errorMessage,
     this.isTemporaryUser = false,
     this.showLoginOverlay = false,
+    this.pinMatchingUsernames = const [],
+    this.isPinChecking = false,
   });
 
   const GameState.initial()
@@ -59,7 +63,9 @@ class GameState {
         isCorrectGuess = null,
         errorMessage = null,
         isTemporaryUser = false,
-        showLoginOverlay = false;
+        showLoginOverlay = false,
+        pinMatchingUsernames = const [],
+        isPinChecking = false;
 
   GameState copyWith({
     GameStatus? status,
@@ -73,6 +79,8 @@ class GameState {
     Object? errorMessage = _sentinel,
     bool? isTemporaryUser,
     bool? showLoginOverlay,
+    List<String>? pinMatchingUsernames,
+    bool? isPinChecking,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -95,6 +103,8 @@ class GameState {
           : errorMessage as String?,
       isTemporaryUser: isTemporaryUser ?? this.isTemporaryUser,
       showLoginOverlay: showLoginOverlay ?? this.showLoginOverlay,
+      pinMatchingUsernames: pinMatchingUsernames ?? this.pinMatchingUsernames,
+      isPinChecking: isPinChecking ?? this.isPinChecking,
     );
   }
 }
