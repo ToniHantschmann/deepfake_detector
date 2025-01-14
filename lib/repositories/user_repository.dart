@@ -1,11 +1,13 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/storage/json_storage.dart';
+import 'package:deepfake_detector/models/user_model.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:math';
 
 class UserRepository {
   static UserRepository? _instance;
   late final JsonStorage _storage;
-  List<String> _users = [];
+  Map<String, User> _users = {}; // Geändert zu Map für schnelleren Zugriff
   bool _isInitialized = false;
   bool _isStorageProvided = false;
 
@@ -20,7 +22,6 @@ class UserRepository {
 
   UserRepository._internal();
 
-  /// Constructor for testing purposes that allows injecting a mock storage
   @visibleForTesting
   factory UserRepository.withStorage(JsonStorage storage) {
     resetInstance();
@@ -30,7 +31,6 @@ class UserRepository {
     return repository;
   }
 
-  /// Initialize the repository by loading users
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -46,74 +46,116 @@ class UserRepository {
   }
 
   Future<void> _loadUsers() async {
-    _users = await _getAllUsers();
-  }
-
-  Future<List<String>> _getAllUsers() async {
     try {
       final data = await _storage.readJsonFile(JsonStorage.usersFileName);
-      final usersList = (data['users'] as List?)?.cast<String>() ?? [];
-      return usersList;
+      final usersList =
+          (data['users'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+
+      _users = {
+        for (var userData in usersList)
+          userData['username'] as String: User.fromJson(userData)
+      };
     } catch (e) {
       throw UserException('Error when loading users: $e');
     }
   }
 
-  /// Get all registered users
-  /// Returns a [List] of usernames
   Future<List<String>> getUsers() async {
     if (!_isInitialized) await initialize();
-    return List<String>.from(_users);
+    return _users.keys.toList();
   }
 
-  /// Add a new user with the given [username]
-  /// Throws [UserException] if username is invalid or already exists
-  Future<void> addUser(String username) async {
+  Future<bool> userExists(String username) async {
+    if (!_isInitialized) await initialize();
+    return _users.containsKey(username);
+  }
+
+  Future<void> addUser(String username, {String? pin}) async {
     if (!_isInitialized) await initialize();
 
     if (!_isValidUsername(username)) {
       throw UserException('Invalid username');
     }
 
-    if (_users.contains(username)) {
+    if (_users.containsKey(username)) {
       throw UserException('Username already exists');
     }
 
+    final userPin = pin ?? _generateRandomPin();
+    if (!_isValidPin(userPin)) {
+      throw UserException('Invalid PIN format');
+    }
+
     try {
-      _users.add(username);
-      await _storage.writeJsonFile(JsonStorage.usersFileName, {
-        'users': _users,
-      });
+      final newUser = User(
+        username: username,
+        pin: userPin,
+      );
+
+      _users[username] = newUser;
+      await _saveUsers();
     } catch (e) {
-      _users.remove(username); // Rollback on error
+      _users.remove(username); // Rollback bei Fehler
       throw UserException('Failed to add user: $e');
     }
   }
 
-  /// Check if a user exists
-  /// Returns [bool] indicating if the user exists
-  Future<bool> userExists(String username) async {
+  Future<List<User>> getUsersByPin(String pin) async {
     if (!_isInitialized) await initialize();
-    return _users.contains(username);
+
+    return _users.values.where((user) => user.pin == pin).toList();
   }
 
-  /// Remove a user by username
-  /// Throws [UserException] if user doesn't exist
+  Future<bool> verifyPin(String username, String pin) async {
+    if (!_isInitialized) await initialize();
+
+    final user = _users[username];
+    return user?.pin == pin;
+  }
+
+  Future<void> updatePin(String username, String newPin) async {
+    if (!_isInitialized) await initialize();
+
+    if (!_users.containsKey(username)) {
+      throw UserException('User not found');
+    }
+
+    if (!_isValidPin(newPin)) {
+      throw UserException('Invalid PIN format');
+    }
+
+    try {
+      final user = _users[username]!;
+      _users[username] = user.copyWith(pin: newPin);
+      await _saveUsers();
+    } catch (e) {
+      throw UserException('Failed to update PIN: $e');
+    }
+  }
+
   Future<void> removeUser(String username) async {
     if (!_isInitialized) await initialize();
 
-    if (!_users.contains(username)) {
+    if (!_users.containsKey(username)) {
       throw UserException('User not found');
     }
 
     try {
       _users.remove(username);
+      await _saveUsers();
+    } catch (e) {
+      throw UserException('Failed to remove user: $e');
+    }
+  }
+
+  Future<void> _saveUsers() async {
+    try {
+      final usersList = _users.values.map((user) => user.toJson()).toList();
       await _storage.writeJsonFile(JsonStorage.usersFileName, {
-        'users': _users,
+        'users': usersList,
       });
     } catch (e) {
-      _users.add(username); // Rollback on error
-      throw UserException('Failed to remove user: $e');
+      throw UserException('Failed to save users: $e');
     }
   }
 
@@ -121,5 +163,16 @@ class UserRepository {
     return username.isNotEmpty &&
         username.length <= 50 &&
         RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(username);
+  }
+
+  bool _isValidPin(String pin) {
+    return pin.length == 4 && RegExp(r'^\d{4}$').hasMatch(pin);
+  }
+
+  String _generateRandomPin() {
+    // Generiere zufälligen 4-stelligen PIN
+    final random = Random();
+    final pin = List.generate(4, (_) => random.nextInt(10)).join();
+    return pin;
   }
 }
