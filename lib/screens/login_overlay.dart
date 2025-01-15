@@ -1,11 +1,11 @@
-// lib/screens/login_overlay.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
-import 'dart:ui';
+import '../widgets/auth/auth_overlay_base.dart';
+import '../widgets/auth/pin_display.dart';
+import '../widgets/auth/number_pad.dart';
 
 class LoginOverlay extends StatefulWidget {
   const LoginOverlay({Key? key}) : super(key: key);
@@ -20,11 +20,13 @@ class _LoginOverlayState extends State<LoginOverlay> {
   bool _showUserSelection = false;
   List<String> _matchingUsernames = [];
   String? _selectedUsername;
+  String? _errorMessage;
 
   void _handleNumberInput(String number) {
     if (_pin.length < 4) {
       setState(() {
         _pin += number;
+        _errorMessage = null;
       });
 
       if (_pin.length == 4) {
@@ -37,6 +39,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
     if (_pin.isNotEmpty) {
       setState(() {
         _pin = _pin.substring(0, _pin.length - 1);
+        _errorMessage = null;
       });
     }
   }
@@ -48,7 +51,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
   void _handleConfirm() {
     if (_selectedUsername != null) {
       context.read<GameBloc>().add(LoginExistingUser(_selectedUsername!));
-      Navigator.of(context).pop(); // Dialog schließen
+      Navigator.of(context).pop();
     }
   }
 
@@ -59,6 +62,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
       _showUserSelection = false;
       _selectedUsername = null;
       _matchingUsernames = [];
+      _errorMessage = null;
     });
   }
 
@@ -69,199 +73,61 @@ class _LoginOverlayState extends State<LoginOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: BlocConsumer<GameBloc, GameState>(
-        listener: (context, state) {
-          if (state.isPinChecking) return;
+    return BlocConsumer<GameBloc, GameState>(
+      listener: (context, state) {
+        if (state.isPinChecking) return;
 
-          if (state.pinMatchingUsernames.isEmpty) {
-            setState(() {
-              _pin = '';
-              // TODO: Show error message
-            });
-          } else if (state.pinMatchingUsernames.length == 1) {
-            setState(() {
-              _showConfirmation = true;
-              _selectedUsername = state.pinMatchingUsernames.first;
-            });
-          } else {
-            setState(() {
-              _showUserSelection = true;
-              _matchingUsernames = state.pinMatchingUsernames;
-            });
-          }
-        },
-        builder: (context, state) {
-          return BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 400),
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1A1A1A),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.1),
+        if (state.pinMatchingUsernames.isEmpty) {
+          setState(() {
+            _pin = '';
+            _errorMessage = 'Invalid PIN';
+          });
+        } else if (state.pinMatchingUsernames.length == 1) {
+          setState(() {
+            _showConfirmation = true;
+            _selectedUsername = state.pinMatchingUsernames.first;
+          });
+        } else {
+          setState(() {
+            _showUserSelection = true;
+            _matchingUsernames = state.pinMatchingUsernames;
+          });
+        }
+      },
+      builder: (context, state) {
+        return AuthOverlayBase(
+          title: _showConfirmation
+              ? 'Confirm Identity'
+              : _showUserSelection
+                  ? 'Select Account'
+                  : 'Enter PIN',
+          onClose: _handleClose,
+          children: [
+            if (!_showConfirmation && !_showUserSelection) ...[
+              PinDisplay(pin: _pin),
+              if (_errorMessage != null) ...[
+                const SizedBox(height: 16),
+                Text(
+                  _errorMessage!,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 14,
                   ),
                 ),
-                child: Stack(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _showConfirmation
-                                  ? 'Confirm Identity'
-                                  : _showUserSelection
-                                      ? 'Select Account'
-                                      : 'Enter PIN',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            IconButton(
-                              icon:
-                                  const Icon(Icons.close, color: Colors.white),
-                              onPressed: _handleClose,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        if (!_showConfirmation && !_showUserSelection) ...[
-                          _buildPinDisplay(),
-                          const SizedBox(height: 32),
-                          _buildNumberPad(),
-                        ] else if (_showUserSelection) ...[
-                          _buildUserSelection(),
-                        ] else ...[
-                          _buildConfirmation(),
-                        ],
-                      ],
-                    ),
-                    if (state.isPinChecking)
-                      Container(
-                        color: Colors.black.withOpacity(0.8),
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                  ],
-                ),
+              ],
+              const SizedBox(height: 32),
+              NumberPad(
+                onNumberPressed: _handleNumberInput,
+                onBackspacePressed: _handleBackspace,
               ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildPinDisplay() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(4, (index) {
-        return Container(
-          width: 56,
-          height: 56,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFF262626),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: index < _pin.length
-                  ? Colors.blue
-                  : Colors.white.withOpacity(0.2),
-              width: 2,
-            ),
-          ),
-          child: Center(
-            child: index < _pin.length
-                ? const Icon(Icons.circle, size: 12, color: Colors.blue)
-                : null,
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildNumberPad() {
-    return Column(
-      children: [
-        // Zahlen 1-9
-        for (var row = 0; row < 3; row++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(3, (col) {
-                final number = (row * 3 + col + 1).toString();
-                return _buildNumberButton(number);
-              }),
-            ),
-          ),
-        // Letzte Reihe mit 0 und Backspace
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildNumberButton('0'),
-            _buildBackspaceButton(),
+            ] else if (_showUserSelection) ...[
+              _buildUserSelection(),
+            ] else ...[
+              _buildConfirmation(),
+            ],
           ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNumberButton(String number) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      width: 72,
-      height: 72,
-      child: TextButton(
-        onPressed: () => _handleNumberInput(number),
-        style: TextButton.styleFrom(
-          backgroundColor: const Color(0xFF262626),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: Text(
-          number,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackspaceButton() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      width: 72,
-      height: 72,
-      child: TextButton(
-        onPressed: _handleBackspace,
-        style: TextButton.styleFrom(
-          backgroundColor: const Color(0xFF262626),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: const Icon(
-          Icons.backspace_outlined,
-          color: Colors.white,
-          size: 24,
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -317,12 +183,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
         SizedBox(
           width: double.infinity,
           child: TextButton(
-            onPressed: () {
-              setState(() {
-                _pin = '';
-                _showUserSelection = false;
-              });
-            },
+            onPressed: _handleCancel,
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: Colors.grey[800],
@@ -373,7 +234,10 @@ class _LoginOverlayState extends State<LoginOverlay> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.grey[800],
                 ),
-                child: const Text('No, try again'),
+                child: const Text(
+                  'No, try again',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -384,7 +248,10 @@ class _LoginOverlayState extends State<LoginOverlay> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.blue,
                 ),
-                child: const Text('Yes, that\'s me'),
+                child: const Text(
+                  'Yes, that\'s me',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],
