@@ -32,16 +32,45 @@ class GameWrapper extends StatelessWidget {
   }
 }
 
-class GameWrapperView extends StatelessWidget {
+class GameWrapperView extends StatefulWidget {
   const GameWrapperView({Key? key}) : super(key: key);
 
   @override
+  State<GameWrapperView> createState() => _GameWrapperViewState();
+}
+
+class _GameWrapperViewState extends State<GameWrapperView> {
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GameBloc, GameState>(
+    return BlocConsumer<GameBloc, GameState>(
+      listenWhen: (previous, current) =>
+          previous.showLoginOverlay != current.showLoginOverlay,
+      listener: (context, state) {
+        if (state.showLoginOverlay) {
+          _showLoginDialog(context);
+        }
+      },
       builder: (context, state) {
         return _buildCurrentScreen(state);
       },
     );
+  }
+
+  Future<void> _showLoginDialog(BuildContext context) async {
+    final bloc = context.read<GameBloc>();
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.8),
+      builder: (dialogContext) => BlocProvider.value(
+        value: bloc,
+        child: const LoginOverlay(),
+      ),
+    );
+
+    if (mounted) {
+      bloc.add(const CancelLogin());
+    }
   }
 
   Widget _buildCurrentScreen(GameState state) {
@@ -76,8 +105,8 @@ class GameWrapperView extends StatelessWidget {
       case GameScreen.statistics:
         return const StrategiesScreen();
 
-      case GameScreen.login:
-        return const LoginOverlay();
+      default:
+        return const IntroductionScreen();
     }
   }
 }
