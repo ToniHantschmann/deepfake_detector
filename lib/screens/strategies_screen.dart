@@ -50,7 +50,7 @@ class StrategiesScreen extends BaseGameScreen {
                     const SizedBox(height: 24),
                     _buildTipCard(),
                     const SizedBox(height: 24),
-                    _buildNextButton(context),
+                    _buildButtonSection(context, state),
                   ],
                 ),
               ),
@@ -132,6 +132,42 @@ class StrategiesScreen extends BaseGameScreen {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildButtonSection(BuildContext context, GameState state) {
+    return Column(
+      children: [
+        _buildNextButton(context),
+        const SizedBox(height: 16),
+        _buildRegisterButton(context, state),
+      ],
+    );
+  }
+
+  Widget _buildRegisterButton(BuildContext context, GameState state) {
+    if (!state.isTemporaryUser) return const SizedBox.shrink();
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () => handleLoginNavigation(context),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          side: const BorderSide(color: Colors.blue),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: const Text(
+          'Register to Save Progress',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.blue,
+          ),
+        ),
       ),
     );
   }
