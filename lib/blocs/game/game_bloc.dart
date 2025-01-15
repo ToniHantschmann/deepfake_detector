@@ -28,6 +28,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<ShowLogin>(_onShowLogin);
     on<CancelLogin>(_onCancelLogin);
     on<NextScreen>(_onNextScreen);
+    on<PreviousScreen>(_onPreviousScreen);
     on<SelectDeepfake>(_onSelectDeepfake);
     on<RestartGame>(_onRestartGame);
     on<SaveTempUser>(_onSaveTempUser);
@@ -253,6 +254,49 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         add(const RestartGame());
         break;
     }
+  }
+
+  /// Handler für die Zurück-Navigation
+  Future<void> _onPreviousScreen(
+    PreviousScreen event,
+    Emitter<GameState> emit,
+  ) async {
+    if (state.status != GameStatus.playing) return;
+
+    GameScreen previousScreen;
+    switch (state.currentScreen) {
+      case GameScreen.firstVideo:
+        previousScreen = GameScreen.introduction;
+        break;
+
+      case GameScreen.secondVideo:
+        previousScreen = GameScreen.firstVideo;
+        break;
+
+      case GameScreen.comparison:
+        previousScreen = GameScreen.secondVideo;
+        break;
+
+      case GameScreen.result:
+        previousScreen = GameScreen.comparison;
+        // Reset selection when going back from result
+        emit(state.copyWith(
+          currentScreen: previousScreen,
+          selectedVideoIndex: null,
+          isCorrectGuess: null,
+        ));
+        return;
+
+      case GameScreen.statistics:
+        previousScreen = GameScreen.result;
+        break;
+
+      default:
+        // For introduction and login screens, do nothing
+        return;
+    }
+
+    emit(state.copyWith(currentScreen: previousScreen));
   }
 
   Future<void> _onSelectDeepfake(

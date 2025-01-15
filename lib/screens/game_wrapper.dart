@@ -9,6 +9,7 @@ import '../screens/introduction_screen.dart';
 import '../screens/comparison_screen.dart';
 import '../screens/result_screen.dart';
 import '../screens/strategies_screen.dart';
+import '../screens/login_overlay.dart';
 
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
@@ -76,11 +77,7 @@ class GameWrapperView extends StatelessWidget {
         return const StrategiesScreen();
 
       case GameScreen.login:
-        // TODO: Implement LoginScreen
-        throw UnimplementedError('Login screen not implemented yet');
-
-      default:
-        throw Exception('Unknown screen state');
+        return const LoginOverlay();
     }
   }
 }
