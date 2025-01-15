@@ -77,4 +77,8 @@ abstract class BaseGameScreen extends StatelessWidget {
   void handleNextNavigation(BuildContext context) {
     dispatchGameEvent(context, const NextScreen());
   }
+
+  void handleLoginNavigation(BuildContext context) {
+    dispatchGameEvent(context, const ShowLogin());
+  }
 }

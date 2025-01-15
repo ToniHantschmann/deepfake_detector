@@ -5,7 +5,7 @@ import '../../repositories/statistics_repository.dart';
 import '../../repositories/user_repository.dart';
 import '../../models/statistics_model.dart';
 import '../../exceptions/app_exceptions.dart';
-import '../../services/temp_user_service.dart';
+import '../../utils/temp_user_service.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
