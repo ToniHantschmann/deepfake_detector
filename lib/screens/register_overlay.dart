@@ -20,6 +20,7 @@ class RegisterOverlay extends StatefulWidget {
 class _RegisterOverlayState extends State<RegisterOverlay> {
   final TextEditingController _usernameController = TextEditingController();
   String _pin = '';
+  bool _showPinEntry = false;
   bool _isConfirmingPin = false;
   String _confirmPin = '';
   String? _errorMessage;
@@ -28,6 +29,23 @@ class _RegisterOverlayState extends State<RegisterOverlay> {
   void dispose() {
     _usernameController.dispose();
     super.dispose();
+  }
+
+  void _handleUsernameSubmit() {
+    final username = _usernameController.text.trim();
+    final usernameError = UsernameValidator.validate(username);
+
+    if (usernameError != null) {
+      setState(() {
+        _errorMessage = usernameError;
+      });
+      return;
+    }
+
+    setState(() {
+      _showPinEntry = true;
+      _errorMessage = null;
+    });
   }
 
   void _handleNumberInput(String number) {
@@ -90,15 +108,6 @@ class _RegisterOverlayState extends State<RegisterOverlay> {
 
   void _handleRegistration() {
     final username = _usernameController.text.trim();
-    final usernameError = UsernameValidator.validate(username);
-
-    if (usernameError != null) {
-      setState(() {
-        _errorMessage = usernameError;
-      });
-      return;
-    }
-
     context.read<GameBloc>().add(RegisterNewUser(username));
     Navigator.of(context).pop();
   }
@@ -108,17 +117,99 @@ class _RegisterOverlayState extends State<RegisterOverlay> {
     Navigator.of(context).pop();
   }
 
+  void _handleBack() {
+    setState(() {
+      if (_isConfirmingPin) {
+        _isConfirmingPin = false;
+        _confirmPin = '';
+      } else if (_showPinEntry) {
+        _showPinEntry = false;
+        _pin = '';
+      }
+      _errorMessage = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AuthOverlayBase(
       title: 'Register Account',
       onClose: _handleClose,
       children: [
-        if (!_isConfirmingPin) ...[
-          _buildUsernameField(),
-          const SizedBox(height: 24),
+        if (!_showPinEntry) ...[
+          _buildUsernameStep(),
+        ] else ...[
+          _buildPinStep(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildUsernameStep() {
+    return Column(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: TextField(
+            controller: _usernameController,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Enter username',
+              hintStyle: TextStyle(color: Colors.grey[400]),
+              filled: true,
+              fillColor: const Color(0xFF262626),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (_errorMessage != null) ...[
+          Text(
+            _errorMessage!,
+            style: const TextStyle(
+              color: Colors.red,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _handleUsernameSubmit,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Continue',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPinStep() {
+    return Column(
+      children: [
+        if (_isConfirmingPin) ...[
           const Text(
-            'Choose a 4-digit PIN',
+            'Confirm your PIN',
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -126,7 +217,7 @@ class _RegisterOverlayState extends State<RegisterOverlay> {
           ),
         ] else ...[
           const Text(
-            'Confirm your PIN',
+            'Choose a 4-digit PIN',
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -152,28 +243,15 @@ class _RegisterOverlayState extends State<RegisterOverlay> {
           onNumberPressed: _handleNumberInput,
           onBackspacePressed: _handleBackspace,
         ),
+        const SizedBox(height: 16),
+        TextButton(
+          onPressed: _handleBack,
+          child: const Text(
+            'Back',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
       ],
-    );
-  }
-
-  Widget _buildUsernameField() {
-    return TextField(
-      controller: _usernameController,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: 'Enter username',
-        hintStyle: TextStyle(color: Colors.grey[400]),
-        filled: true,
-        fillColor: const Color(0xFF262626),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-      ),
     );
   }
 }

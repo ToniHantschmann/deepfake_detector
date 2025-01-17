@@ -152,7 +152,7 @@ class StrategiesScreen extends BaseGameScreen {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton(
-        onPressed: () => handleLoginNavigation(context),
+        onPressed: () => handleRegisterNavigation(context),
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           side: const BorderSide(color: Colors.blue),

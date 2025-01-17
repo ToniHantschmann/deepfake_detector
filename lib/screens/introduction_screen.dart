@@ -169,7 +169,7 @@ class IntroductionScreen extends BaseGameScreen {
       width: double.infinity,
       height: 48,
       child: OutlinedButton(
-        onPressed: () => dispatchGameEvent(context, const ShowLogin()),
+        onPressed: () => handleLoginNavigation(context),
         style: OutlinedButton.styleFrom(
           side: const BorderSide(color: Colors.white),
           shape: RoundedRectangleBorder(
