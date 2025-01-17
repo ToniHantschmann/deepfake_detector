@@ -20,6 +20,10 @@ class CancelLogin extends GameEvent {
   const CancelLogin();
 }
 
+class CancelRegister extends GameEvent {
+  const CancelRegister();
+}
+
 class NextScreen extends GameEvent {
   const NextScreen();
 }
@@ -54,4 +58,8 @@ class CheckPin extends GameEvent {
 class SetPinCheckResult extends GameEvent {
   final List<String> matchingUsernames;
   const SetPinCheckResult(this.matchingUsernames);
+}
+
+class ShowRegister extends GameEvent {
+  const ShowRegister();
 }

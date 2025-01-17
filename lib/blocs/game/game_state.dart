@@ -9,6 +9,7 @@ enum GameScreen {
   comparison,
   result,
   statistics,
+  register,
 }
 
 enum GameStatus {
@@ -16,6 +17,7 @@ enum GameStatus {
   loading,
   error,
   showLogin,
+  showRegister,
   playing,
 }
 
@@ -31,6 +33,7 @@ class GameState {
   final String? errorMessage;
   final bool isTemporaryUser;
   final bool showLoginOverlay;
+  final bool showRegisterOverlay;
   final List<String> pinMatchingUsernames;
   final bool isPinChecking;
 
@@ -48,6 +51,7 @@ class GameState {
     this.errorMessage,
     this.isTemporaryUser = false,
     this.showLoginOverlay = false,
+    this.showRegisterOverlay = false,
     this.pinMatchingUsernames = const [],
     this.isPinChecking = false,
   });
@@ -64,6 +68,7 @@ class GameState {
         errorMessage = null,
         isTemporaryUser = false,
         showLoginOverlay = false,
+        showRegisterOverlay = false,
         pinMatchingUsernames = const [],
         isPinChecking = false;
 
@@ -79,6 +84,7 @@ class GameState {
     Object? errorMessage = _sentinel,
     bool? isTemporaryUser,
     bool? showLoginOverlay,
+    bool? showRegisterOverlay,
     List<String>? pinMatchingUsernames,
     bool? isPinChecking,
   }) {
@@ -103,6 +109,7 @@ class GameState {
           : errorMessage as String?,
       isTemporaryUser: isTemporaryUser ?? this.isTemporaryUser,
       showLoginOverlay: showLoginOverlay ?? this.showLoginOverlay,
+      showRegisterOverlay: showRegisterOverlay ?? this.showRegisterOverlay,
       pinMatchingUsernames: pinMatchingUsernames ?? this.pinMatchingUsernames,
       isPinChecking: isPinChecking ?? this.isPinChecking,
     );

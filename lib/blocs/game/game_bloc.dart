@@ -34,6 +34,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<SaveTempUser>(_onSaveTempUser);
     on<CheckPin>(_onCheckPin);
     on<SetPinCheckResult>(_onSetPinCheckResult);
+    on<ShowRegister>(_onShowRegister);
+    on<CancelRegister>(_onCancelRegister);
   }
 
   /// Handler zum Anzeigen des Login-Dialogs
@@ -44,10 +46,28 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     ));
   }
 
+  void _onShowRegister(ShowRegister event, Emitter<GameState> emit) {
+    emit(state.copyWith(
+      status: GameStatus.showRegister,
+      showRegisterOverlay: true,
+    ));
+  }
+
   void _onCancelLogin(CancelLogin event, Emitter<GameState> emit) {
     emit(state.copyWith(
       status: GameStatus.initial,
       showLoginOverlay: false,
+      pinMatchingUsernames: [],
+      isPinChecking: false,
+    ));
+  }
+
+  void _onCancelRegister(CancelRegister event, Emitter<GameState> emit) {
+    emit(state.copyWith(
+      status: GameStatus.playing,
+      showRegisterOverlay: false,
+    ));
+    emit(state.copyWith(
       pinMatchingUsernames: [],
       isPinChecking: false,
     ));
@@ -249,6 +269,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       case GameScreen.statistics:
         add(const RestartGame());
+        break;
+
+      case GameScreen.register:
+        emit(state.copyWith(currentScreen: GameScreen.register));
         break;
     }
   }
