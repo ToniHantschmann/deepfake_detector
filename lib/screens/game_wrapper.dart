@@ -10,6 +10,7 @@ import '../screens/comparison_screen.dart';
 import '../screens/result_screen.dart';
 import '../screens/strategies_screen.dart';
 import '../screens/login_overlay.dart';
+import '../screens/register_overlay.dart';
 
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
@@ -44,10 +45,14 @@ class _GameWrapperViewState extends State<GameWrapperView> {
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listenWhen: (previous, current) =>
-          previous.showLoginOverlay != current.showLoginOverlay,
+          previous.showLoginOverlay != current.showLoginOverlay ||
+          previous.showRegisterOverlay != current.showRegisterOverlay,
       listener: (context, state) {
         if (state.showLoginOverlay) {
           _showLoginDialog(context);
+        }
+        if (state.showRegisterOverlay) {
+          _showRegisterDialog(context);
         }
       },
       builder: (context, state) {
@@ -70,6 +75,23 @@ class _GameWrapperViewState extends State<GameWrapperView> {
 
     if (mounted) {
       bloc.add(const CancelLogin());
+    }
+  }
+
+  Future<void> _showRegisterDialog(BuildContext context) async {
+    final bloc = context.read<GameBloc>();
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.8),
+      builder: (dialogContext) => BlocProvider.value(
+        value: bloc,
+        child: const RegisterOverlay(),
+      ),
+    );
+
+    if (mounted) {
+      bloc.add(const CancelRegister());
     }
   }
 
