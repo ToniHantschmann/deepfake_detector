@@ -12,6 +12,29 @@ enum GameScreen {
   register,
 }
 
+/// Extension für GameScreen-spezifische Navigation
+extension GameScreenNavigation on GameScreen {
+  bool get canNavigateBack {
+    switch (this) {
+      case GameScreen.introduction:
+      case GameScreen.login:
+      case GameScreen.register:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  bool get canNavigateForward {
+    switch (this) {
+      case GameScreen.statistics:
+        return false;
+      default:
+        return true;
+    }
+  }
+}
+
 enum GameStatus {
   initial,
   loading,
