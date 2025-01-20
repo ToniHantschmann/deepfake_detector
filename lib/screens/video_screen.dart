@@ -5,6 +5,7 @@ import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
 import 'base_game_screen.dart';
 import '../widgets/common/navigaton_buttons.dart';
+import '../widgets/common/progress_bar.dart';
 
 class VideoScreen extends BaseGameScreen {
   final Video video;
@@ -29,6 +30,7 @@ class VideoScreen extends BaseGameScreen {
       isFirstVideo: isFirstVideo,
       onNext: () => handleNextNavigation(context),
       onBack: () => handleBackNavigation(context),
+      currentScreen: state.currentScreen,
     );
   }
 }
@@ -38,6 +40,7 @@ class _VideoScreenContent extends StatefulWidget {
   final bool isFirstVideo;
   final VoidCallback onNext;
   final VoidCallback onBack;
+  final GameScreen currentScreen;
 
   const _VideoScreenContent({
     Key? key,
@@ -45,6 +48,7 @@ class _VideoScreenContent extends StatefulWidget {
     required this.isFirstVideo,
     required this.onNext,
     required this.onBack,
+    required this.currentScreen,
   }) : super(key: key);
 
   @override
@@ -123,34 +127,38 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Stack(
-              children: [
-                // Video Title Card
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  right: 16,
-                  child: _buildTitleCard(),
-                ),
+      body: Column(
+        children: [
+          ProgressBar(currentScreen: widget.currentScreen),
+          Expanded(
+            child: SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
+                    children: [
+                      // Video Title Card
+                      Positioned(
+                        top: 16,
+                        left: 16,
+                        right: 16,
+                        child: _buildTitleCard(),
+                      ),
 
-                // Main Video Content
-                _buildMainContent(constraints),
+                      // Main Video Content
+                      _buildMainContent(constraints),
 
-                // Navigation Arrows
-                if (_isInitialized)
-                  NavigationButtons(
-                    onNext: widget.onNext,
-                    onBack: widget.onBack,
-                    // Optional: Spezielle Padding für Video Screen
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                  ),
-              ],
-            );
-          },
-        ),
+                      // Navigation Arrows
+                      if (_isInitialized) ...[
+                        _buildBackButton(constraints),
+                        _buildNextButton(constraints),
+                      ],
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
