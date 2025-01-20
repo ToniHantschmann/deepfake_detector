@@ -4,6 +4,7 @@ import '../models/video_model.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
 import 'base_game_screen.dart';
+import '../widgets/common/navigaton_buttons.dart';
 
 class VideoScreen extends BaseGameScreen {
   final Video video;
@@ -139,10 +140,13 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
                 _buildMainContent(constraints),
 
                 // Navigation Arrows
-                if (_isInitialized) ...[
-                  _buildBackButton(constraints),
-                  _buildNextButton(constraints),
-                ],
+                if (_isInitialized)
+                  NavigationButtons(
+                    onNext: widget.onNext,
+                    onBack: widget.onBack,
+                    // Optional: Spezielle Padding für Video Screen
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                  ),
               ],
             );
           },
