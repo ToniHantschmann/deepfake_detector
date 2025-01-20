@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/video_model.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
+import '../widgets/common/navigaton_buttons.dart';
 import 'base_game_screen.dart';
 
 class ComparisonScreen extends BaseGameScreen {
@@ -101,40 +102,12 @@ class ComparisonScreen extends BaseGameScreen {
               ],
             ),
 
-            // Left Navigation Arrow
-            Positioned(
-              left: 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.chevron_left,
-                    color: Colors.white,
-                    size: 56,
-                  ),
-                  onPressed: () => handleBackNavigation(context),
-                ),
-              ),
-            ),
-
-            // Right Navigation Arrow
-            Positioned(
-              right: 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.chevron_right,
-                    color: state.selectedVideoIndex != null
-                        ? Colors.white
-                        : Colors.grey[700],
-                    size: 56,
-                  ),
-                  onPressed: () => handleNextNavigation(context),
-                ),
-              ),
+            // Navigation Buttons
+            NavigationButtons.forGameScreen(
+              onNext: () => handleNextNavigation(context),
+              onBack: () => handleBackNavigation(context),
+              currentScreen: GameScreen.comparison,
+              enableNext: state.selectedVideoIndex != null,
             ),
           ],
         ),
