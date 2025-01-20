@@ -63,7 +63,7 @@ class ProgressBar extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 56,
-      color: const Color(0xFF171717),
+      color: const Color(0xCC212121),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(

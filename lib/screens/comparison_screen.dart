@@ -3,6 +3,7 @@ import '../models/video_model.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
 import '../widgets/common/navigaton_buttons.dart';
+import '../widgets/common/progress_bar.dart';
 import 'base_game_screen.dart';
 
 class ComparisonScreen extends BaseGameScreen {
@@ -22,97 +23,91 @@ class ComparisonScreen extends BaseGameScreen {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF171717),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // Main Content Column
-            Column(
-              children: [
-                // Progress Bar Placeholder
-                Container(
-                  width: double.infinity,
-                  height: 8,
-                  color: Colors.grey[800],
-                ),
-                const SizedBox(height: 24),
-                // Main Content
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 120.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Which video is the Deepfake?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Column(
+            children: [
+              ProgressBar(currentScreen: state.currentScreen),
+              Expanded(
+                child: Stack(
+                  children: [
+                    // Main Content Column
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 120.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
+                          const Text(
+                            'Which video is the Deepfake?',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Select the video you think is artificially generated',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Select the video you think is artificially generated',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 32),
-                        Expanded(
-                          child: _buildVideoComparison(context, state),
-                        ),
-                        // Confirm Button Container (immer sichtbar)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 24.0,
-                            horizontal: 32.0,
+                          const SizedBox(height: 32),
+                          Expanded(
+                            child: _buildVideoComparison(context, state),
                           ),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 52, // Feste Höhe für konsistentes Layout
-                            child: state.selectedVideoIndex != null
-                                ? ElevatedButton(
-                                    onPressed: () => dispatchGameEvent(
-                                      context,
-                                      const NextScreen(),
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
+                          // Confirm Button Container (immer sichtbar)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 24.0,
+                              horizontal: 32.0,
+                            ),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 52, // Feste Höhe für konsistentes Layout
+                              child: state.selectedVideoIndex != null
+                                  ? ElevatedButton(
+                                      onPressed: () => dispatchGameEvent(
+                                        context,
+                                        const NextScreen(),
                                       ),
-                                    ),
-                                    child: const Text(
-                                      'Confirm Selection',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                : null, // Kein Button, aber Platz wird reserviert
+                                      child: const Text(
+                                        'Confirm Selection',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    )
+                                  : null, // Kein Button, aber Platz wird reserviert
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
 
-            // Navigation Buttons
-            NavigationButtons.forGameScreen(
-              onNext: () => handleNextNavigation(context),
-              onBack: () => handleBackNavigation(context),
-              currentScreen: GameScreen.comparison,
-              enableNext: state.selectedVideoIndex != null,
-            ),
-          ],
-        ),
-      ),
-    );
+                    // Navigation Buttons
+                    NavigationButtons.forGameScreen(
+                      onNext: () => handleNextNavigation(context),
+                      onBack: () => handleBackNavigation(context),
+                      currentScreen: GameScreen.comparison,
+                      enableNext: state.selectedVideoIndex != null,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 
   Widget _buildVideoComparison(BuildContext context, GameState state) {
