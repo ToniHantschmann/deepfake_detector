@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../blocs/game/game_state.dart';
 
 class NavigationButtons extends StatelessWidget {
-  final VoidCallback onNext;
-  final VoidCallback onBack;
+  final VoidCallback? onNext;
+  final VoidCallback? onBack;
   final bool showNext;
   final bool showBack;
   final bool enableNext;
@@ -13,26 +13,29 @@ class NavigationButtons extends StatelessWidget {
 
   const NavigationButtons({
     super.key,
-    required this.onNext,
-    required this.onBack,
+    this.onNext,
+    this.onBack,
     this.showNext = true,
     this.showBack = true,
     this.enableNext = true,
     this.iconColor,
     this.iconSize = 56,
     this.padding,
-  });
+  }) : assert(
+          (!showNext || onNext != null) && (!showBack || onBack != null),
+          'Callback muss gesetzt sein wenn der entsprechende Button angezeigt wird',
+        );
 
   /// Factory constructor für Game-spezifische Navigation
   factory NavigationButtons.forGameScreen({
-    required VoidCallback onNext,
-    required VoidCallback onBack,
+    VoidCallback? onNext,
+    VoidCallback? onBack,
     required GameScreen currentScreen,
     bool enableNext = true,
   }) {
     return NavigationButtons(
-      onNext: onNext,
-      onBack: onBack,
+      onNext: currentScreen.canNavigateForward ? onNext : null,
+      onBack: currentScreen.canNavigateBack ? onBack : null,
       showNext: currentScreen.canNavigateForward,
       showBack: currentScreen.canNavigateBack,
       enableNext: enableNext,

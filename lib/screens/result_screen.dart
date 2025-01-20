@@ -55,7 +55,6 @@ class ResultScreen extends BaseGameScreen {
             // Navigation Buttons - neue Implementierung
             NavigationButtons.forGameScreen(
               onNext: () => handleNextNavigation(context),
-              onBack: () => handleBackNavigation(context),
               currentScreen: GameScreen.result,
             ),
           ],
