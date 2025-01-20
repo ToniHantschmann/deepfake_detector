@@ -1,17 +1,15 @@
-// lib/screens/introduction_screen.dart
-
-import 'package:deepfake_detector/blocs/game/game_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
+import '../blocs/game/game_event.dart';
 
 class IntroductionScreen extends BaseGameScreen {
   const IntroductionScreen({Key? key}) : super(key: key);
 
   @override
   bool shouldRebuild(GameState previous, GameState current) {
-    // Only rebuild if the screen or status changes
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status;
   }
@@ -20,6 +18,19 @@ class IntroductionScreen extends BaseGameScreen {
   Widget buildGameScreen(BuildContext context, GameState state) {
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => dispatchGameEvent(context, const ShowLogin()),
+        label: const Text(
+          'Login',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        icon: const Icon(Icons.login),
+        backgroundColor: Colors.blue,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -131,54 +142,38 @@ class IntroductionScreen extends BaseGameScreen {
         ),
         const SizedBox(height: 32),
         _buildQuickStartButton(context),
-        const SizedBox(height: 16),
-        _buildLoginButton(context),
       ],
     );
   }
 
   Widget _buildQuickStartButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 64,
-      child: ElevatedButton(
-        onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey[800],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.play_arrow, color: Colors.white, size: 24),
-            SizedBox(width: 8),
-            Text(
-              'Quick Start',
-              style: TextStyle(fontSize: 20, color: Colors.white),
+    return Center(
+      child: SizedBox(
+        width: 400,
+        height: 80,
+        child: ElevatedButton(
+          onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(40),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoginButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: OutlinedButton(
-        onPressed: () => handleLoginNavigation(context),
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Colors.white),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
           ),
-        ),
-        child: const Text(
-          'Login / Register',
-          style: TextStyle(fontSize: 16, color: Colors.white),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.play_arrow, color: Colors.white, size: 32),
+              SizedBox(width: 12),
+              Text(
+                'Quick Start',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
