@@ -68,6 +68,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
       _controller = VideoPlayerController.asset(widget.video.videoUrl);
       await _controller.initialize();
       _controller.addListener(_videoListener);
+      await _controller.seekTo(Duration.zero);
 
       if (mounted) {
         setState(() {
@@ -102,6 +103,19 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
+  }
+
+  Future<void> _handleNavigation(bool isForward) async {
+    // Pausiere das Video
+    await _controller.pause();
+    // Setze es auf den Anfang zurück
+    await _controller.seekTo(Duration.zero);
+    // Führe die Navigation aus
+    if (isForward) {
+      widget.onNext();
+    } else {
+      widget.onBack();
+    }
   }
 
   @override
@@ -301,7 +315,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           color: Colors.white,
           size: 56,
         ),
-        onPressed: widget.onBack,
+        onPressed: () => _handleNavigation(false),
       ),
     );
   }
@@ -316,7 +330,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           color: Colors.white,
           size: 56,
         ),
-        onPressed: widget.onNext,
+        onPressed: () => _handleNavigation(true),
       ),
     );
   }
