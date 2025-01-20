@@ -200,9 +200,10 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            if (_isInitialized)
-              VideoPlayer(_controller)
-            else
+            if (_isInitialized) ...[
+              VideoPlayer(_controller),
+              _buildTapToPlayOverlay(),
+            ] else
               Container(
                 color: Colors.black,
                 child: const Center(
@@ -266,6 +267,38 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildTapToPlayOverlay() {
+    return Positioned.fill(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+          onTap: () {
+            setState(() {
+              if (_controller.value.isPlaying) {
+                _controller.pause();
+              } else {
+                _controller.play();
+              }
+            });
+          },
+          child: AnimatedOpacity(
+            opacity: _controller.value.isPlaying ? 0.0 : 1.0,
+            duration: const Duration(milliseconds: 300),
+            child: Icon(
+              _controller.value.isPlaying
+                  ? Icons.pause_circle_outline
+                  : Icons.play_circle_outline,
+              size: 80,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
