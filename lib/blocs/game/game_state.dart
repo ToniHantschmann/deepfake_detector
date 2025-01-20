@@ -19,6 +19,7 @@ extension GameScreenNavigation on GameScreen {
       case GameScreen.introduction:
       case GameScreen.login:
       case GameScreen.register:
+      case GameScreen.result:
         return false;
       default:
         return true;

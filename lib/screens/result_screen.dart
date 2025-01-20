@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/video_model.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
+import '../widgets/common/navigaton_buttons.dart';
 
 class ResultScreen extends BaseGameScreen {
   const ResultScreen({Key? key}) : super(key: key);
@@ -51,37 +52,11 @@ class ResultScreen extends BaseGameScreen {
               ),
             ),
 
-            // Navigation Arrows
-            Positioned(
-              left: 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.chevron_left,
-                    color: Colors.white,
-                    size: 56,
-                  ),
-                  onPressed: () => handleBackNavigation(context),
-                ),
-              ),
-            ),
-
-            Positioned(
-              right: 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.chevron_right,
-                    color: Colors.white,
-                    size: 56,
-                  ),
-                  onPressed: () => handleNextNavigation(context),
-                ),
-              ),
+            // Navigation Buttons - neue Implementierung
+            NavigationButtons.forGameScreen(
+              onNext: () => handleNextNavigation(context),
+              onBack: () => handleBackNavigation(context),
+              currentScreen: GameScreen.result,
             ),
           ],
         ),
