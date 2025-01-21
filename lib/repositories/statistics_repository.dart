@@ -3,7 +3,7 @@ import 'package:deepfake_detector/models/statistics_model.dart';
 import 'package:deepfake_detector/storage/json_storage.dart';
 import 'package:flutter/foundation.dart';
 
-/// Repository class to manage user statistics
+/// Repository class to manage statistics
 class StatisticsRepository {
   late final JsonStorage _storage;
   final Map<String, UserStatistics> _statistics = {};
@@ -17,7 +17,6 @@ class StatisticsRepository {
 
   StatisticsRepository._internal();
 
-  /// Constructor for testing purposes that allows injecting a mock storage
   @visibleForTesting
   factory StatisticsRepository.withStorage(JsonStorage storage) {
     final repository = StatisticsRepository._internal();
@@ -28,7 +27,6 @@ class StatisticsRepository {
     return repository;
   }
 
-  /// Initialize the repository
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -59,22 +57,24 @@ class StatisticsRepository {
     }
   }
 
-  /// Get statistics for a specific user
-  /// Returns [UserStatistics] for the given username
+  /// Get statistics for a specific PIN
+  /// Returns [UserStatistics] for the given PIN
   /// Creates new statistics if none exist
-  Future<UserStatistics> getStatistics(String username) async {
+  Future<UserStatistics> getStatistics(String pin) async {
     if (!_isInitialized) await initialize();
 
-    return _statistics[username] ?? UserStatistics.initial(username);
+    return _statistics[pin] ?? UserStatistics.initial(pin);
   }
 
-  /// Add a new attempt to a user's statistics
+  /// Add a new attempt to a PIN's statistics
+  /// [pin]: The PIN to add statistics for
+  /// [attempt]: The GameAttempt to add
   /// Throws [StatisticsException] if the operation fails
-  Future<void> addAttempt(String username, GameAttempt attempt) async {
+  Future<void> addAttempt(String pin, GameAttempt attempt) async {
     if (!_isInitialized) await initialize();
 
     try {
-      final stats = await getStatistics(username);
+      final stats = await getStatistics(pin);
 
       final updatedStats = stats.copyWith(
         totalAttempts: stats.totalAttempts + 1,
@@ -85,21 +85,21 @@ class StatisticsRepository {
         ].take(10).toList(), // Keep only last 10 attempts
       );
 
-      _statistics[username] = updatedStats;
-
+      _statistics[pin] = updatedStats;
       await _saveStatistics();
     } catch (e) {
       throw StatisticsException('Failed to add attempt: $e');
     }
   }
 
-  /// Reset statistics for a specific user
+  /// Reset statistics for a specific PIN
+  /// [pin]: The PIN to reset statistics for
   /// Throws [StatisticsException] if the operation fails
-  Future<void> resetStatistics(String username) async {
+  Future<void> resetStatistics(String pin) async {
     if (!_isInitialized) await initialize();
 
     try {
-      _statistics[username] = UserStatistics.initial(username);
+      _statistics[pin] = UserStatistics.initial(pin);
       await _saveStatistics();
     } catch (e) {
       throw StatisticsException('Failed to reset statistics: $e');
@@ -120,30 +120,29 @@ class StatisticsRepository {
     }
   }
 
-  /// Kopiert die Statistiken von einem User zu einem anderen
-  /// [fromUsername]: Quell-Username
-  /// [toUsername]: Ziel-Username
-  /// Throws [StatisticsException] wenn einer der User nicht existiert
-  Future<void> copyStatistics(String fromUsername, String toUsername) async {
+  /// Copies statistics from one PIN to another
+  /// [fromPin]: Source PIN
+  /// [toPin]: Target PIN
+  /// Throws [StatisticsException] if one of the PINs doesn't exist
+  Future<void> copyStatistics(String fromPin, String toPin) async {
     if (!_isInitialized) await initialize();
 
     try {
-      // Prüfe ob Source-Statistiken existieren
-      final sourceStats = _statistics[fromUsername];
+      final sourceStats = _statistics[fromPin];
       if (sourceStats == null) {
-        throw StatisticsException('Source user statistics not found');
+        throw StatisticsException('Source PIN statistics not found');
       }
 
-      // Erstelle neue Statistiken für den Ziel-User
+      // Create new statistics for the target PIN
       final newStats = UserStatistics(
-        username: toUsername,
+        pin: toPin,
         totalAttempts: sourceStats.totalAttempts,
         correctGuesses: sourceStats.correctGuesses,
         recentAttempts: List.from(sourceStats.recentAttempts),
       );
 
-      // Speichere die neuen Statistiken
-      _statistics[toUsername] = newStats;
+      // Save the new statistics
+      _statistics[toPin] = newStats;
       await _saveStatistics();
     } catch (e) {
       if (e is StatisticsException) rethrow;
