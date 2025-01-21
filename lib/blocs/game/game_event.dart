@@ -2,14 +2,9 @@ abstract class GameEvent {
   const GameEvent();
 }
 
-class LoginExistingUser extends GameEvent {
-  final String username;
-  const LoginExistingUser(this.username);
-}
-
-class RegisterNewUser extends GameEvent {
-  final String username;
-  const RegisterNewUser(this.username);
+class LoginWithPin extends GameEvent {
+  final String pin;
+  const LoginWithPin(this.pin);
 }
 
 class ShowLogin extends GameEvent {
@@ -18,10 +13,6 @@ class ShowLogin extends GameEvent {
 
 class CancelLogin extends GameEvent {
   const CancelLogin();
-}
-
-class CancelRegister extends GameEvent {
-  const CancelRegister();
 }
 
 class NextScreen extends GameEvent {
@@ -45,21 +36,11 @@ class QuickStartGame extends GameEvent {
   const QuickStartGame();
 }
 
-class SaveTempUser extends GameEvent {
-  final String username;
-  const SaveTempUser(this.username);
+class GeneratePin extends GameEvent {
+  const GeneratePin();
 }
 
 class CheckPin extends GameEvent {
   final String pin;
   const CheckPin(this.pin);
-}
-
-class SetPinCheckResult extends GameEvent {
-  final List<String> matchingUsernames;
-  const SetPinCheckResult(this.matchingUsernames);
-}
-
-class ShowRegister extends GameEvent {
-  const ShowRegister();
 }
