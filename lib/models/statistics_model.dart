@@ -1,13 +1,13 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 
 class UserStatistics {
-  final String username;
+  final String pin; // Changed from username to pin
   final int totalAttempts;
   final int correctGuesses;
   final List<GameAttempt> recentAttempts;
 
   UserStatistics({
-    required this.username,
+    required this.pin,
     required this.totalAttempts,
     required this.correctGuesses,
     required this.recentAttempts,
@@ -16,9 +16,9 @@ class UserStatistics {
   double get successRate =>
       totalAttempts > 0 ? (correctGuesses / totalAttempts) * 100 : 0;
 
-  factory UserStatistics.initial(String username) {
+  factory UserStatistics.initial(String pin) {
     return UserStatistics(
-      username: username,
+      pin: pin,
       totalAttempts: 0,
       correctGuesses: 0,
       recentAttempts: [],
@@ -26,7 +26,7 @@ class UserStatistics {
   }
 
   Map<String, dynamic> toJson() => {
-        'username': username,
+        'pin': pin,
         'totalAttempts': totalAttempts,
         'correctGuesses': correctGuesses,
         'recentAttempts': recentAttempts.map((a) => a.toJson()).toList(),
@@ -34,7 +34,7 @@ class UserStatistics {
 
   factory UserStatistics.fromJson(Map<String, dynamic> json) {
     return UserStatistics(
-      username: json['username'] as String,
+      pin: json['pin'] as String,
       totalAttempts: json['totalAttempts'] as int,
       correctGuesses: json['correctGuesses'] as int,
       recentAttempts: (json['recentAttempts'] as List)
@@ -44,13 +44,13 @@ class UserStatistics {
   }
 
   UserStatistics copyWith({
-    String? username,
+    String? pin,
     int? totalAttempts,
     int? correctGuesses,
     List<GameAttempt>? recentAttempts,
   }) {
     return UserStatistics(
-      username: username ?? this.username,
+      pin: pin ?? this.pin,
       totalAttempts: totalAttempts ?? this.totalAttempts,
       correctGuesses: correctGuesses ?? this.correctGuesses,
       recentAttempts: recentAttempts ?? List.from(this.recentAttempts),
@@ -58,7 +58,7 @@ class UserStatistics {
   }
 }
 
-/// model for a single try
+/// Model for a single game attempt
 class GameAttempt {
   final DateTime timestamp;
   final bool wasCorrect;
@@ -81,7 +81,7 @@ class GameAttempt {
       throw StatisticsException('Attempt timestamp cannot be in the future');
     }
     if (videoIds.length != 2) {
-      throw StatisticsException('Exactly to video IDs are required');
+      throw StatisticsException('Exactly two video IDs are required');
     }
     if (videoIds[0] == videoIds[1]) {
       throw StatisticsException('Video IDs must be different');
@@ -102,7 +102,6 @@ class GameAttempt {
 
   factory GameAttempt.fromJson(Map<String, dynamic> json) {
     try {
-      //check if all fields exist
       if (!json.containsKey('timestamp') ||
           !json.containsKey('wasCorrect') ||
           !json.containsKey('videoIds') ||
@@ -110,7 +109,6 @@ class GameAttempt {
         throw StatisticsException('Missing required field in JSON');
       }
 
-      //check if all fields contain correct datatypes
       if (json['timestamp'] is! String ||
           json['wasCorrect'] is! bool ||
           json['videoIds'] is! List ||
@@ -118,7 +116,6 @@ class GameAttempt {
         throw StatisticsException('Invalid data types in JSON');
       }
 
-      // get videoIds
       final videoIds = (json['videoIds'] as List).map((id) {
         if (id is! String) {
           throw StatisticsException('Video IDs must be strings');
@@ -133,10 +130,8 @@ class GameAttempt {
         selectedVideoId: json['selectedVideoId'] as String,
       );
     } catch (e) {
-      if (e is StatisticsException) {
-        rethrow;
-      }
-      throw StatisticsException('failed to parse GameAttempt from JSON: $e');
+      if (e is StatisticsException) rethrow;
+      throw StatisticsException('Failed to parse GameAttempt from JSON: $e');
     }
   }
 }
