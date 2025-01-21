@@ -3,6 +3,7 @@ import '../models/video_model.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
 import '../widgets/common/navigaton_buttons.dart';
+import '../widgets/common/progress_bar.dart';
 
 class ResultScreen extends BaseGameScreen {
   const ResultScreen({Key? key}) : super(key: key);
@@ -26,39 +27,65 @@ class ResultScreen extends BaseGameScreen {
 
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // Progress Bar Placeholder
-            Container(
-              width: double.infinity,
-              height: 8,
-              color: Colors.grey[800],
-            ),
+      body: Column(
+        children: [
+          // Progress Bar
+          ProgressBar(currentScreen: state.currentScreen),
 
-            // Main Content
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 120.0, vertical: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildResultHeader(state.isCorrectGuess!),
-                  const SizedBox(height: 32),
-                  _buildDeepfakeExplanation(selectedVideo),
-                  const SizedBox(height: 32),
-                  _buildStatistics(state),
-                ],
-              ),
-            ),
+          // Main Content Area - Scrollable
+          Expanded(
+            child: Stack(
+              children: [
+                // Scrollable Content
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 120.0, vertical: 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildResultHeader(state.isCorrectGuess!),
+                        const SizedBox(height: 32),
+                        _buildDeepfakeExplanation(selectedVideo),
+                        // Add bottom padding to ensure content doesn't get hidden behind statistics
+                        const SizedBox(height: 180),
+                      ],
+                    ),
+                  ),
+                ),
 
-            // Navigation Buttons - neue Implementierung
-            NavigationButtons.forGameScreen(
-              onNext: () => handleNextNavigation(context),
-              currentScreen: GameScreen.result,
+                // Navigation Buttons
+                NavigationButtons.forGameScreen(
+                  onNext: () => handleNextNavigation(context),
+                  currentScreen: GameScreen.result,
+                ),
+
+                // Statistics Panel - Fixed at bottom
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF171717),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: _buildStatistics(state),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -141,84 +168,86 @@ class ResultScreen extends BaseGameScreen {
       return const SizedBox.shrink();
     }
 
-    // Berechne die Statistiken für den aktuellen Run
     final currentRunStats = state.userStatistics!.recentAttempts
         .where((attempt) => attempt.wasCorrect)
         .length;
     final totalRunAttempts = state.userStatistics!.recentAttempts.length;
-
-    // Gesamtstatistiken
     final totalCorrect = state.userStatistics!.correctGuesses;
     final totalAttempts = state.userStatistics!.totalAttempts;
 
-    return Row(
-      children: [
-        // Current Run Statistics
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF262626),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'Current Run',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: const Color(0xFF262626),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Current Run',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '$currentRunStats of $totalRunAttempts correct',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    height: 1.5,
+                  const SizedBox(height: 8),
+                  Text(
+                    '$currentRunStats of $totalRunAttempts correct',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      height: 1.5,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 24),
-        // Overall Statistics
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF262626),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'Overall Statistics',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '$totalCorrect of $totalAttempts correct',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    height: 1.5,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 24),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: const Color(0xFF262626),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Overall Statistics',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '$totalCorrect of $totalAttempts correct',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
