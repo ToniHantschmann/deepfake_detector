@@ -18,19 +18,6 @@ class IntroductionScreen extends BaseGameScreen {
   Widget buildGameScreen(BuildContext context, GameState state) {
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => dispatchGameEvent(context, const ShowLogin()),
-        label: const Text(
-          'Login',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        icon: const Icon(Icons.login),
-        backgroundColor: Colors.blue,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -45,6 +32,11 @@ class IntroductionScreen extends BaseGameScreen {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => dispatchGameEvent(context, const ShowLogin()),
+        icon: const Icon(Icons.login),
+        label: const Text('Login with PIN'),
       ),
     );
   }
@@ -165,7 +157,7 @@ class IntroductionScreen extends BaseGameScreen {
               Icon(Icons.play_arrow, color: Colors.white, size: 32),
               SizedBox(width: 12),
               Text(
-                'Quick Start',
+                'Start Game',
                 style: TextStyle(
                   fontSize: 22,
                   color: Colors.white,
