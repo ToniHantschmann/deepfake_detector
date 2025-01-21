@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
+import '../widgets/auth/generated_pin_display.dart';
 import 'base_game_screen.dart';
 import '../widgets/detection_strategies/strategy_card.dart';
 import '../widgets/detection_strategies/blinking_animation.dart';
 import '../widgets/detection_strategies/skin_texture_animation.dart';
+import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
 
 class StrategiesScreen extends BaseGameScreen {
@@ -13,7 +17,9 @@ class StrategiesScreen extends BaseGameScreen {
   @override
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
-        previous.status != current.status;
+        previous.status != current.status ||
+        previous.currentPin != current.currentPin ||
+        previous.generatedPin != current.generatedPin;
   }
 
   @override
@@ -26,7 +32,6 @@ class StrategiesScreen extends BaseGameScreen {
           Expanded(
             child: Stack(
               children: [
-                // Main Scrollable Content
                 SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -56,6 +61,10 @@ class StrategiesScreen extends BaseGameScreen {
                         _buildStrategiesGrid(context),
                         const SizedBox(height: 24),
                         _buildTipCard(),
+                        if (state.generatedPin != null) ...[
+                          const SizedBox(height: 32),
+                          GeneratedPinDisplay(pin: state.generatedPin!),
+                        ],
                         const SizedBox(height: 48),
                         _buildNextButton(context),
                         const SizedBox(height: 32),
@@ -63,12 +72,11 @@ class StrategiesScreen extends BaseGameScreen {
                     ),
                   ),
                 ),
-
-                // Navigation Arrows
-                _buildNavigationArrows(context),
-
-                // Register Button (if temporary user)
-                if (state.isTemporaryUser) _buildRegisterButton(context),
+                NavigationButtons.forGameScreen(
+                  onBack: () => handleBackNavigation(context),
+                  currentScreen: GameScreen.statistics,
+                ),
+                if (state.currentPin == null) _buildRegisterButton(context),
               ],
             ),
           ),
@@ -183,10 +191,10 @@ class StrategiesScreen extends BaseGameScreen {
       right: 16,
       bottom: 16,
       child: FloatingActionButton.extended(
-        onPressed: () => handleRegisterNavigation(context),
-        icon: const Icon(Icons.person_add),
+        onPressed: () => context.read<GameBloc>().add(const GeneratePin()),
+        icon: const Icon(Icons.pin_outlined),
         label: const Text(
-          'Register',
+          'Get PIN',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -194,28 +202,6 @@ class StrategiesScreen extends BaseGameScreen {
         ),
         backgroundColor: Colors.blue,
       ),
-    );
-  }
-
-  Widget _buildNavigationArrows(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          left: 16,
-          top: 0,
-          bottom: 0,
-          child: Center(
-            child: IconButton(
-              icon: const Icon(
-                Icons.chevron_left,
-                color: Colors.white,
-                size: 56,
-              ),
-              onPressed: () => handleBackNavigation(context),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
