@@ -5,6 +5,7 @@ import 'base_game_screen.dart';
 import '../widgets/detection_strategies/strategy_card.dart';
 import '../widgets/detection_strategies/blinking_animation.dart';
 import '../widgets/detection_strategies/skin_texture_animation.dart';
+import '../widgets/common/progress_bar.dart';
 
 class StrategiesScreen extends BaseGameScreen {
   const StrategiesScreen({Key? key}) : super(key: key);
@@ -19,45 +20,59 @@ class StrategiesScreen extends BaseGameScreen {
   Widget buildGameScreen(BuildContext context, GameState state) {
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 32.0, vertical: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'How to detect Deepfakes?',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+      body: Column(
+        children: [
+          ProgressBar(currentScreen: state.currentScreen),
+          Expanded(
+            child: Stack(
+              children: [
+                // Main Scrollable Content
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32.0,
+                      vertical: 24.0,
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Learn the key strategies to identify deepfake videos',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'How to detect Deepfakes?',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Learn the key strategies to identify deepfake videos',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        _buildStrategiesGrid(context),
+                        const SizedBox(height: 24),
+                        _buildTipCard(),
+                        const SizedBox(height: 48),
+                        _buildNextButton(context),
+                        const SizedBox(height: 32),
+                      ],
                     ),
-                    const SizedBox(height: 32),
-                    _buildStrategiesGrid(context),
-                    const SizedBox(height: 24),
-                    _buildTipCard(),
-                    const SizedBox(height: 24),
-                    _buildButtonSection(context, state),
-                  ],
+                  ),
                 ),
-              ),
+
+                // Navigation Arrows
+                _buildNavigationArrows(context),
+
+                // Register Button (if temporary user)
+                if (state.isTemporaryUser) _buildRegisterButton(context),
+              ],
             ),
-            _buildNavigationArrows(context),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -136,61 +151,48 @@ class StrategiesScreen extends BaseGameScreen {
     );
   }
 
-  Widget _buildButtonSection(BuildContext context, GameState state) {
-    return Column(
-      children: [
-        _buildNextButton(context),
-        const SizedBox(height: 16),
-        _buildRegisterButton(context, state),
-      ],
-    );
-  }
-
-  Widget _buildRegisterButton(BuildContext context, GameState state) {
-    if (!state.isTemporaryUser) return const SizedBox.shrink();
-
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton(
-        onPressed: () => handleRegisterNavigation(context),
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          side: const BorderSide(color: Colors.blue),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildNextButton(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 200,
+        height: 80,
+        child: ElevatedButton(
+          onPressed: () => handleNextNavigation(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(40),
+            ),
           ),
-        ),
-        child: const Text(
-          'Register to Save Progress',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.blue,
+          child: const Text(
+            'Next Game',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildNextButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => handleNextNavigation(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: const Text(
-          'Next Game',
+  Widget _buildRegisterButton(BuildContext context) {
+    return Positioned(
+      right: 16,
+      bottom: 16,
+      child: FloatingActionButton.extended(
+        onPressed: () => handleRegisterNavigation(context),
+        icon: const Icon(Icons.person_add),
+        label: const Text(
+          'Register',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
         ),
+        backgroundColor: Colors.blue,
       ),
     );
   }
@@ -198,7 +200,6 @@ class StrategiesScreen extends BaseGameScreen {
   Widget _buildNavigationArrows(BuildContext context) {
     return Stack(
       children: [
-        // Left Arrow
         Positioned(
           left: 16,
           top: 0,
