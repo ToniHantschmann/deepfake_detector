@@ -83,6 +83,7 @@ class ComparisonScreen extends BaseGameScreen {
                                       child: const Text(
                                         'Confirm Selection',
                                         style: TextStyle(
+                                          color: Colors.white,
                                           fontSize: 18,
                                           fontWeight: FontWeight.w500,
                                         ),
