@@ -1,5 +1,3 @@
-// lib/widgets/common/progress_bar.dart
-
 import 'package:flutter/material.dart';
 import '../../blocs/game/game_state.dart';
 
@@ -11,20 +9,23 @@ class ProgressBar extends StatelessWidget {
     required this.currentScreen,
   }) : super(key: key);
 
+  // Check if a screen is completed (all previous screens are done)
   bool _isScreenCompleted(GameScreen screen) {
-    // Introduction und Login Screens zählen nicht zum Progress
+    // Introduction, login and register screens don't count for progress
     if (screen == GameScreen.introduction ||
         screen == GameScreen.login ||
         screen == GameScreen.register) {
       return false;
     }
-    return currentScreen.index >= screen.index;
+    return currentScreen.index > screen.index;
   }
 
+  // Check if this is the currently active screen
   bool _isScreenActive(GameScreen screen) {
     return currentScreen == screen;
   }
 
+  // Get the display label for each screen
   String _getScreenLabel(GameScreen screen) {
     switch (screen) {
       case GameScreen.firstVideo:
@@ -42,7 +43,7 @@ class ProgressBar extends StatelessWidget {
     }
   }
 
-  // Gibt nur die Screens zurück, die im Progress angezeigt werden sollen
+  // List of screens to show in the progress bar
   List<GameScreen> get _progressScreens => [
         GameScreen.firstVideo,
         GameScreen.secondVideo,
@@ -53,7 +54,7 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Zeige keine Progress Bar für bestimmte Screens
+    // Hide progress bar for intro/auth screens
     if (currentScreen == GameScreen.introduction ||
         currentScreen == GameScreen.login ||
         currentScreen == GameScreen.register) {
@@ -67,10 +68,14 @@ class ProgressBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
-          children: _progressScreens.map((screen) {
-            final isLast = screen == _progressScreens.last;
+          children: _progressScreens.asMap().entries.map((entry) {
+            final index = entry.key;
+            final screen = entry.value;
+            final isLast = index == _progressScreens.length - 1;
+
             return _buildProgressItem(
-              label: _getScreenLabel(screen),
+              screen: screen,
+              number: index + 1,
               isActive: _isScreenActive(screen),
               isCompleted: _isScreenCompleted(screen),
               showConnector: !isLast,
@@ -82,7 +87,8 @@ class ProgressBar extends StatelessWidget {
   }
 
   Widget _buildProgressItem({
-    required String label,
+    required GameScreen screen,
+    required int number,
     required bool isActive,
     required bool isCompleted,
     required bool showConnector,
@@ -90,7 +96,7 @@ class ProgressBar extends StatelessWidget {
     return Expanded(
       child: Row(
         children: [
-          // Circle with Number or Checkmark
+          // Circle with number or checkmark
           Container(
             width: 24,
             height: 24,
@@ -108,7 +114,7 @@ class ProgressBar extends StatelessWidget {
                       color: Colors.white,
                     )
                   : Text(
-                      '${_progressScreens.indexOf(_progressScreens.firstWhere((s) => s.index == currentScreen.index)) + 1}',
+                      number.toString(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -118,14 +124,15 @@ class ProgressBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          // Label
+          // Screen label
           Text(
-            label,
+            _getScreenLabel(screen),
             style: TextStyle(
               color: isActive || isCompleted ? Colors.white : Colors.grey,
               fontSize: 14,
             ),
           ),
+          // Connector line between items
           if (showConnector) ...[
             Expanded(
               child: Container(
