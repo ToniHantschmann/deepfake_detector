@@ -1,11 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-//import '../../models/video_model.dart';
 import '../../repositories/video_repository.dart';
 import '../../repositories/statistics_repository.dart';
 import '../../repositories/user_repository.dart';
 import '../../models/statistics_model.dart';
 import '../../exceptions/app_exceptions.dart';
-import '../../utils/temp_user_service.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
@@ -23,52 +21,29 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         _userRepository = userRepository,
         super(const GameState.initial()) {
     on<QuickStartGame>(_onQuickStartGame);
-    on<LoginExistingUser>(_onLoginExistingUser);
-    on<RegisterNewUser>(_onRegisterNewUser);
+    on<LoginWithPin>(_onLoginWithPin);
     on<ShowLogin>(_onShowLogin);
     on<CancelLogin>(_onCancelLogin);
     on<NextScreen>(_onNextScreen);
     on<PreviousScreen>(_onPreviousScreen);
     on<SelectDeepfake>(_onSelectDeepfake);
     on<RestartGame>(_onRestartGame);
-    on<SaveTempUser>(_onSaveTempUser);
+    on<GeneratePin>(_onGeneratePin);
     on<CheckPin>(_onCheckPin);
-    on<SetPinCheckResult>(_onSetPinCheckResult);
-    on<ShowRegister>(_onShowRegister);
-    on<CancelRegister>(_onCancelRegister);
   }
 
-  /// Handler zum Anzeigen des Login-Dialogs
-  void _onShowLogin(ShowLogin event, Emitter<GameState> emit) {
+  Future<void> _onShowLogin(ShowLogin event, Emitter<GameState> emit) async {
     emit(state.copyWith(
       status: GameStatus.showLogin,
       showLoginOverlay: true,
     ));
   }
 
-  void _onShowRegister(ShowRegister event, Emitter<GameState> emit) {
-    emit(state.copyWith(
-      status: GameStatus.showRegister,
-      showRegisterOverlay: true,
-    ));
-  }
-
-  void _onCancelLogin(CancelLogin event, Emitter<GameState> emit) {
+  Future<void> _onCancelLogin(
+      CancelLogin event, Emitter<GameState> emit) async {
     emit(state.copyWith(
       status: GameStatus.initial,
       showLoginOverlay: false,
-      pinMatchingUsernames: [],
-      isPinChecking: false,
-    ));
-  }
-
-  void _onCancelRegister(CancelRegister event, Emitter<GameState> emit) {
-    emit(state.copyWith(
-      status: GameStatus.playing,
-      showRegisterOverlay: false,
-    ));
-    emit(state.copyWith(
-      pinMatchingUsernames: [],
       isPinChecking: false,
     ));
   }
@@ -77,13 +52,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(isPinChecking: true));
 
     try {
-      final users = await _userRepository.getUsersByPin(event.pin);
-      final usernames = users.map((u) => u.username).toList();
-
-      emit(state.copyWith(
-        isPinChecking: false,
-        pinMatchingUsernames: usernames,
-      ));
+      final user = await _userRepository.getUserByPin(event.pin);
+      if (user != null) {
+        add(LoginWithPin(event.pin));
+      } else {
+        emit(state.copyWith(
+          isPinChecking: false,
+          errorMessage: 'Invalid PIN',
+        ));
+      }
     } catch (e) {
       emit(state.copyWith(
         isPinChecking: false,
@@ -93,65 +70,39 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  void _onSetPinCheckResult(SetPinCheckResult event, Emitter<GameState> emit) {
-    emit(state.copyWith(pinMatchingUsernames: event.matchingUsernames));
-  }
-
   Future<void> _onQuickStartGame(
       QuickStartGame event, Emitter<GameState> emit) async {
     emit(state.copyWith(status: GameStatus.loading));
     try {
-      final tempUsername = TempUserService.generateTempUsername();
-
-      // Temporären User anlegen
-      await _userRepository.addUser(tempUsername);
-
-      // Statistiken initialisieren
-      final statistics =
-          await _statisticsRepository.getStatistics(tempUsername);
-
       final videos = await _videoRepository.getRandomVideoPair();
 
       emit(state.copyWith(
         status: GameStatus.playing,
         currentScreen: GameScreen.firstVideo,
-        currentUser: tempUsername,
-        userStatistics: statistics,
-        isTemporaryUser: true,
+        currentPin: null,
         videos: videos,
       ));
     } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
-        errorMessage: 'Failed to create temporary user: $e',
+        errorMessage: 'Failed to start game: $e',
       ));
     }
   }
 
-  Future<void> _onLoginExistingUser(
-      LoginExistingUser event, Emitter<GameState> emit) async {
+  Future<void> _onLoginWithPin(
+      LoginWithPin event, Emitter<GameState> emit) async {
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
-      // Prüfe ob User existiert
-      final exists = await _userRepository.userExists(event.username);
-      if (!exists) {
-        throw UserException('User does not exist');
-      }
-
-      // Lade Statistiken
-      final statistics =
-          await _statisticsRepository.getStatistics(event.username);
-
-      // Hole Videos für das Spiel
+      final statistics = await _statisticsRepository.getStatistics(event.pin);
       final videos = await _videoRepository.getRandomVideoPair();
 
       emit(state.copyWith(
         status: GameStatus.playing,
         currentScreen: GameScreen.firstVideo,
-        currentUser: event.username,
+        currentPin: event.pin,
         userStatistics: statistics,
-        isTemporaryUser: false,
         videos: videos,
         showLoginOverlay: false,
       ));
@@ -163,67 +114,28 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  Future<void> _onRegisterNewUser(
-      RegisterNewUser event, Emitter<GameState> emit) async {
-    emit(state.copyWith(status: GameStatus.loading));
-
+  Future<void> _onGeneratePin(
+      GeneratePin event, Emitter<GameState> emit) async {
     try {
-      // Erstelle neuen User
-      await _userRepository.addUser(event.username);
+      final pin = await _userRepository.createNewUser();
+      emit(state.copyWith(generatedPin: pin));
 
-      // Initialisiere Statistiken
-      final statistics =
-          await _statisticsRepository.getStatistics(event.username);
-
-      // Hole Videos für das Spiel
-      final videos = await _videoRepository.getRandomVideoPair();
+      // Wenn es aktuelle Statistiken gibt, kopiere sie zum neuen PIN
+      if (state.userStatistics != null) {
+        await _statisticsRepository.copyStatistics(
+          state.currentPin!,
+          pin,
+        );
+      }
 
       emit(state.copyWith(
+        currentPin: pin,
         status: GameStatus.playing,
-        currentScreen: GameScreen.firstVideo,
-        currentUser: event.username,
-        userStatistics: statistics,
-        isTemporaryUser: false,
-        videos: videos,
       ));
     } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
-        errorMessage: 'Registration failed: ${e.toString()}',
-      ));
-    }
-  }
-
-  Future<void> _onSaveTempUser(
-      SaveTempUser event, Emitter<GameState> emit) async {
-    if (!state.isTemporaryUser || state.currentUser == null) {
-      return;
-    }
-
-    emit(state.copyWith(status: GameStatus.loading));
-
-    try {
-      final oldUsername = state.currentUser!;
-
-      // Erstelle neuen permanenten User
-      await _userRepository.addUser(event.username);
-
-      // Kopiere Statistiken vom temporären zum permanenten User
-      final oldStats = await _statisticsRepository.getStatistics(oldUsername);
-      await _statisticsRepository.copyStatistics(oldUsername, event.username);
-
-      // Lösche temporären User
-      await _userRepository.removeUser(oldUsername);
-
-      emit(state.copyWith(
-        currentUser: event.username,
-        userStatistics: oldStats,
-        isTemporaryUser: false,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        status: GameStatus.error,
-        errorMessage: 'Failed to convert temporary user: ${e.toString()}',
+        errorMessage: 'Failed to generate PIN: ${e.toString()}',
       ));
     }
   }
@@ -234,9 +146,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     switch (state.currentScreen) {
       case GameScreen.introduction:
         emit(state.copyWith(currentScreen: GameScreen.firstVideo));
-        break;
-      case GameScreen.login:
-        emit(state.copyWith(currentScreen: GameScreen.login));
         break;
 
       case GameScreen.firstVideo:
@@ -252,36 +161,22 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           emit(state.copyWith(currentScreen: GameScreen.result));
         }
         break;
+
       case GameScreen.result:
-        if (state.currentUser != null) {
-          try {
-            emit(state.copyWith(
-              currentScreen: GameScreen.statistics,
-            ));
-          } catch (e) {
-            emit(state.copyWith(
-              status: GameStatus.error,
-              errorMessage: 'Failed to load statistics',
-            ));
-          }
-        }
+        emit(state.copyWith(currentScreen: GameScreen.statistics));
         break;
 
       case GameScreen.statistics:
         add(const RestartGame());
         break;
 
-      case GameScreen.register:
-        emit(state.copyWith(currentScreen: GameScreen.register));
+      default:
         break;
     }
   }
 
-  /// Handler für die Zurück-Navigation
   Future<void> _onPreviousScreen(
-    PreviousScreen event,
-    Emitter<GameState> emit,
-  ) async {
+      PreviousScreen event, Emitter<GameState> emit) async {
     if (state.status != GameStatus.playing) return;
 
     GameScreen previousScreen;
@@ -300,7 +195,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       case GameScreen.result:
         previousScreen = GameScreen.comparison;
-        // Reset selection when going back from result
         emit(state.copyWith(
           currentScreen: previousScreen,
           selectedVideoIndex: null,
@@ -313,7 +207,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       default:
-        // For introduction and login screens, do nothing
         return;
     }
 
@@ -324,7 +217,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       SelectDeepfake event, Emitter<GameState> emit) async {
     if (state.status != GameStatus.playing ||
         state.currentScreen != GameScreen.comparison ||
-        state.currentUser == null ||
         event.videoIndex >= state.videos.length) {
       return;
     }
@@ -340,15 +232,22 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         selectedVideoId: selectedVideo.id,
       );
 
-      await _statisticsRepository.addAttempt(state.currentUser!, attempt);
-      final updatedStats =
-          await _statisticsRepository.getStatistics(state.currentUser!);
+      if (state.currentPin != null) {
+        await _statisticsRepository.addAttempt(state.currentPin!, attempt);
+        final updatedStats =
+            await _statisticsRepository.getStatistics(state.currentPin!);
 
-      emit(state.copyWith(
-        selectedVideoIndex: event.videoIndex,
-        isCorrectGuess: isCorrect,
-        userStatistics: updatedStats,
-      ));
+        emit(state.copyWith(
+          selectedVideoIndex: event.videoIndex,
+          isCorrectGuess: isCorrect,
+          userStatistics: updatedStats,
+        ));
+      } else {
+        emit(state.copyWith(
+          selectedVideoIndex: event.videoIndex,
+          isCorrectGuess: isCorrect,
+        ));
+      }
     } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
@@ -359,32 +258,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onRestartGame(
       RestartGame event, Emitter<GameState> emit) async {
-    final currentUser = state.currentUser;
-    final isTemp = state.isTemporaryUser;
-
-    if (currentUser == null) {
-      // Kein User vorhanden - zurück zum Start
-      emit(const GameState.initial());
-      return;
-    }
+    final currentPin = state.currentPin;
 
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
-      // Prüfe ob User noch existiert
-      final exists = await _userRepository.userExists(currentUser);
-      if (!exists) {
-        emit(const GameState.initial());
-        return;
+      final videos = await _videoRepository.getRandomVideoPair();
+      UserStatistics? statistics;
+
+      if (currentPin != null) {
+        statistics = await _statisticsRepository.getStatistics(currentPin);
       }
 
-      // Hole aktuelle Statistiken
-      final statistics = await _statisticsRepository.getStatistics(currentUser);
-
-      // Hole neue Videos für die nächste Runde
-      final videos = await _videoRepository.getRandomVideoPair();
-
-      // Setze Spiel zurück und behalte User-Informationen
       emit(state.copyWith(
         status: GameStatus.playing,
         currentScreen: GameScreen.firstVideo,
@@ -393,7 +278,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         selectedVideoIndex: null,
         isCorrectGuess: null,
         errorMessage: null,
-        isTemporaryUser: isTemp,
+        generatedPin: null,
       ));
     } catch (e) {
       emit(state.copyWith(
