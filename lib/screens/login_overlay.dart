@@ -16,10 +16,6 @@ class LoginOverlay extends StatefulWidget {
 
 class _LoginOverlayState extends State<LoginOverlay> {
   String _pin = '';
-  bool _showConfirmation = false;
-  bool _showUserSelection = false;
-  List<String> _matchingUsernames = [];
-  String? _selectedUsername;
   String? _errorMessage;
 
   void _handleNumberInput(String number) {
@@ -30,7 +26,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
       });
 
       if (_pin.length == 4) {
-        _checkPin();
+        _verifyPin();
       }
     }
   }
@@ -44,26 +40,8 @@ class _LoginOverlayState extends State<LoginOverlay> {
     }
   }
 
-  void _checkPin() {
-    context.read<GameBloc>().add(CheckPin(_pin));
-  }
-
-  void _handleConfirm() {
-    if (_selectedUsername != null) {
-      context.read<GameBloc>().add(LoginExistingUser(_selectedUsername!));
-      Navigator.of(context).pop();
-    }
-  }
-
-  void _handleCancel() {
-    setState(() {
-      _pin = '';
-      _showConfirmation = false;
-      _showUserSelection = false;
-      _selectedUsername = null;
-      _matchingUsernames = [];
-      _errorMessage = null;
-    });
+  void _verifyPin() {
+    context.read<GameBloc>().add(LoginWithPin(_pin));
   }
 
   void _handleClose() {
@@ -75,188 +53,63 @@ class _LoginOverlayState extends State<LoginOverlay> {
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listener: (context, state) {
-        if (state.isPinChecking) return;
-
-        if (state.pinMatchingUsernames.isEmpty) {
+        if (state.status == GameStatus.error) {
           setState(() {
+            _errorMessage = state.errorMessage;
             _pin = '';
-            _errorMessage = 'Invalid PIN';
           });
-        } else if (state.pinMatchingUsernames.length == 1) {
-          setState(() {
-            _showConfirmation = true;
-            _selectedUsername = state.pinMatchingUsernames.first;
-          });
-        } else {
-          setState(() {
-            _showUserSelection = true;
-            _matchingUsernames = state.pinMatchingUsernames;
-          });
+        } else if (!state.showLoginOverlay) {
+          Navigator.of(context).pop();
         }
       },
       builder: (context, state) {
         return AuthOverlayBase(
-          title: _showConfirmation
-              ? 'Confirm Identity'
-              : _showUserSelection
-                  ? 'Select Account'
-                  : 'Enter PIN',
+          title: 'Enter PIN',
           onClose: _handleClose,
           children: [
-            if (!_showConfirmation && !_showUserSelection) ...[
-              PinDisplay(pin: _pin),
-              if (_errorMessage != null) ...[
-                const SizedBox(height: 16),
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 32),
-              NumberPad(
-                onNumberPressed: _handleNumberInput,
-                onBackspacePressed: _handleBackspace,
+            const Text(
+              'Enter your 4-digit PIN to continue',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
               ),
-            ] else if (_showUserSelection) ...[
-              _buildUserSelection(),
-            ] else ...[
-              _buildConfirmation(),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            PinDisplay(pin: _pin),
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                _errorMessage!,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
+            const SizedBox(height: 32),
+            NumberPad(
+              onNumberPressed: _handleNumberInput,
+              onBackspacePressed: _handleBackspace,
+            ),
+            const SizedBox(height: 24),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<GameBloc>().add(const QuickStartGame());
+              },
+              child: const Text(
+                'Continue without PIN',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+            ),
           ],
         );
       },
-    );
-  }
-
-  Widget _buildUserSelection() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text(
-          'Multiple accounts found',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'Please select your account',
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 24),
-        ..._matchingUsernames.map((username) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedUsername = username;
-                    _showUserSelection = false;
-                    _showConfirmation = true;
-                  });
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: const Color(0xFF262626),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 24,
-                  ),
-                ),
-                child: Text(
-                  username,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            )),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: TextButton(
-            onPressed: _handleCancel,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: Colors.grey[800],
-            ),
-            child: const Text(
-              'Try different PIN',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildConfirmation() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(
-          Icons.account_circle,
-          size: 64,
-          color: Colors.blue,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          _selectedUsername ?? '',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Is this your account?',
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: TextButton(
-                onPressed: _handleCancel,
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.grey[800],
-                ),
-                child: const Text(
-                  'No, try again',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _handleConfirm,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue,
-                ),
-                child: const Text(
-                  'Yes, that\'s me',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
