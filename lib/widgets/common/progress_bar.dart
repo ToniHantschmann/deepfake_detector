@@ -12,9 +12,7 @@ class ProgressBar extends StatelessWidget {
   // Check if a screen is completed (all previous screens are done)
   bool _isScreenCompleted(GameScreen screen) {
     // Introduction, login and register screens don't count for progress
-    if (screen == GameScreen.introduction ||
-        screen == GameScreen.login ||
-        screen == GameScreen.register) {
+    if (screen == GameScreen.introduction || screen == GameScreen.login) {
       return false;
     }
     return currentScreen.index > screen.index;
@@ -56,8 +54,7 @@ class ProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     // Hide progress bar for intro/auth screens
     if (currentScreen == GameScreen.introduction ||
-        currentScreen == GameScreen.login ||
-        currentScreen == GameScreen.register) {
+        currentScreen == GameScreen.login) {
       return const SizedBox.shrink();
     }
 
