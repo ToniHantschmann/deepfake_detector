@@ -7,6 +7,7 @@ import 'package:deepfake_detector/blocs/game/game_event.dart';
 import 'package:deepfake_detector/blocs/game/game_state.dart';
 import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
+import 'package:deepfake_detector/models/user_model.dart';
 import 'package:deepfake_detector/repositories/video_repository.dart';
 import 'package:deepfake_detector/repositories/statistics_repository.dart';
 import 'package:deepfake_detector/repositories/user_repository.dart';
@@ -48,10 +49,15 @@ void main() {
   ];
 
   final testStats = UserStatistics(
-    username: 'testUser',
+    pin: '1234',
     totalAttempts: 5,
     correctGuesses: 3,
     recentAttempts: [],
+  );
+
+  final testUser = User(
+    pin: '1234',
+    created: DateTime.parse('2024-01-01T10:00:00.000Z'),
   );
 
   setUp(() {
@@ -77,11 +83,8 @@ void main() {
 
     group('QuickStartGame', () {
       blocTest<GameBloc, GameState>(
-        'starts game with temporary user',
+        'starts game without PIN',
         setUp: () {
-          when(mockUserRepository.addUser(any)).thenAnswer((_) async => {});
-          when(mockStatisticsRepository.getStatistics(any))
-              .thenAnswer((_) async => testStats);
           when(mockVideoRepository.getRandomVideoPair())
               .thenAnswer((_) async => testVideos);
         },
@@ -93,12 +96,11 @@ void main() {
             (state) =>
                 state.status == GameStatus.playing &&
                 state.currentScreen == GameScreen.firstVideo &&
-                state.isTemporaryUser == true &&
+                state.currentPin == null &&
                 state.videos.length == 2,
           ),
         ],
         verify: (_) {
-          verify(mockUserRepository.addUser(any)).called(1);
           verify(mockVideoRepository.getRandomVideoPair()).called(1);
         },
       );
@@ -106,8 +108,8 @@ void main() {
       blocTest<GameBloc, GameState>(
         'handles error during quick start',
         setUp: () {
-          when(mockUserRepository.addUser(any))
-              .thenThrow(UserException('Failed to create temp user'));
+          when(mockVideoRepository.getRandomVideoPair())
+              .thenThrow(VideoException('Failed to load videos'));
         },
         build: () => gameBloc,
         act: (bloc) => bloc.add(const QuickStartGame()),
@@ -116,126 +118,85 @@ void main() {
           predicate<GameState>(
             (state) =>
                 state.status == GameStatus.error &&
-                state.errorMessage!.contains('Failed to create temp user'),
+                state.errorMessage!.contains('Failed to load videos'),
           ),
         ],
       );
     });
 
-    group('LoginExistingUser', () {
+    group('LoginWithPin', () {
       blocTest<GameBloc, GameState>(
-        'logs in existing user successfully',
+        'logs in with valid PIN',
         setUp: () {
-          when(mockUserRepository.userExists('testUser'))
-              .thenAnswer((_) async => true);
-          when(mockStatisticsRepository.getStatistics('testUser'))
+          when(mockUserRepository.getUserByPin('1234'))
+              .thenAnswer((_) async => testUser);
+          when(mockStatisticsRepository.getStatistics('1234'))
               .thenAnswer((_) async => testStats);
           when(mockVideoRepository.getRandomVideoPair())
               .thenAnswer((_) async => testVideos);
         },
         build: () => gameBloc,
-        act: (bloc) => bloc.add(const LoginExistingUser('testUser')),
+        act: (bloc) => bloc.add(const LoginWithPin('1234')),
         expect: () => [
           predicate<GameState>((state) => state.status == GameStatus.loading),
           predicate<GameState>(
             (state) =>
                 state.status == GameStatus.playing &&
                 state.currentScreen == GameScreen.firstVideo &&
-                state.currentUser == 'testUser' &&
-                state.isTemporaryUser == false,
+                state.currentPin == '1234' &&
+                state.userStatistics == testStats &&
+                state.videos.length == 2,
           ),
         ],
       );
 
       blocTest<GameBloc, GameState>(
-        'handles non-existent user login',
+        'handles invalid PIN login',
         setUp: () {
-          when(mockUserRepository.userExists('nonexistent'))
-              .thenAnswer((_) async => false);
+          when(mockUserRepository.getUserByPin('9999'))
+              .thenAnswer((_) async => null);
         },
         build: () => gameBloc,
-        act: (bloc) => bloc.add(const LoginExistingUser('nonexistent')),
+        act: (bloc) => bloc.add(const LoginWithPin('9999')),
         expect: () => [
           predicate<GameState>((state) => state.status == GameStatus.loading),
           predicate<GameState>(
             (state) =>
                 state.status == GameStatus.error &&
-                state.errorMessage!.contains('User does not exist'),
+                state.errorMessage == 'Invalid PIN',
           ),
         ],
       );
     });
 
-    group('RegisterNewUser', () {
+    group('GeneratePin', () {
       blocTest<GameBloc, GameState>(
-        'registers new user successfully',
+        'generates new PIN and converts temporary stats',
         setUp: () {
-          when(mockUserRepository.addUser('newUser'))
-              .thenAnswer((_) async => {});
-          when(mockStatisticsRepository.getStatistics('newUser'))
-              .thenAnswer((_) async => testStats);
-          when(mockVideoRepository.getRandomVideoPair())
-              .thenAnswer((_) async => testVideos);
+          final tempStats = UserStatistics.temporary();
+          when(mockUserRepository.createNewUser())
+              .thenAnswer((_) async => '5678');
+          when(mockStatisticsRepository.convertTemporaryStats(
+                  tempStats, '5678'))
+              .thenAnswer((_) async => testStats.copyWith(pin: '5678'));
         },
-        build: () => gameBloc,
-        act: (bloc) => bloc.add(const RegisterNewUser('newUser')),
-        expect: () => [
-          predicate<GameState>((state) => state.status == GameStatus.loading),
-          predicate<GameState>(
-            (state) =>
-                state.status == GameStatus.playing &&
-                state.currentScreen == GameScreen.firstVideo &&
-                state.currentUser == 'newUser' &&
-                state.isTemporaryUser == false,
-          ),
-        ],
-      );
-    });
-
-    group('SaveTempUser', () {
-      blocTest<GameBloc, GameState>(
-        'converts temporary user to permanent user',
-        setUp: () {
-          // Add missing mock for getStatistics
-          when(mockStatisticsRepository.getStatistics('temp'))
-              .thenAnswer((_) async => testStats);
-
-          when(mockUserRepository.addUser('permanent'))
-              .thenAnswer((_) async => Future<void>.value());
-
-          // Fix the return type for copyStatistics
-          when(mockStatisticsRepository.copyStatistics('temp', 'permanent'))
-              .thenAnswer((_) async => Future<void>.value());
-
-          when(mockUserRepository.removeUser('temp'))
-              .thenAnswer((_) async => Future<void>.value());
-        },
-        seed: () => const GameState(
+        seed: () => GameState(
           status: GameStatus.playing,
-          currentScreen: GameScreen.firstVideo,
-          videos: [],
-          availableUsers: [],
-          currentUser: 'temp',
-          isTemporaryUser: true,
+          currentScreen: GameScreen.statistics,
+          videos: testVideos,
+          userStatistics: UserStatistics.temporary(),
         ),
         build: () => gameBloc,
-        act: (bloc) => bloc.add(const SaveTempUser('permanent')),
+        act: (bloc) => bloc.add(const GeneratePin()),
         expect: () => [
-          predicate<GameState>((state) => state.status == GameStatus.loading),
           predicate<GameState>(
             (state) =>
-                state.currentUser == 'permanent' &&
-                state.isTemporaryUser == false &&
-                state.userStatistics == testStats,
+                state.currentPin == '5678' &&
+                state.generatedPin == '5678' &&
+                state.userStatistics?.pin == '5678' &&
+                !state.userStatistics!.isTemporary,
           ),
         ],
-        verify: (_) {
-          verify(mockStatisticsRepository.getStatistics('temp')).called(1);
-          verify(mockUserRepository.addUser('permanent')).called(1);
-          verify(mockStatisticsRepository.copyStatistics('temp', 'permanent'))
-              .called(1);
-          verify(mockUserRepository.removeUser('temp')).called(1);
-        },
       );
     });
 
@@ -243,73 +204,84 @@ void main() {
       blocTest<GameBloc, GameState>(
         'records user selection and updates state',
         setUp: () {
-          when(mockStatisticsRepository.addAttempt(any, any))
-              .thenAnswer((_) async => {});
+          final updatedStats = UserStatistics(
+            pin: "1234",
+            totalAttempts: 5,
+            correctGuesses: 3,
+            recentAttempts: [],
+          );
+          when(mockStatisticsRepository.addAttempt(
+            any,
+            pin: anyNamed('pin'),
+            stats: anyNamed('stats'),
+          )).thenAnswer((_) async => updatedStats);
         },
         seed: () => GameState(
           status: GameStatus.playing,
           currentScreen: GameScreen.comparison,
           videos: testVideos,
-          availableUsers: const [],
-          currentUser: 'testUser',
+          currentPin: '1234',
+          userStatistics: testStats,
         ),
         build: () => gameBloc,
         act: (bloc) => bloc.add(const SelectDeepfake(1)),
         expect: () => [
           predicate<GameState>(
             (state) =>
-                state.selectedVideoIndex == 1 && state.isCorrectGuess == true,
+                state.selectedVideoIndex == 1 &&
+                state.isCorrectGuess == true &&
+                state.userStatistics?.totalAttempts == 5 &&
+                state.userStatistics?.correctGuesses == 3,
           ),
         ],
-        verify: (_) {
-          verify(mockStatisticsRepository.addAttempt('testUser', any))
-              .called(1);
-        },
       );
-    });
 
-    group('NextScreen', () {
       blocTest<GameBloc, GameState>(
-        'transitions through screens correctly',
-        build: () => gameBloc,
+        'records temporary attempt without PIN',
+        setUp: () {
+          final tempStats = UserStatistics.temporary();
+          when(mockStatisticsRepository.addAttempt(
+            any,
+            stats: tempStats,
+          )).thenAnswer((_) async => tempStats.copyWith(
+                totalAttempts: 1,
+                correctGuesses: 1,
+              ));
+        },
         seed: () => GameState(
           status: GameStatus.playing,
-          currentScreen: GameScreen.firstVideo,
+          currentScreen: GameScreen.comparison,
           videos: testVideos,
-          availableUsers: const [],
-          currentUser: 'testUser',
+          userStatistics: UserStatistics.temporary(),
         ),
-        act: (bloc) => bloc.add(const NextScreen()),
+        build: () => gameBloc,
+        act: (bloc) => bloc.add(const SelectDeepfake(1)),
         expect: () => [
           predicate<GameState>(
-              (state) => state.currentScreen == GameScreen.secondVideo),
+            (state) =>
+                state.selectedVideoIndex == 1 &&
+                state.isCorrectGuess == true &&
+                state.userStatistics!.isTemporary &&
+                state.userStatistics!.totalAttempts == 1,
+          ),
         ],
       );
     });
 
     group('RestartGame', () {
       blocTest<GameBloc, GameState>(
-        'resets game state while preserving user',
-        setUp: () async {
-          // Definiere alle möglichen Aufrufe vorab
-          when(mockUserRepository.userExists('testUser'))
-              .thenAnswer((_) async => true);
-          when(mockStatisticsRepository.getStatistics('testUser'))
-              .thenAnswer((_) async => testStats);
+        'resets game while preserving PIN and stats',
+        setUp: () {
           when(mockVideoRepository.getRandomVideoPair())
               .thenAnswer((_) async => testVideos);
-
-          // Pre-initialize repositories if needed
-          await mockUserRepository.userExists('testUser');
-          await mockStatisticsRepository.getStatistics('testUser');
-          await mockVideoRepository.getRandomVideoPair();
+          when(mockStatisticsRepository.getStatistics('1234'))
+              .thenAnswer((_) async => testStats);
         },
         seed: () => GameState(
           status: GameStatus.playing,
           currentScreen: GameScreen.statistics,
           videos: testVideos,
-          availableUsers: const [],
-          currentUser: 'testUser',
+          currentPin: '1234',
           userStatistics: testStats,
           selectedVideoIndex: 1,
           isCorrectGuess: true,
@@ -317,20 +289,45 @@ void main() {
         build: () => gameBloc,
         act: (bloc) => bloc.add(const RestartGame()),
         expect: () => [
-          isA<GameState>().having(
-            (state) => state.status,
-            'status',
-            GameStatus.loading,
+          predicate<GameState>((state) => state.status == GameStatus.loading),
+          predicate<GameState>(
+            (state) =>
+                state.status == GameStatus.playing &&
+                state.currentScreen == GameScreen.firstVideo &&
+                state.currentPin == '1234' &&
+                state.userStatistics == testStats &&
+                state.selectedVideoIndex == null &&
+                state.isCorrectGuess == null,
           ),
-          isA<GameState>()
-              .having((state) => state.status, 'status', GameStatus.playing)
-              .having((state) => state.currentScreen, 'screen',
-                  GameScreen.firstVideo)
-              .having((state) => state.currentUser, 'user', 'testUser')
-              .having((state) => state.selectedVideoIndex, 'selectedVideoIndex',
-                  null)
-              .having((state) => state.isCorrectGuess, 'isCorrectGuess', null)
-              .having((state) => state.videos.length, 'videos length', 2),
+        ],
+      );
+
+      blocTest<GameBloc, GameState>(
+        'resets game with temporary stats',
+        setUp: () {
+          when(mockVideoRepository.getRandomVideoPair())
+              .thenAnswer((_) async => testVideos);
+        },
+        seed: () => GameState(
+          status: GameStatus.playing,
+          currentScreen: GameScreen.statistics,
+          videos: testVideos,
+          userStatistics: UserStatistics.temporary(),
+          selectedVideoIndex: 1,
+          isCorrectGuess: true,
+        ),
+        build: () => gameBloc,
+        act: (bloc) => bloc.add(const RestartGame()),
+        expect: () => [
+          predicate<GameState>((state) => state.status == GameStatus.loading),
+          predicate<GameState>(
+            (state) =>
+                state.status == GameStatus.playing &&
+                state.currentScreen == GameScreen.firstVideo &&
+                state.currentPin == null &&
+                state.userStatistics!.isTemporary &&
+                state.userStatistics!.totalAttempts == 0,
+          ),
         ],
       );
     });

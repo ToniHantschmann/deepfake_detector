@@ -14,18 +14,21 @@ void main() {
   late MockJsonStorage mockStorage;
 
   final testStats = {
-    'user1': {
-      'username': 'user1',
-      'totalAttempts': 10,
-      'correctGuesses': 7,
-      'recentAttempts': [
-        {
-          'timestamp': '2024-01-01T10:00:00.000Z',
-          'wasCorrect': true,
-          'videoIds': ['video1', 'video2'],
-          'selectedVideoId': 'video1'
-        }
-      ]
+    'statistics': {
+      '1234': {
+        'pin': '1234',
+        'totalAttempts': 10,
+        'correctGuesses': 7,
+        'recentAttempts': [
+          {
+            'timestamp': '2024-01-01T10:00:00.000Z',
+            'wasCorrect': true,
+            'videoIds': ['video1', 'video2'],
+            'selectedVideoId': 'video1'
+          }
+        ],
+        'isTemporary': false
+      }
     }
   };
 
@@ -33,7 +36,6 @@ void main() {
     mockStorage = MockJsonStorage();
     when(mockStorage.readJsonFile(JsonStorage.statsFileName))
         .thenAnswer((_) async => testStats);
-
     statisticsRepository = StatisticsRepository.withStorage(mockStorage);
   });
 
@@ -48,43 +50,29 @@ void main() {
       await statisticsRepository.initialize();
       verify(mockStorage.readJsonFile(JsonStorage.statsFileName)).called(1);
     });
-
-    test('should handle empty statistics', () async {
-      when(mockStorage.readJsonFile(JsonStorage.statsFileName))
-          .thenAnswer((_) async => {});
-
-      await statisticsRepository.initialize();
-      final stats = await statisticsRepository.getStatistics('newuser');
-      expect(stats.totalAttempts, 0);
-      expect(stats.correctGuesses, 0);
-      expect(stats.recentAttempts, isEmpty);
-    });
   });
 
   group('StatisticsRepository Tests - getStatistics', () {
-    test('should initialize repository if not initialized', () async {
-      await statisticsRepository.getStatistics('user1');
-      verify(mockStorage.readJsonFile(JsonStorage.statsFileName)).called(1);
-    });
-
-    test('should return existing statistics', () async {
+    test('should return existing statistics for PIN', () async {
       await statisticsRepository.initialize();
-      final stats = await statisticsRepository.getStatistics('user1');
+      final stats = await statisticsRepository.getStatistics('1234');
 
-      expect(stats.username, 'user1');
+      expect(stats.pin, '1234');
       expect(stats.totalAttempts, 10);
       expect(stats.correctGuesses, 7);
       expect(stats.recentAttempts.length, 1);
+      expect(stats.isTemporary, false);
     });
 
-    test('should return initial statistics for new user', () async {
+    test('should return new statistics for new PIN', () async {
       await statisticsRepository.initialize();
-      final stats = await statisticsRepository.getStatistics('newuser');
+      final stats = await statisticsRepository.getStatistics('9999');
 
-      expect(stats.username, 'newuser');
+      expect(stats.pin, '9999');
       expect(stats.totalAttempts, 0);
       expect(stats.correctGuesses, 0);
       expect(stats.recentAttempts, isEmpty);
+      expect(stats.isTemporary, false);
     });
   });
 
@@ -95,104 +83,53 @@ void main() {
         videoIds: ['video3', 'video4'],
         selectedVideoId: 'video3');
 
-    test('should initialize repository if not initialized', () async {
-      when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
-
-      await statisticsRepository.addAttempt('user1', newAttempt);
-      verify(mockStorage.readJsonFile(JsonStorage.statsFileName)).called(1);
-    });
-
-    test('should update existing statistics', () async {
+    test('should update existing statistics with PIN', () async {
       when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
       await statisticsRepository.initialize();
-      await statisticsRepository.addAttempt('user1', newAttempt);
+      final updatedStats =
+          await statisticsRepository.addAttempt(newAttempt, pin: '1234');
 
-      final stats = await statisticsRepository.getStatistics('user1');
-      expect(stats.totalAttempts, 11);
-      expect(stats.correctGuesses, 8);
-      expect(stats.recentAttempts.length, 2);
+      expect(updatedStats.totalAttempts, 11);
+      expect(updatedStats.correctGuesses, 8);
+      expect(updatedStats.recentAttempts.length, 2);
+      expect(updatedStats.isTemporary, false);
     });
 
-    test('should create new statistics for new user', () async {
+    test('should handle temporary statistics', () async {
+      final tempStats = UserStatistics.temporary();
+      final updatedStats =
+          await statisticsRepository.addAttempt(newAttempt, stats: tempStats);
+
+      expect(updatedStats.totalAttempts, 1);
+      expect(updatedStats.correctGuesses, 1);
+      expect(updatedStats.recentAttempts.length, 1);
+      expect(updatedStats.isTemporary, true);
+    });
+
+    test('should convert temporary to permanent statistics', () async {
       when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
-      await statisticsRepository.initialize();
-      await statisticsRepository.addAttempt('newuser', newAttempt);
+      final tempStats = UserStatistics.temporary();
+      final tempWithAttempt =
+          await statisticsRepository.addAttempt(newAttempt, stats: tempStats);
 
-      final stats = await statisticsRepository.getStatistics('newuser');
-      expect(stats.totalAttempts, 1);
-      expect(stats.correctGuesses, 1);
-      expect(stats.recentAttempts.length, 1);
+      final permanentStats = await statisticsRepository.convertTemporaryStats(
+          tempWithAttempt, '9999');
+
+      expect(permanentStats.pin, '9999');
+      expect(permanentStats.totalAttempts, 1);
+      expect(permanentStats.correctGuesses, 1);
+      expect(permanentStats.recentAttempts.length, 1);
+      expect(permanentStats.isTemporary, false);
     });
 
-    test('should limit recent attempts to 10', () async {
-      when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
-
-      await statisticsRepository.initialize();
-
-      // Add 11 attempts
-      for (var i = 0; i < 11; i++) {
-        await statisticsRepository.addAttempt('user1', newAttempt);
-      }
-
-      final stats = await statisticsRepository.getStatistics('user1');
-      expect(stats.recentAttempts.length, 10);
-    });
-
-    test('should handle storage error', () async {
-      when(mockStorage.writeJsonFile(any, any))
-          .thenThrow(StorageException('Test error'));
-
-      await statisticsRepository.initialize();
+    test('should throw when converting non-temporary stats', () async {
+      final permanentStats = UserStatistics.withPin('1234');
 
       expect(
-        () => statisticsRepository.addAttempt('user1', newAttempt),
-        throwsA(isA<StatisticsException>()),
-      );
-    });
-
-    test('should validate that selectedVideoId is in videoIds', () async {
-      expect(
-        () => GameAttempt(
-            timestamp: DateTime.parse('2024-01-02T10:00:00.000Z'),
-            wasCorrect: true,
-            videoIds: ['video1', 'video2'],
-            selectedVideoId: 'video3' // video3 is not in videoIds
-            ),
-        throwsA(isA<StatisticsException>()),
-      );
-    });
-  });
-
-  group('StatisticsRepository Tests - resetStatistics', () {
-    test('should initialize repository if not initialized', () async {
-      when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
-
-      await statisticsRepository.resetStatistics('user1');
-      verify(mockStorage.readJsonFile(JsonStorage.statsFileName)).called(1);
-    });
-
-    test('should reset existing statistics', () async {
-      when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
-
-      await statisticsRepository.initialize();
-      await statisticsRepository.resetStatistics('user1');
-
-      final stats = await statisticsRepository.getStatistics('user1');
-      expect(stats.totalAttempts, 0);
-      expect(stats.correctGuesses, 0);
-      expect(stats.recentAttempts, isEmpty);
-    });
-
-    test('should handle storage error', () async {
-      when(mockStorage.writeJsonFile(any, any))
-          .thenThrow(StorageException('Test error'));
-
-      await statisticsRepository.initialize();
-
-      expect(
-        () => statisticsRepository.resetStatistics('user1'),
+        () =>
+            statisticsRepository.convertTemporaryStats(permanentStats, '9999'),
         throwsA(isA<StatisticsException>()),
       );
     });

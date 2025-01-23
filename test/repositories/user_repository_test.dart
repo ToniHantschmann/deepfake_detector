@@ -13,23 +13,20 @@ void main() {
   late MockJsonStorage mockStorage;
 
   final testUsers = {
-    'users': ['user1', 'user2', 'user3']
+    'users': {
+      '1234': {'pin': '1234', 'created': '2024-01-01T10:00:00.000Z'},
+      '5678': {'pin': '5678', 'created': '2024-01-02T10:00:00.000Z'}
+    }
   };
 
-  /// Setup mockStorage and userRepository
-  setUp(() async {
+  setUp(() {
     mockStorage = MockJsonStorage();
-    reset(mockStorage);
+    when(mockStorage.readJsonFile(JsonStorage.usersFileName))
+        .thenAnswer((_) async => testUsers);
     userRepository = UserRepository.withStorage(mockStorage);
   });
 
   group('UserRepository Tests - Initialization', () {
-    setUp(() async {
-      UserRepository.resetInstance();
-      // Standard-Mock-Verhalten für Storage
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => testUsers);
-    });
     test('should load users on initialization', () async {
       await userRepository.initialize();
       verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
@@ -42,191 +39,82 @@ void main() {
     });
   });
 
-  group('UserRepository Tests - getUsers', () {
-    setUp(() async {
-      UserRepository.resetInstance();
-      // Standard-Mock-Verhalten für Storage
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => testUsers);
-    });
+  group('UserRepository Tests - getUserByPin', () {
     test('should initialize repository if not initialized', () async {
-      await userRepository.getUsers();
+      await userRepository.getUserByPin('1234');
       verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
     });
 
-    test('should return list of users', () async {
+    test('should return user for existing PIN', () async {
       await userRepository.initialize();
-      final users = await userRepository.getUsers();
+      final user = await userRepository.getUserByPin('1234');
 
-      expect(users, equals(['user1', 'user2', 'user3']));
+      expect(user, isNotNull);
+      expect(user?.pin, '1234');
+      expect(user?.created, DateTime.parse('2024-01-01T10:00:00.000Z'));
     });
 
-    test('returned list should be a copy', () async {
+    test('should return null for non-existing PIN', () async {
       await userRepository.initialize();
-      final users = await userRepository.getUsers();
-      users.add('newUser');
-
-      final secondFetch = await userRepository.getUsers();
-      expect(secondFetch, equals(['user1', 'user2', 'user3']));
-    });
-
-    test('should handle empty users list', () async {
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => {'users': []});
-
-      await userRepository.initialize();
-      final users = await userRepository.getUsers();
-      expect(users, isEmpty);
+      final user = await userRepository.getUserByPin('9999');
+      expect(user, isNull);
     });
   });
 
-  group('UserRepository Tests - addUser', () {
-    setUp(() async {
-      UserRepository.resetInstance();
-      // Standard-Mock-Verhalten für Storage
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => testUsers);
-    });
+  group('UserRepository Tests - createNewUser', () {
     test('should initialize repository if not initialized', () async {
       when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
-      await userRepository.addUser('user4');
+      await userRepository.createNewUser();
       verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
     });
 
-    test('should add valid user', () async {
-      // Initial setup
-      await userRepository.initialize();
+    test('should create user with valid PIN', () async {
+      when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
-      // Mock behavior for the write operation
-      //when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
+      final pin = await userRepository.createNewUser();
 
-      /*
-      // Mock behavior for subsequent read operations after adding user
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => {
-                'users': ['user1', 'user2', 'user3', 'newUser']
-              });
-      */
-
-      await userRepository.addUser('user5');
-
-      final expectedData = {
-        'users': ['user1', 'user2', 'user3', 'user4', 'user5']
-      };
+      expect(pin.length, 4);
+      expect(int.tryParse(pin), isNotNull);
 
       verify(mockStorage.writeJsonFile(
         JsonStorage.usersFileName,
-        expectedData,
+        any,
       )).called(1);
-
-      // Verify the user was actually added
-      final users = await userRepository.getUsers();
-      expect(users, contains('user5'));
     });
 
-    test('should throw on duplicate username', () async {
-      await userRepository.initialize();
+    test('should not create duplicate PINs', () async {
+      when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
-      expect(
-        () => userRepository.addUser('user1'),
-        throwsA(isA<UserException>()),
-      );
+      // Mock PinGeneratorService um zuerst einen existierenden PIN zu generieren
+      // und dann einen neuen
+      final pin = await userRepository.createNewUser();
+      expect(pin, isNot(equals('1234')));
+      expect(pin, isNot(equals('5678')));
     });
 
-    test('should throw on invalid username', () async {
-      await userRepository.initialize();
-
-      // Empty username
-      expect(
-        () => userRepository.addUser(''),
-        throwsA(isA<UserException>()),
-      );
-
-      // Too long username
-      expect(
-        () => userRepository.addUser('a' * 51),
-        throwsA(isA<UserException>()),
-      );
-
-      // Invalid characters
-      expect(
-        () => userRepository.addUser('user@name'),
-        throwsA(isA<UserException>()),
-      );
-    });
-
-    test('should rollback on storage error', () async {
+    test('should throw on storage error', () async {
       when(mockStorage.writeJsonFile(any, any))
           .thenThrow(StorageException('Test error'));
 
-      await userRepository.initialize();
-
       expect(
-        () => userRepository.addUser('newUser'),
+        () => userRepository.createNewUser(),
         throwsA(isA<UserException>()),
       );
-
-      final users = await userRepository.getUsers();
-      expect(users, equals(['user1', 'user2', 'user3', 'user4', 'user5']));
     });
   });
 
   group('UserRepository Tests - removeUser', () {
-    setUp(() async {
-      UserRepository.resetInstance();
-      // Standard-Mock-Verhalten für Storage
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => testUsers);
-    });
-    test('should initialize repository if not initialized', () async {
-      // Mock für das initiale Lesen
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => {'users': []});
-
-      // Mock für das Schreiben
-      when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
-
-      // Aktion ausführen ohne vorherige Initialisierung
-      await userRepository.addUser('user4');
-
-      // Verifizieren, dass readJsonFile aufgerufen wurde
-      verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
-    });
-
-    test('should throw when adding existing user', () async {
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => {
-                'users': ['user1']
-              });
-
-      await userRepository.initialize();
-
-      expect(
-        () => userRepository.addUser('user1'),
-        throwsA(isA<UserException>()),
-      );
-    });
-
     test('should remove existing user', () async {
-      reset(mockStorage);
-
-      // Mock für das Lesen klar definieren
-      // aus irgendeinem Grund besteht testUsers aus dem Zustand von der 'add user'
-      // group und wird hier auch so wieder eingefügt. Deswegen explizite Liste
-      // mitgegeben.
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => {
-                'users': ['user1', 'user2', 'user3']
-              });
-
       when(mockStorage.writeJsonFile(any, any)).thenAnswer((_) async => {});
 
       await userRepository.initialize();
-      await userRepository.removeUser('user2');
+      await userRepository.removeUser('1234');
 
       final expectedData = {
-        'users': ['user1', 'user3']
+        'users': {
+          '5678': {'pin': '5678', 'created': '2024-01-02T10:00:00.000Z'}
+        }
       };
 
       verify(mockStorage.writeJsonFile(
@@ -237,61 +125,22 @@ void main() {
 
     test('should throw on non-existing user', () async {
       await userRepository.initialize();
-
       expect(
-        () => userRepository.removeUser('nonexistent'),
+        () => userRepository.removeUser('9999'),
         throwsA(isA<UserException>()),
       );
-    });
-
-    test('should rollback on storage error', () async {
-      // Reset für diesen spezifischen Test
-      reset(mockStorage);
-
-      // Erster Aufruf für die Initialisierung
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((realInvocation) async => {
-                'users': ['user1', 'user2', 'user3']
-              });
-      when(mockStorage.writeJsonFile(any, any))
-          .thenThrow(StorageException('Test error'));
-
-      await userRepository.initialize();
-
-      expect(
-        () => userRepository.removeUser('user1'),
-        throwsA(isA<UserException>()),
-      );
-
-      final users = await userRepository.getUsers();
-
-      /// removeUser() rollback removes user first
-      /// and adds it back after getting the error->
-      /// changed order of list
-      expect(users, equals(['user2', 'user3', 'user1']));
     });
   });
 
-  group('UserRepository Tests - userExists', () {
-    setUp(() async {
-      UserRepository.resetInstance();
-      // Standard-Mock-Verhalten für Storage
-      when(mockStorage.readJsonFile(JsonStorage.usersFileName))
-          .thenAnswer((_) async => testUsers);
-    });
-    test('should initialize repository if not initialized', () async {
-      await userRepository.userExists('user1');
-      verify(mockStorage.readJsonFile(JsonStorage.usersFileName)).called(1);
+  group('UserRepository Tests - pinExists', () {
+    test('should return true for existing PIN', () async {
+      await userRepository.initialize();
+      expect(await userRepository.pinExists('1234'), isTrue);
     });
 
-    test('should return true for existing user', () async {
+    test('should return false for non-existing PIN', () async {
       await userRepository.initialize();
-      expect(await userRepository.userExists('user1'), isTrue);
-    });
-
-    test('should return false for non-existing user', () async {
-      await userRepository.initialize();
-      expect(await userRepository.userExists('nonexistent'), isFalse);
+      expect(await userRepository.pinExists('9999'), isFalse);
     });
   });
 }
