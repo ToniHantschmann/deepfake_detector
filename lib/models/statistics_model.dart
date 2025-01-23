@@ -1,22 +1,53 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 
 class UserStatistics {
-  final String pin; // Changed from username to pin
+  final String? pin; // Optional PIN für temporäre Statistiken
   final int totalAttempts;
   final int correctGuesses;
   final List<GameAttempt> recentAttempts;
+  final bool isTemporary; // Neues Flag für temporäre Statistiken
 
   UserStatistics({
-    required this.pin,
+    this.pin,
     required this.totalAttempts,
     required this.correctGuesses,
     required this.recentAttempts,
-  });
+  }) : isTemporary = pin == null {
+    _validateStatistics();
+  }
+
+  void _validateStatistics() {
+    if (!isTemporary && (pin == null || pin!.isEmpty)) {
+      throw StatisticsException('Permanent statistics require a valid PIN');
+    }
+
+    if (totalAttempts < 0) {
+      throw StatisticsException('Total attempts cannot be negative');
+    }
+
+    if (correctGuesses < 0 || correctGuesses > totalAttempts) {
+      throw StatisticsException('Invalid number of correct guesses');
+    }
+  }
 
   double get successRate =>
       totalAttempts > 0 ? (correctGuesses / totalAttempts) * 100 : 0;
 
-  factory UserStatistics.initial(String pin) {
+  // Factory für temporäre Statistiken
+  factory UserStatistics.temporary() {
+    return UserStatistics(
+      pin: null,
+      totalAttempts: 0,
+      correctGuesses: 0,
+      recentAttempts: [],
+    );
+  }
+
+  // Factory für permanente Statistiken
+  factory UserStatistics.withPin(String pin) {
+    if (pin.isEmpty) {
+      throw StatisticsException('PIN cannot be empty');
+    }
     return UserStatistics(
       pin: pin,
       totalAttempts: 0,
@@ -25,16 +56,25 @@ class UserStatistics {
     );
   }
 
+  // Konvertierung zu permanenten Statistiken
+  UserStatistics toPermanent(String newPin) {
+    if (newPin.isEmpty) {
+      throw StatisticsException('Cannot convert to permanent with empty PIN');
+    }
+    return copyWith(pin: newPin);
+  }
+
   Map<String, dynamic> toJson() => {
         'pin': pin,
         'totalAttempts': totalAttempts,
         'correctGuesses': correctGuesses,
         'recentAttempts': recentAttempts.map((a) => a.toJson()).toList(),
+        'isTemporary': isTemporary,
       };
 
   factory UserStatistics.fromJson(Map<String, dynamic> json) {
     return UserStatistics(
-      pin: json['pin'] as String,
+      pin: json['pin'] as String?,
       totalAttempts: json['totalAttempts'] as int,
       correctGuesses: json['correctGuesses'] as int,
       recentAttempts: (json['recentAttempts'] as List)
@@ -56,6 +96,18 @@ class UserStatistics {
       recentAttempts: recentAttempts ?? List.from(this.recentAttempts),
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserStatistics &&
+          pin == other.pin &&
+          totalAttempts == other.totalAttempts &&
+          correctGuesses == other.correctGuesses;
+
+  @override
+  int get hashCode =>
+      pin.hashCode ^ totalAttempts.hashCode ^ correctGuesses.hashCode;
 }
 
 /// Model for a single game attempt

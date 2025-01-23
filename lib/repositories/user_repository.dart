@@ -50,9 +50,21 @@ class UserRepository {
       final data = await _storage.readJsonFile(JsonStorage.usersFileName);
       _users.clear();
 
-      final usersMap = data['users'] as Map<String, dynamic>? ?? {};
-      for (final entry in usersMap.entries) {
-        _users[entry.key] = User.fromJson(entry.value as Map<String, dynamic>);
+      final usersData = data['users'];
+      if (usersData != null && usersData is Map) {
+        for (final entry in usersData.entries) {
+          if (entry.value is Map) {
+            try {
+              // Sichere Konvertierung zu Map<String, dynamic>
+              final Map<String, dynamic> userData =
+                  Map<String, dynamic>.from(entry.value as Map);
+              _users[entry.key] = User.fromJson(userData);
+            } catch (e) {
+              print('Error parsing user data for PIN ${entry.key}: $e');
+              continue;
+            }
+          }
+        }
       }
     } catch (e) {
       throw UserException('Error when loading users: $e');

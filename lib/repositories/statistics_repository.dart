@@ -3,7 +3,7 @@ import 'package:deepfake_detector/models/statistics_model.dart';
 import 'package:deepfake_detector/storage/json_storage.dart';
 import 'package:flutter/foundation.dart';
 
-/// Repository class to manage statistics
+/// Repository zur Verwaltung von Statistiken (temporär und permanent)
 class StatisticsRepository {
   late final JsonStorage _storage;
   final Map<String, UserStatistics> _statistics = {};
@@ -12,7 +12,6 @@ class StatisticsRepository {
 
   static final StatisticsRepository _instance =
       StatisticsRepository._internal();
-
   factory StatisticsRepository() => _instance;
 
   StatisticsRepository._internal();
@@ -46,10 +45,24 @@ class StatisticsRepository {
       final data = await _storage.readJsonFile(JsonStorage.statsFileName);
       _statistics.clear();
 
-      for (final entry in data.entries) {
-        if (entry.value is Map<String, dynamic>) {
-          _statistics[entry.key] =
-              UserStatistics.fromJson(entry.value as Map<String, dynamic>);
+      final statisticsData = data['statistics'];
+      if (statisticsData != null && statisticsData is Map) {
+        for (final entry in statisticsData.entries) {
+          if (entry.value is Map) {
+            // Prüfen ob der Wert eine Map ist
+            try {
+              // Sichere Konvertierung zu Map<String, dynamic>
+              final Map<String, dynamic> statsData =
+                  Map<String, dynamic>.from(entry.value as Map);
+              final stats = UserStatistics.fromJson(statsData);
+              if (!stats.isTemporary && stats.pin != null) {
+                _statistics[stats.pin!] = stats;
+              }
+            } catch (e) {
+              print('Error parsing statistics for entry: $e');
+              continue;
+            }
+          }
         }
       }
     } catch (e) {
@@ -57,62 +70,111 @@ class StatisticsRepository {
     }
   }
 
-  /// Get statistics for a specific PIN
-  /// Returns [UserStatistics] for the given PIN
-  /// Creates new statistics if none exist
+  /// Hole Statistiken für einen PIN
+  /// Wenn keine existieren, werden neue permanente Statistiken erstellt
   Future<UserStatistics> getStatistics(String pin) async {
     if (!_isInitialized) await initialize();
-
-    return _statistics[pin] ?? UserStatistics.initial(pin);
+    return _statistics[pin] ?? UserStatistics.withPin(pin);
   }
 
-  /// Add a new attempt to a PIN's statistics
-  /// [pin]: The PIN to add statistics for
-  /// [attempt]: The GameAttempt to add
-  /// Throws [StatisticsException] if the operation fails
-  Future<void> addAttempt(String pin, GameAttempt attempt) async {
+  /// Fügt einen neuen Versuch zu den Statistiken hinzu
+  /// [pin]: PIN der Statistiken (optional für temporäre Stats)
+  /// [attempt]: Der neue Spielversuch
+  /// [stats]: Aktuelle Statistiken (optional, für temporäre Stats)
+  /// Returns: Aktualisierte Statistiken
+  Future<UserStatistics> addAttempt(
+    GameAttempt attempt, {
+    String? pin,
+    UserStatistics? stats,
+  }) async {
     if (!_isInitialized) await initialize();
 
     try {
-      final stats = await getStatistics(pin);
+      // Behandle temporäre Statistiken
+      if (pin == null) {
+        if (stats == null) {
+          throw StatisticsException(
+              'Either PIN or current statistics must be provided');
+        }
+        return _updateTemporaryStats(stats, attempt);
+      }
 
-      final updatedStats = stats.copyWith(
-        totalAttempts: stats.totalAttempts + 1,
-        correctGuesses: stats.correctGuesses + (attempt.wasCorrect ? 1 : 0),
-        recentAttempts: [
-          ...stats.recentAttempts,
-          attempt,
-        ].take(10).toList(), // Keep only last 10 attempts
-      );
-
-      _statistics[pin] = updatedStats;
-      await _saveStatistics();
+      // Behandle permanente Statistiken
+      return await _updatePermanentStats(pin, attempt);
     } catch (e) {
       throw StatisticsException('Failed to add attempt: $e');
     }
   }
 
-  /// Reset statistics for a specific PIN
-  /// [pin]: The PIN to reset statistics for
-  /// Throws [StatisticsException] if the operation fails
-  Future<void> resetStatistics(String pin) async {
-    if (!_isInitialized) await initialize();
-
-    try {
-      _statistics[pin] = UserStatistics.initial(pin);
-      await _saveStatistics();
-    } catch (e) {
-      throw StatisticsException('Failed to reset statistics: $e');
+  /// Aktualisiert temporäre Statistiken (nicht persistent)
+  UserStatistics _updateTemporaryStats(
+    UserStatistics currentStats,
+    GameAttempt attempt,
+  ) {
+    if (!currentStats.isTemporary) {
+      throw StatisticsException('Cannot update permanent stats as temporary');
     }
+
+    return currentStats.copyWith(
+      totalAttempts: currentStats.totalAttempts + 1,
+      correctGuesses:
+          currentStats.correctGuesses + (attempt.wasCorrect ? 1 : 0),
+      recentAttempts: [
+        ...currentStats.recentAttempts,
+        attempt,
+      ].take(10).toList(),
+    );
   }
 
-  /// Save all statistics to storage
+  /// Aktualisiert permanente Statistiken (persistent)
+  Future<UserStatistics> _updatePermanentStats(
+    String pin,
+    GameAttempt attempt,
+  ) async {
+    final stats = await getStatistics(pin);
+    final updatedStats = stats.copyWith(
+      totalAttempts: stats.totalAttempts + 1,
+      correctGuesses: stats.correctGuesses + (attempt.wasCorrect ? 1 : 0),
+      recentAttempts: [
+        ...stats.recentAttempts,
+        attempt,
+      ].take(10).toList(),
+    );
+
+    _statistics[pin] = updatedStats;
+    await _saveStatistics();
+    return updatedStats;
+  }
+
+  /// Konvertiert und speichert temporäre Statistiken mit neuem PIN
+  Future<UserStatistics> convertTemporaryStats(
+    UserStatistics temporaryStats,
+    String newPin,
+  ) async {
+    if (!temporaryStats.isTemporary) {
+      throw StatisticsException('Statistics are already permanent');
+    }
+
+    if (_statistics.containsKey(newPin)) {
+      throw StatisticsException('PIN already exists');
+    }
+
+    final permanentStats = temporaryStats.toPermanent(newPin);
+    _statistics[newPin] = permanentStats;
+    await _saveStatistics();
+    return permanentStats;
+  }
+
+  /// Speichert alle permanenten Statistiken
   Future<void> _saveStatistics() async {
     try {
-      final data = Map<String, dynamic>.fromEntries(
-        _statistics.entries
-            .map((entry) => MapEntry(entry.key, entry.value.toJson())),
-      );
+      final data = {
+        'statistics': Map.fromEntries(
+          _statistics.entries.map(
+            (entry) => MapEntry(entry.key, entry.value.toJson()),
+          ),
+        ),
+      };
 
       await _storage.writeJsonFile(JsonStorage.statsFileName, data);
     } catch (e) {
@@ -120,10 +182,19 @@ class StatisticsRepository {
     }
   }
 
-  /// Copies statistics from one PIN to another
-  /// [fromPin]: Source PIN
-  /// [toPin]: Target PIN
-  /// Throws [StatisticsException] if one of the PINs doesn't exist
+  /// Löscht Statistiken für einen PIN
+  Future<void> resetStatistics(String pin) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      _statistics[pin] = UserStatistics.withPin(pin);
+      await _saveStatistics();
+    } catch (e) {
+      throw StatisticsException('Failed to reset statistics: $e');
+    }
+  }
+
+  /// Kopiert Statistiken von einem PIN zu einem anderen
   Future<void> copyStatistics(String fromPin, String toPin) async {
     if (!_isInitialized) await initialize();
 
@@ -133,16 +204,7 @@ class StatisticsRepository {
         throw StatisticsException('Source PIN statistics not found');
       }
 
-      // Create new statistics for the target PIN
-      final newStats = UserStatistics(
-        pin: toPin,
-        totalAttempts: sourceStats.totalAttempts,
-        correctGuesses: sourceStats.correctGuesses,
-        recentAttempts: List.from(sourceStats.recentAttempts),
-      );
-
-      // Save the new statistics
-      _statistics[toPin] = newStats;
+      _statistics[toPin] = sourceStats.copyWith(pin: toPin);
       await _saveStatistics();
     } catch (e) {
       if (e is StatisticsException) rethrow;
