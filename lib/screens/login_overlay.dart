@@ -42,6 +42,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
 
   void _verifyPin() {
     context.read<GameBloc>().add(LoginWithPin(_pin));
+    Navigator.of(context).pop();
   }
 
   void _handleClose() {
@@ -58,8 +59,6 @@ class _LoginOverlayState extends State<LoginOverlay> {
             _errorMessage = state.errorMessage;
             _pin = '';
           });
-        } else if (!state.showLoginOverlay) {
-          Navigator.of(context).pop();
         }
       },
       builder: (context, state) {

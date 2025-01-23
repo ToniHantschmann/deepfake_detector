@@ -42,13 +42,45 @@ class _GameWrapperViewState extends State<GameWrapperView> {
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listenWhen: (previous, current) =>
-          previous.showLoginOverlay != current.showLoginOverlay,
+          previous.currentScreen != current.currentScreen &&
+          current.currentScreen == GameScreen.login,
       listener: (context, state) {
-        if (state.showLoginOverlay) {
+        if (state.currentScreen == GameScreen.login) {
           _showLoginDialog(context);
         }
       },
       builder: (context, state) {
+        if (state.status == GameStatus.loading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (state.status == GameStatus.error) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    state.errorMessage ?? 'An error occurred',
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () =>
+                        context.read<GameBloc>().add(const InitializeGame()),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         return _buildCurrentScreen(state);
       },
     );
