@@ -44,3 +44,7 @@ class CheckPin extends GameEvent {
   final String pin;
   const CheckPin(this.pin);
 }
+
+class InitializeGame extends GameEvent {
+  const InitializeGame();
+}

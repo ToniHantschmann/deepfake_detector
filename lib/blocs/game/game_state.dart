@@ -8,7 +8,7 @@ enum GameScreen {
   secondVideo,
   comparison,
   result,
-  statistics,
+  statistics
 }
 
 /// Extension für GameScreen-spezifische Navigation
@@ -16,7 +16,6 @@ extension GameScreenNavigation on GameScreen {
   bool get canNavigateBack {
     switch (this) {
       case GameScreen.introduction:
-      case GameScreen.login:
       case GameScreen.result:
         return false;
       default:
@@ -46,14 +45,21 @@ class GameState {
   final GameStatus status;
   final GameScreen currentScreen;
   final List<Video> videos;
-  final String? currentPin;
+  final String? currentPin; // Null bedeutet temporäre Session
   final UserStatistics? userStatistics;
   final int? selectedVideoIndex;
   final bool? isCorrectGuess;
   final String? errorMessage;
-  final bool showLoginOverlay;
   final bool isPinChecking;
   final String? generatedPin;
+
+  bool get isTemporarySession => currentPin == null;
+  bool get hasStatistics => userStatistics != null;
+  bool get canGeneratePin => isTemporarySession && hasStatistics;
+  bool get showStatisticsSavePrompt =>
+      canGeneratePin &&
+      currentScreen == GameScreen.statistics &&
+      userStatistics!.totalAttempts > 0;
 
   const GameState({
     required this.status,
@@ -64,7 +70,6 @@ class GameState {
     this.selectedVideoIndex,
     this.isCorrectGuess,
     this.errorMessage,
-    this.showLoginOverlay = false,
     this.isPinChecking = false,
     this.generatedPin,
   });
@@ -78,7 +83,6 @@ class GameState {
         selectedVideoIndex = null,
         isCorrectGuess = null,
         errorMessage = null,
-        showLoginOverlay = false,
         isPinChecking = false,
         generatedPin = null;
 
@@ -113,13 +117,39 @@ class GameState {
       errorMessage: errorMessage == _sentinel
           ? this.errorMessage
           : errorMessage as String?,
-      showLoginOverlay: showLoginOverlay ?? this.showLoginOverlay,
       isPinChecking: isPinChecking ?? this.isPinChecking,
       generatedPin: generatedPin == _sentinel
           ? this.generatedPin
           : generatedPin as String?,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GameState &&
+          runtimeType == other.runtimeType &&
+          status == other.status &&
+          currentScreen == other.currentScreen &&
+          currentPin == other.currentPin &&
+          selectedVideoIndex == other.selectedVideoIndex &&
+          isCorrectGuess == other.isCorrectGuess &&
+          isPinChecking == other.isPinChecking &&
+          generatedPin == other.generatedPin;
+
+  @override
+  int get hashCode =>
+      status.hashCode ^
+      currentScreen.hashCode ^
+      currentPin.hashCode ^
+      selectedVideoIndex.hashCode ^
+      isCorrectGuess.hashCode ^
+      isPinChecking.hashCode ^
+      generatedPin.hashCode;
+
+  @override
+  String toString() =>
+      'GameState(status: $status, screen: $currentScreen, pin: $currentPin)';
 }
 
 const _sentinel = Object();
