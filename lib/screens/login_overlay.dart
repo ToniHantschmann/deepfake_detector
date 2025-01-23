@@ -42,7 +42,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
 
   void _verifyPin() {
     context.read<GameBloc>().add(LoginWithPin(_pin));
-    Navigator.of(context).pop();
+    //Navigator.of(context).pop();
   }
 
   void _handleClose() {
@@ -54,7 +54,10 @@ class _LoginOverlayState extends State<LoginOverlay> {
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listener: (context, state) {
-        if (state.status == GameStatus.error) {
+        if (state.status == GameStatus.playing) {
+          Navigator.of(context).pop();
+        } else if (state.status == GameStatus.showLogin &&
+            state.errorMessage != null) {
           setState(() {
             _errorMessage = state.errorMessage;
             _pin = '';

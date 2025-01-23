@@ -42,7 +42,7 @@ class _GameWrapperViewState extends State<GameWrapperView> {
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listenWhen: (previous, current) =>
-          previous.currentScreen != current.currentScreen &&
+          current.status == GameStatus.showLogin &&
           current.currentScreen == GameScreen.login,
       listener: (context, state) {
         if (state.currentScreen == GameScreen.login) {
@@ -98,7 +98,7 @@ class _GameWrapperViewState extends State<GameWrapperView> {
       ),
     );
 
-    if (mounted) {
+    if (mounted && bloc.state.status != GameStatus.playing) {
       bloc.add(const CancelLogin());
     }
   }
