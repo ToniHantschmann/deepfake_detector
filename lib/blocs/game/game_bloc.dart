@@ -30,6 +30,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<RestartGame>(_onRestartGame);
     on<GeneratePin>(_onGeneratePin);
     on<CheckPin>(_onCheckPin);
+    on<InitializeGame>(_onInitializeGame);
   }
 
   Future<void> _onQuickStartGame(
@@ -62,8 +63,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final user = await _userRepository.getUserByPin(event.pin);
       if (user == null) {
         emit(state.copyWith(
-          status: GameStatus.error,
+          status: GameStatus.showLogin,
           errorMessage: 'Invalid PIN',
+          currentScreen: GameScreen.login,
           isPinChecking: false,
         ));
         return;
@@ -78,13 +80,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           currentPin: event.pin,
           userStatistics: statistics,
           videos: videos,
-          showLoginOverlay: false,
           errorMessage: null));
     } catch (e) {
       emit(state.copyWith(
           status: GameStatus.error,
-          errorMessage: 'Login failed: ${e.toString()}',
-          showLoginOverlay: true));
+          errorMessage: 'Login failed: ${e.toString()}'));
     }
   }
 
@@ -309,5 +309,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
 
     emit(state.copyWith(currentScreen: previousScreen));
+  }
+
+  Future<void> _onInitializeGame(
+      InitializeGame event, Emitter<GameState> emit) async {
+    emit(state.copyWith(
+      status: GameStatus.initial,
+      currentScreen: GameScreen.introduction,
+      videos: [],
+      currentPin: null,
+      userStatistics: null,
+      selectedVideoIndex: null,
+      isCorrectGuess: null,
+      errorMessage: null,
+      isPinChecking: false,
+      generatedPin: null,
+    ));
   }
 }
