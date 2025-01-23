@@ -38,12 +38,18 @@ class JsonStorage {
       }
 
       final jsonStr = _prefs.getString('${fileName}_data');
-
       if (jsonStr == null) {
+        // Initialisiere mit leerer Struktur
+        if (fileName == statsFileName) {
+          return {'statistics': {}};
+        }
+        if (fileName == usersFileName) {
+          return {'users': {}};
+        }
         return {};
       }
 
-      return jsonDecode(jsonStr) as Map<String, dynamic>;
+      return json.decode(jsonStr) as Map<String, dynamic>;
     } catch (e) {
       throw StorageException('Failed to read $fileName: $e');
     }
