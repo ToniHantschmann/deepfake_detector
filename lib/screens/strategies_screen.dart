@@ -63,7 +63,8 @@ class StrategiesScreen extends BaseGameScreen {
                         _buildTipCard(),
                         if (state.generatedPin != null) ...[
                           const SizedBox(height: 32),
-                          GeneratedPinDisplay(pin: state.generatedPin!),
+                          GeneratedPinDisplay(
+                              pin: state.generatedPin!.toString()),
                         ],
                         const SizedBox(height: 48),
                         _buildNextButton(context),

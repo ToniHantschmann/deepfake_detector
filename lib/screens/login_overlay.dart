@@ -41,7 +41,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
   }
 
   void _verifyPin() {
-    context.read<GameBloc>().add(LoginWithPin(_pin));
+    context.read<GameBloc>().add(LoginWithPin(int.parse(_pin)));
     //Navigator.of(context).pop();
   }
 

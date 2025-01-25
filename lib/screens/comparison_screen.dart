@@ -69,10 +69,15 @@ class ComparisonScreen extends BaseGameScreen {
                               height: 52, // Feste Höhe für konsistentes Layout
                               child: state.selectedVideoIndex != null
                                   ? ElevatedButton(
-                                      onPressed: () => dispatchGameEvent(
-                                        context,
-                                        const NextScreen(),
-                                      ),
+                                      onPressed: () {
+                                        // Dispatch SelectDeepfake only when confirming
+                                        dispatchGameEvent(
+                                          context,
+                                          SelectDeepfake(
+                                              state.selectedVideoIndex!),
+                                        );
+                                        handleNextNavigation(context);
+                                      },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
@@ -98,7 +103,11 @@ class ComparisonScreen extends BaseGameScreen {
 
                     // Navigation Buttons
                     NavigationButtons.forGameScreen(
-                      onNext: () => handleNextNavigation(context),
+                      onNext: () {
+                        dispatchGameEvent(
+                            context, SelectDeepfake(state.selectedVideoIndex!));
+                        handleNextNavigation(context);
+                      },
                       onBack: () => handleBackNavigation(context),
                       currentScreen: GameScreen.comparison,
                       enableNext: state.selectedVideoIndex != null,
@@ -117,30 +126,27 @@ class ComparisonScreen extends BaseGameScreen {
         // First Video
         Expanded(
           child: _buildVideoCard(
-            context: context,
-            video: state.videos[0],
-            isSelected: state.selectedVideoIndex == 0,
-            onSelect: () => dispatchGameEvent(
-              context,
-              const SelectDeepfake(0),
-            ),
-          ),
+              context: context,
+              video: state.videos[0],
+              isSelected: state.selectedVideoIndex == 0,
+              onSelect: () => _handleVideoSelection(context, 0)),
         ),
         const SizedBox(width: 24),
         // Second Video
         Expanded(
           child: _buildVideoCard(
-            context: context,
-            video: state.videos[1],
-            isSelected: state.selectedVideoIndex == 1,
-            onSelect: () => dispatchGameEvent(
-              context,
-              const SelectDeepfake(1),
-            ),
-          ),
+              context: context,
+              video: state.videos[1],
+              isSelected: state.selectedVideoIndex == 1,
+              onSelect: () => _handleVideoSelection(context, 1)),
         ),
       ],
     );
+  }
+
+  void _handleVideoSelection(BuildContext context, int index) {
+    // Update the state locally without dispatching SelectDeepfake
+    dispatchGameEvent(context, UpdateSelectedVideo(index));
   }
 
   Widget _buildVideoCard({

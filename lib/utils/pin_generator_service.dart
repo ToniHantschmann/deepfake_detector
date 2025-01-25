@@ -3,48 +3,40 @@ import '../exceptions/app_exceptions.dart';
 
 /// Service zur Generierung und Validierung von PINs
 class PinGeneratorService {
-  // Private Konstruktor verhindert Instanziierung
-  PinGeneratorService._();
+  static const int _minPin = 1000; // 4-stellige PIN
+  static const int _maxPin = 9999;
+  static const int _maxAttempts = 100;
 
-  // Konstanten für die PIN-Generierung
-  static const int _pinLength = 4;
-  static const int _maxGenerationAttempts = 100;
-  static const String _allowedChars = '0123456789';
+  static int generateUniquePin(Set<int> existingPins) {
+    if (existingPins.length >= _maxPin - _minPin + 1) {
+      throw PinException('Keine weiteren PINs verfügbar');
+    }
 
-  /// Generiert einen zufälligen PIN
-  /// Returns: 4-stelliger PIN
-  static String generatePin() {
-    final random = Random();
-    return List.generate(_pinLength, (_) {
-      return _allowedChars[random.nextInt(_allowedChars.length)];
-    }).join();
-  }
-
-  /// Generiert einen einzigartigen PIN
-  /// [existingPins]: Set von bereits vergebenen PINs
-  /// Returns: Eindeutiger PIN
-  /// Throws [PinException] wenn kein freier PIN gefunden werden kann
-  static String generateUniquePin(Set<String> existingPins) {
     int attempts = 0;
-    String pin;
-
-    do {
-      if (attempts >= _maxGenerationAttempts) {
-        throw PinException(
-            'Failed to generate unique PIN after $attempts attempts');
+    while (attempts < _maxAttempts) {
+      final pin = _generatePin();
+      if (!existingPins.contains(pin)) {
+        return pin;
       }
-
-      pin = generatePin();
       attempts++;
-    } while (existingPins.contains(pin));
+    }
 
-    return pin;
+    // Fallback: Sequentiell nach freier PIN suchen
+    for (int pin = _minPin; pin <= _maxPin; pin++) {
+      if (!existingPins.contains(pin)) {
+        return pin;
+      }
+    }
+
+    throw PinException('Konnte keine eindeutige PIN generieren');
   }
 
-  /// Überprüft, ob ein PIN valide ist
-  /// [pin]: Der zu prüfende PIN
-  /// Returns: true wenn der PIN valide ist
-  static bool isValidPin(String pin) {
-    return pin.length == _pinLength && RegExp(r'^\d{4}$').hasMatch(pin);
+  static int _generatePin() {
+    return _minPin +
+        (DateTime.now().millisecondsSinceEpoch % (_maxPin - _minPin + 1));
+  }
+
+  static bool isValidPin(int pin) {
+    return pin >= _minPin && pin <= _maxPin;
   }
 }
