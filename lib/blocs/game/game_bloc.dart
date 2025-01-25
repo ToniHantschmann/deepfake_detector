@@ -31,6 +31,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<GeneratePin>(_onGeneratePin);
     on<CheckPin>(_onCheckPin);
     on<InitializeGame>(_onInitializeGame);
+    on<UpdateSelectedVideo>(_onUpdateSelectedVideo);
   }
 
   Future<void> _onQuickStartGame(
@@ -167,6 +168,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Future<void> _onRestartGame(
       RestartGame event, Emitter<GameState> emit) async {
     final currentPin = state.currentPin;
+    final currentStats = state.userStatistics;
 
     emit(state.copyWith(status: GameStatus.loading));
 
@@ -177,8 +179,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       if (currentPin != null) {
         // Lade permanente Statistiken
         statistics = await _statisticsRepository.getStatistics(currentPin);
+      } else if (currentStats != null && currentStats.isTemporary) {
+        // Behalte existierende temporäre Statistiken
+        statistics = currentStats;
       } else {
-        // Erstelle neue temporäre Statistiken
+        // Erstelle neue temporäre Statistiken nur wenn keine existieren
         statistics = UserStatistics.temporary();
       }
 
@@ -324,6 +329,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       errorMessage: null,
       isPinChecking: false,
       generatedPin: null,
+    ));
+  }
+
+  Future<void> _onUpdateSelectedVideo(
+      UpdateSelectedVideo event, Emitter<GameState> emit) async {
+    // Only update the selection without recording the attempt
+    emit(state.copyWith(
+      selectedVideoIndex: event.videoIndex,
     ));
   }
 }
