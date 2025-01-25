@@ -6,104 +6,89 @@ import 'package:flutter/foundation.dart';
 
 class UserRepository {
   static UserRepository? _instance;
-  late final JsonStorage _storage;
-  Map<String, User> _users = {};
+  JsonStorage? _storage;
+  Set<int> _users = {};
   bool _isInitialized = false;
-  bool _isStorageProvided = false;
 
-  @visibleForTesting
-  static void resetInstance() {
-    _instance = null;
-  }
-
+  // Factory constructor for singleton instance
   factory UserRepository() {
     return _instance ??= UserRepository._internal();
   }
 
   UserRepository._internal();
 
+  // Test constructor with dependency injection
   @visibleForTesting
   factory UserRepository.withStorage(JsonStorage storage) {
-    resetInstance();
     final repository = UserRepository._internal();
     repository._storage = storage;
-    repository._isStorageProvided = true;
     return repository;
+  }
+
+  @visibleForTesting
+  static void resetInstance() {
+    _instance = null;
   }
 
   Future<void> initialize() async {
     if (_isInitialized) return;
-
     await _initStorage();
     await _loadUsers();
     _isInitialized = true;
   }
 
   Future<void> _initStorage() async {
-    if (!_isStorageProvided) {
-      _storage = await JsonStorage.getInstance();
-    }
+    _storage ??= await JsonStorage.getInstance();
   }
 
   Future<void> _loadUsers() async {
     try {
-      final data = await _storage.readJsonFile(JsonStorage.usersFileName);
-      _users.clear();
-
-      final usersData = data['users'];
-      if (usersData != null && usersData is Map) {
-        for (final entry in usersData.entries) {
-          if (entry.value is Map) {
-            try {
-              // Sichere Konvertierung zu Map<String, dynamic>
-              final Map<String, dynamic> userData =
-                  Map<String, dynamic>.from(entry.value as Map);
-              _users[entry.key] = User.fromJson(userData);
-            } catch (e) {
-              print('Error parsing user data for PIN ${entry.key}: $e');
-              continue;
-            }
-          }
-        }
-      }
+      final data = await _storage!.readJsonFile(JsonStorage.usersFileName);
+      _users = Set<int>.from(data['users'] as List);
     } catch (e) {
       throw UserException('Error when loading users: $e');
     }
   }
 
-  Future<bool> pinExists(String pin) async {
+  Future<bool> pinExists(int pin) async {
     if (!_isInitialized) await initialize();
-    return _users.containsKey(pin);
+    return _users.contains(pin);
   }
 
-  Future<User?> getUserByPin(String pin) async {
+  Future<int?> getUserByPin(int pin) async {
     if (!_isInitialized) await initialize();
-    return _users[pin];
+    return _users.contains(pin) ? pin : null;
   }
 
-  /// Erstellt einen neuen Benutzer mit einem generierten PIN
-  /// Returns den generierten PIN
-  /// Throws [UserException] bei Fehlern
-  Future<String> createNewUser() async {
+  Future<int> createNewUser() async {
     if (!_isInitialized) await initialize();
 
     try {
-      final pin = PinGeneratorService.generateUniquePin(_users.keys.toSet());
-      final user = User(pin: pin);
-
-      _users[pin] = user;
+      final pin = PinGeneratorService.generateUniquePin(_users);
+      _users.add(pin);
       await _saveUsers();
-
       return pin;
     } catch (e) {
       throw UserException('Failed to create new user: $e');
     }
   }
 
+  Future<void> _saveUsers() async {
+    try {
+      await _storage!.writeJsonFile(JsonStorage.usersFileName, {
+        'users': _users.toList(),
+      });
+    } catch (e) {
+      throw UserException('Failed to save users: $e');
+    }
+  }
+
+  bool isValidPin(int pin) => pin >= 1000 && pin <= 9999; // 4-stellige PIN
+
   Future<void> removeUser(String pin) async {
     if (!_isInitialized) await initialize();
 
-    if (!_users.containsKey(pin)) {
+    if (!_users.contains(pin)) {
       throw UserException('User not found');
     }
 
@@ -114,22 +99,4 @@ class UserRepository {
       throw UserException('Failed to remove user: $e');
     }
   }
-
-  Future<void> _saveUsers() async {
-    try {
-      final data = {
-        'users': Map.fromEntries(
-          _users.entries.map(
-            (entry) => MapEntry(entry.key, entry.value.toJson()),
-          ),
-        ),
-      };
-
-      await _storage.writeJsonFile(JsonStorage.usersFileName, data);
-    } catch (e) {
-      throw UserException('Failed to save users: $e');
-    }
-  }
-
-  bool isValidPin(String pin) => PinGeneratorService.isValidPin(pin);
 }

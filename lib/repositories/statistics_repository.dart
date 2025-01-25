@@ -3,12 +3,10 @@ import 'package:deepfake_detector/models/statistics_model.dart';
 import 'package:deepfake_detector/storage/json_storage.dart';
 import 'package:flutter/foundation.dart';
 
-/// Repository zur Verwaltung von Statistiken (temporär und permanent)
 class StatisticsRepository {
-  late final JsonStorage _storage;
-  final Map<String, UserStatistics> _statistics = {};
+  JsonStorage? _storage;
+  final Map<int, UserStatistics> _statistics = {};
   bool _isInitialized = false;
-  bool _isStorageProvided = false;
 
   static final StatisticsRepository _instance =
       StatisticsRepository._internal();
@@ -20,77 +18,61 @@ class StatisticsRepository {
   factory StatisticsRepository.withStorage(JsonStorage storage) {
     final repository = StatisticsRepository._internal();
     repository._storage = storage;
-    repository._isStorageProvided = true;
-    repository._isInitialized = false;
-    repository._statistics.clear();
     return repository;
   }
 
   Future<void> initialize() async {
     if (_isInitialized) return;
-
     await _initStorage();
     await _loadStatistics();
     _isInitialized = true;
   }
 
   Future<void> _initStorage() async {
-    if (!_isStorageProvided) {
-      _storage = await JsonStorage.getInstance();
-    }
+    _storage ??= await JsonStorage.getInstance();
   }
 
   Future<void> _loadStatistics() async {
     try {
-      final data = await _storage.readJsonFile(JsonStorage.statsFileName);
+      final data = await _storage!.readJsonFile(JsonStorage.statsFileName);
       _statistics.clear();
 
-      final statisticsData = data['statistics'];
-      if (statisticsData != null && statisticsData is Map) {
-        for (final entry in statisticsData.entries) {
-          if (entry.value is Map) {
-            // Prüfen ob der Wert eine Map ist
-            try {
-              // Sichere Konvertierung zu Map<String, dynamic>
-              final Map<String, dynamic> statsData =
-                  Map<String, dynamic>.from(entry.value as Map);
-              final stats = UserStatistics.fromJson(statsData);
-              if (!stats.isTemporary && stats.pin != null) {
-                _statistics[stats.pin!] = stats;
-              }
-            } catch (e) {
-              print('Error parsing statistics for entry: $e');
-              continue;
-            }
-          }
-        }
+      final statsMap = data['statistics'] as Map<String, dynamic>? ?? {};
+      for (final entry in statsMap.entries) {
+        final pin = int.parse(entry.key);
+        final stats = entry.value as Map<String, dynamic>;
+
+        _statistics[pin] = UserStatistics(
+          pin: pin,
+          totalAttempts: stats['totalAttempts'],
+          correctGuesses: stats['correctGuesses'],
+          recentAttempts: (stats['recentAttempts'] as List)
+              .map((attempt) => GameAttempt(
+                    timestamp: DateTime.parse(attempt['timestamp']),
+                    wasCorrect: attempt['wasCorrect'],
+                    videoIds: List<String>.from(attempt['videoIds']),
+                    selectedVideoId: attempt['selectedVideoId'],
+                  ))
+              .toList(),
+        );
       }
     } catch (e) {
-      throw StatisticsException('Error when loading statistics: $e');
+      throw StatisticsException('Error loading statistics: $e');
     }
   }
 
-  /// Hole Statistiken für einen PIN
-  /// Wenn keine existieren, werden neue permanente Statistiken erstellt
-  Future<UserStatistics> getStatistics(String pin) async {
+  Future<UserStatistics> getStatistics(int pin) async {
     if (!_isInitialized) await initialize();
     return _statistics[pin] ?? UserStatistics.withPin(pin);
   }
 
-  /// Fügt einen neuen Versuch zu den Statistiken hinzu
-  /// [pin]: PIN der Statistiken (optional für temporäre Stats)
-  /// [attempt]: Der neue Spielversuch
-  /// [stats]: Aktuelle Statistiken (optional, für temporäre Stats)
-  /// Returns: Aktualisierte Statistiken
   Future<UserStatistics> addAttempt(
     GameAttempt attempt, {
-    String? pin,
+    int? pin,
     UserStatistics? stats,
   }) async {
     if (!_isInitialized) await initialize();
-
     try {
-      // Behandle temporäre Statistiken
       if (pin == null) {
         if (stats == null) {
           throw StatisticsException(
@@ -98,23 +80,19 @@ class StatisticsRepository {
         }
         return _updateTemporaryStats(stats, attempt);
       }
-
-      // Behandle permanente Statistiken
-      return await _updatePermanentStats(pin, attempt);
+      final updatedStats = await _updatePermanentStats(pin, attempt);
+      await _saveStatistics(); // Speichere nach jedem Update
+      return updatedStats;
     } catch (e) {
       throw StatisticsException('Failed to add attempt: $e');
     }
   }
 
-  /// Aktualisiert temporäre Statistiken (nicht persistent)
   UserStatistics _updateTemporaryStats(
-    UserStatistics currentStats,
-    GameAttempt attempt,
-  ) {
+      UserStatistics currentStats, GameAttempt attempt) {
     if (!currentStats.isTemporary) {
       throw StatisticsException('Cannot update permanent stats as temporary');
     }
-
     return currentStats.copyWith(
       totalAttempts: currentStats.totalAttempts + 1,
       correctGuesses:
@@ -126,11 +104,8 @@ class StatisticsRepository {
     );
   }
 
-  /// Aktualisiert permanente Statistiken (persistent)
   Future<UserStatistics> _updatePermanentStats(
-    String pin,
-    GameAttempt attempt,
-  ) async {
+      int pin, GameAttempt attempt) async {
     final stats = await getStatistics(pin);
     final updatedStats = stats.copyWith(
       totalAttempts: stats.totalAttempts + 1,
@@ -142,15 +117,12 @@ class StatisticsRepository {
     );
 
     _statistics[pin] = updatedStats;
-    await _saveStatistics();
     return updatedStats;
   }
 
-  /// Konvertiert und speichert temporäre Statistiken mit neuem PIN
   Future<UserStatistics> convertTemporaryStats(
-    UserStatistics temporaryStats,
-    String newPin,
-  ) async {
+      UserStatistics temporaryStats, int newPin) async {
+    if (!_isInitialized) await initialize();
     if (!temporaryStats.isTemporary) {
       throw StatisticsException('Statistics are already permanent');
     }
@@ -165,25 +137,34 @@ class StatisticsRepository {
     return permanentStats;
   }
 
-  /// Speichert alle permanenten Statistiken
   Future<void> _saveStatistics() async {
     try {
-      final data = {
-        'statistics': Map.fromEntries(
-          _statistics.entries.map(
-            (entry) => MapEntry(entry.key, entry.value.toJson()),
-          ),
-        ),
-      };
-
-      await _storage.writeJsonFile(JsonStorage.statsFileName, data);
+      final Map<String, dynamic> statsMap = {};
+      for (final entry in _statistics.entries) {
+        if (!entry.value.isTemporary) {
+          statsMap[entry.key.toString()] = {
+            'totalAttempts': entry.value.totalAttempts,
+            'correctGuesses': entry.value.correctGuesses,
+            'recentAttempts': entry.value.recentAttempts
+                .map((attempt) => attempt.toJson())
+                .toList(),
+          };
+        }
+      }
+      if (statsMap.isNotEmpty) {
+        debugPrint('trying to write: ${statsMap.toString()}');
+        await _storage!
+            .writeJsonFile(JsonStorage.statsFileName, {'statistics': statsMap});
+      } else {
+        debugPrint('tried to write empty stats');
+      }
+      debugPrint('stats written to storage');
     } catch (e) {
       throw StatisticsException('Failed to save statistics: $e');
     }
   }
 
-  /// Löscht Statistiken für einen PIN
-  Future<void> resetStatistics(String pin) async {
+  Future<void> resetStatistics(int pin) async {
     if (!_isInitialized) await initialize();
 
     try {
@@ -194,8 +175,7 @@ class StatisticsRepository {
     }
   }
 
-  /// Kopiert Statistiken von einem PIN zu einem anderen
-  Future<void> copyStatistics(String fromPin, String toPin) async {
+  Future<void> copyStatistics(int fromPin, int toPin) async {
     if (!_isInitialized) await initialize();
 
     try {

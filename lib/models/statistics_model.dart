@@ -1,7 +1,8 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
+import 'package:deepfake_detector/utils/pin_generator_service.dart';
 
 class UserStatistics {
-  final String? pin; // Optional PIN für temporäre Statistiken
+  final int? pin; // Optional PIN für temporäre Statistiken
   final int totalAttempts;
   final int correctGuesses;
   final List<GameAttempt> recentAttempts;
@@ -17,7 +18,7 @@ class UserStatistics {
   }
 
   void _validateStatistics() {
-    if (!isTemporary && (pin == null || pin!.isEmpty)) {
+    if (!isTemporary && (pin == null || PinGeneratorService.isValidPin(pin!))) {
       throw StatisticsException('Permanent statistics require a valid PIN');
     }
 
@@ -44,10 +45,7 @@ class UserStatistics {
   }
 
   // Factory für permanente Statistiken
-  factory UserStatistics.withPin(String pin) {
-    if (pin.isEmpty) {
-      throw StatisticsException('PIN cannot be empty');
-    }
+  factory UserStatistics.withPin(int pin) {
     return UserStatistics(
       pin: pin,
       totalAttempts: 0,
@@ -57,10 +55,7 @@ class UserStatistics {
   }
 
   // Konvertierung zu permanenten Statistiken
-  UserStatistics toPermanent(String newPin) {
-    if (newPin.isEmpty) {
-      throw StatisticsException('Cannot convert to permanent with empty PIN');
-    }
+  UserStatistics toPermanent(int newPin) {
     return copyWith(pin: newPin);
   }
 
@@ -74,7 +69,7 @@ class UserStatistics {
 
   factory UserStatistics.fromJson(Map<String, dynamic> json) {
     return UserStatistics(
-      pin: json['pin'] as String?,
+      pin: json['pin'] as int?,
       totalAttempts: json['totalAttempts'] as int,
       correctGuesses: json['correctGuesses'] as int,
       recentAttempts: (json['recentAttempts'] as List)
@@ -84,7 +79,7 @@ class UserStatistics {
   }
 
   UserStatistics copyWith({
-    String? pin,
+    int? pin,
     int? totalAttempts,
     int? correctGuesses,
     List<GameAttempt>? recentAttempts,
