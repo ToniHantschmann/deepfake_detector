@@ -45,13 +45,13 @@ class GameState {
   final GameStatus status;
   final GameScreen currentScreen;
   final List<Video> videos;
-  final String? currentPin; // Null bedeutet temporäre Session
+  final int? currentPin; // Null bedeutet temporäre Session
   final UserStatistics? userStatistics;
   final int? selectedVideoIndex;
   final bool? isCorrectGuess;
   final String? errorMessage;
   final bool isPinChecking;
-  final String? generatedPin;
+  final int? generatedPin;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -104,7 +104,7 @@ class GameState {
       currentScreen: currentScreen ?? this.currentScreen,
       videos: videos ?? this.videos,
       currentPin:
-          currentPin == _sentinel ? this.currentPin : currentPin as String?,
+          currentPin == _sentinel ? this.currentPin : currentPin as int?,
       userStatistics: userStatistics == _sentinel
           ? this.userStatistics
           : userStatistics as UserStatistics?,
@@ -118,9 +118,8 @@ class GameState {
           ? this.errorMessage
           : errorMessage as String?,
       isPinChecking: isPinChecking ?? this.isPinChecking,
-      generatedPin: generatedPin == _sentinel
-          ? this.generatedPin
-          : generatedPin as String?,
+      generatedPin:
+          generatedPin == _sentinel ? this.generatedPin : generatedPin as int?,
     );
   }
 

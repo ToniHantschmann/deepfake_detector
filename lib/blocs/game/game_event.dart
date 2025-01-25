@@ -3,7 +3,7 @@ abstract class GameEvent {
 }
 
 class LoginWithPin extends GameEvent {
-  final String pin;
+  final int pin;
   const LoginWithPin(this.pin);
 }
 
@@ -41,10 +41,15 @@ class GeneratePin extends GameEvent {
 }
 
 class CheckPin extends GameEvent {
-  final String pin;
+  final int pin;
   const CheckPin(this.pin);
 }
 
 class InitializeGame extends GameEvent {
   const InitializeGame();
+}
+
+class UpdateSelectedVideo extends GameEvent {
+  final int videoIndex;
+  const UpdateSelectedVideo(this.videoIndex);
 }
