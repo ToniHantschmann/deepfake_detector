@@ -1,12 +1,12 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
-import 'package:deepfake_detector/storage/json_storage.dart';
+import 'package:deepfake_detector/storage/storage.dart';
 import 'package:deepfake_detector/models/user_model.dart';
 import 'package:deepfake_detector/utils/pin_generator_service.dart';
 import 'package:flutter/foundation.dart';
 
 class UserRepository {
   static UserRepository? _instance;
-  JsonStorage? _storage;
+  Storage? _storage;
   Set<int> _users = {};
   bool _isInitialized = false;
 
@@ -19,7 +19,7 @@ class UserRepository {
 
   // Test constructor with dependency injection
   @visibleForTesting
-  factory UserRepository.withStorage(JsonStorage storage) {
+  factory UserRepository.withStorage(Storage storage) {
     final repository = UserRepository._internal();
     repository._storage = storage;
     return repository;
@@ -38,13 +38,14 @@ class UserRepository {
   }
 
   Future<void> _initStorage() async {
-    _storage ??= await JsonStorage.getInstance();
+    _storage ??= await Storage.getInstance();
   }
 
   Future<void> _loadUsers() async {
     try {
-      final data = await _storage!.readJsonFile(JsonStorage.usersFileName);
-      _users = Set<int>.from(data['users'] as List);
+      final data = await _storage!.readJsonFile(Storage.usersFileName);
+      final usersList = (data['users'] as List?) ?? [];
+      _users = Set<int>.from(usersList);
     } catch (e) {
       throw UserException('Error when loading users: $e');
     }
@@ -75,7 +76,7 @@ class UserRepository {
 
   Future<void> _saveUsers() async {
     try {
-      await _storage!.writeJsonFile(JsonStorage.usersFileName, {
+      await _storage!.writeJsonFile(Storage.usersFileName, {
         'users': _users.toList(),
       });
     } catch (e) {

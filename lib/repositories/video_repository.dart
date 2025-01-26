@@ -1,11 +1,11 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/models/video_model.dart';
-import 'package:deepfake_detector/storage/json_storage.dart';
+import 'package:deepfake_detector/storage/storage.dart';
 import 'package:flutter/foundation.dart';
 
 /// repository class to manage the videos
 class VideoRepository {
-  JsonStorage? _storage;
+  Storage? _storage;
   List<Video> _videos = [];
   bool _isInitialized = false;
 
@@ -18,7 +18,7 @@ class VideoRepository {
 
   // Test constructor
   @visibleForTesting
-  VideoRepository.withStorage(JsonStorage storage) {
+  VideoRepository.withStorage(Storage storage) {
     _storage = storage;
   }
 
@@ -31,7 +31,7 @@ class VideoRepository {
 
     try {
       // Initialize storage if not injected
-      _storage ??= await JsonStorage.getInstance();
+      _storage ??= await Storage.getInstance();
       await _loadVideos();
       _isInitialized = true;
     } catch (e) {
@@ -45,7 +45,7 @@ class VideoRepository {
     }
 
     try {
-      final data = await _storage!.readJsonFile(JsonStorage.videosFileName);
+      final data = await _storage!.readJsonFile(Storage.videosFileName);
       final videosList = (data['videos'] as List?)
               ?.map((json) => Video.fromJson(json as Map<String, dynamic>))
               .toList() ??

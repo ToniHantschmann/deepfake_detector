@@ -1,10 +1,10 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
-import 'package:deepfake_detector/storage/json_storage.dart';
+import 'package:deepfake_detector/storage/storage.dart';
 import 'package:flutter/foundation.dart';
 
 class StatisticsRepository {
-  JsonStorage? _storage;
+  Storage? _storage;
   final Map<int, UserStatistics> _statistics = {};
   bool _isInitialized = false;
 
@@ -15,7 +15,7 @@ class StatisticsRepository {
   StatisticsRepository._internal();
 
   @visibleForTesting
-  factory StatisticsRepository.withStorage(JsonStorage storage) {
+  factory StatisticsRepository.withStorage(Storage storage) {
     final repository = StatisticsRepository._internal();
     repository._storage = storage;
     return repository;
@@ -29,33 +29,34 @@ class StatisticsRepository {
   }
 
   Future<void> _initStorage() async {
-    _storage ??= await JsonStorage.getInstance();
+    _storage ??= await Storage.getInstance();
   }
 
   Future<void> _loadStatistics() async {
     try {
-      final data = await _storage!.readJsonFile(JsonStorage.statsFileName);
-      _statistics.clear();
+      final statsMap = <String, dynamic>{};
 
-      final statsMap = data['statistics'] as Map<String, dynamic>? ?? {};
-      for (final entry in statsMap.entries) {
-        final pin = int.parse(entry.key);
-        final stats = entry.value as Map<String, dynamic>;
+      _statistics.forEach((pin, stats) {
+        if (!stats.isTemporary) {
+          statsMap[pin.toString()] = {
+            'totalAttempts': stats.totalAttempts,
+            'correctGuesses': stats.correctGuesses,
+            'recentAttempts': stats.recentAttempts
+                .map((attempt) => {
+                      'timestamp': attempt.timestamp.toIso8601String(),
+                      'wasCorrect': attempt.wasCorrect,
+                      'videoIds': attempt.videoIds,
+                      'selectedVideoId': attempt.selectedVideoId,
+                    })
+                .toList(),
+          };
+        }
+      });
 
-        _statistics[pin] = UserStatistics(
-          pin: pin,
-          totalAttempts: stats['totalAttempts'],
-          correctGuesses: stats['correctGuesses'],
-          recentAttempts: (stats['recentAttempts'] as List)
-              .map((attempt) => GameAttempt(
-                    timestamp: DateTime.parse(attempt['timestamp']),
-                    wasCorrect: attempt['wasCorrect'],
-                    videoIds: List<String>.from(attempt['videoIds']),
-                    selectedVideoId: attempt['selectedVideoId'],
-                  ))
-              .toList(),
-        );
-      }
+      await _storage!.writeJsonFile(
+        Storage.statsFileName,
+        {'statistics': statsMap},
+      );
     } catch (e) {
       throw StatisticsException('Error loading statistics: $e');
     }
@@ -139,26 +140,29 @@ class StatisticsRepository {
 
   Future<void> _saveStatistics() async {
     try {
-      final Map<String, dynamic> statsMap = {};
-      for (final entry in _statistics.entries) {
-        if (!entry.value.isTemporary) {
-          statsMap[entry.key.toString()] = {
-            'totalAttempts': entry.value.totalAttempts,
-            'correctGuesses': entry.value.correctGuesses,
-            'recentAttempts': entry.value.recentAttempts
-                .map((attempt) => attempt.toJson())
+      final statsMap = <String, dynamic>{};
+
+      _statistics.forEach((pin, stats) {
+        if (!stats.isTemporary) {
+          statsMap[pin.toString()] = {
+            'totalAttempts': stats.totalAttempts,
+            'correctGuesses': stats.correctGuesses,
+            'recentAttempts': stats.recentAttempts
+                .map((attempt) => {
+                      'timestamp': attempt.timestamp.toIso8601String(),
+                      'wasCorrect': attempt.wasCorrect,
+                      'videoIds': attempt.videoIds,
+                      'selectedVideoId': attempt.selectedVideoId,
+                    })
                 .toList(),
           };
         }
-      }
-      if (statsMap.isNotEmpty) {
-        debugPrint('trying to write: ${statsMap.toString()}');
-        await _storage!
-            .writeJsonFile(JsonStorage.statsFileName, {'statistics': statsMap});
-      } else {
-        debugPrint('tried to write empty stats');
-      }
-      debugPrint('stats written to storage');
+      });
+
+      await _storage!.writeJsonFile(
+        Storage.statsFileName,
+        {'statistics': statsMap},
+      );
     } catch (e) {
       throw StatisticsException('Failed to save statistics: $e');
     }
