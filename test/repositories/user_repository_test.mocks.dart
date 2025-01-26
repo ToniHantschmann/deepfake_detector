@@ -5,7 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:deepfake_detector/storage/json_storage.dart' as _i2;
+import 'package:deepfake_detector/storage/storage.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -29,15 +29,14 @@ class MockJsonStorage extends _i1.Mock implements _i2.JsonStorage {
   @override
   _i3.Future<Map<String, dynamic>> readJsonFile(String? fileName) =>
       (super.noSuchMethod(
-            Invocation.method(#readJsonFile, [fileName]),
-            returnValue: _i3.Future<Map<String, dynamic>>.value(
-              <String, dynamic>{},
-            ),
-            returnValueForMissingStub: _i3.Future<Map<String, dynamic>>.value(
-              <String, dynamic>{},
-            ),
-          )
-          as _i3.Future<Map<String, dynamic>>);
+        Invocation.method(#readJsonFile, [fileName]),
+        returnValue: _i3.Future<Map<String, dynamic>>.value(
+          <String, dynamic>{},
+        ),
+        returnValueForMissingStub: _i3.Future<Map<String, dynamic>>.value(
+          <String, dynamic>{},
+        ),
+      ) as _i3.Future<Map<String, dynamic>>);
 
   @override
   _i3.Future<void> writeJsonFile(
@@ -45,9 +44,8 @@ class MockJsonStorage extends _i1.Mock implements _i2.JsonStorage {
     Map<String, dynamic>? data,
   ) =>
       (super.noSuchMethod(
-            Invocation.method(#writeJsonFile, [fileName, data]),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
-          )
-          as _i3.Future<void>);
+        Invocation.method(#writeJsonFile, [fileName, data]),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
 }
