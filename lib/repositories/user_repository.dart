@@ -43,11 +43,18 @@ class UserRepository {
 
   Future<void> _loadUsers() async {
     try {
-      final data = await _storage!.readJsonFile(Storage.usersFileName);
-      final usersList = (data['users'] as List?) ?? [];
-      _users = Set<int>.from(usersList);
+      final data = await _storage!.getUsers();
+      _users = data.toSet();
     } catch (e) {
       throw UserException('Error when loading users: $e');
+    }
+  }
+
+  Future<void> _saveUsers() async {
+    try {
+      await _storage!.saveUsers(_users.toList());
+    } catch (e) {
+      throw UserException('Failed to save users: $e');
     }
   }
 
@@ -71,16 +78,6 @@ class UserRepository {
       return pin;
     } catch (e) {
       throw UserException('Failed to create new user: $e');
-    }
-  }
-
-  Future<void> _saveUsers() async {
-    try {
-      await _storage!.writeJsonFile(Storage.usersFileName, {
-        'users': _users.toList(),
-      });
-    } catch (e) {
-      throw UserException('Failed to save users: $e');
     }
   }
 

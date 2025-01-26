@@ -45,7 +45,7 @@ class VideoRepository {
     }
 
     try {
-      final data = await _storage!.readJsonFile(Storage.videosFileName);
+      final data = await _storage!.getVideos();
       final videosList = (data['videos'] as List?)
               ?.map((json) => Video.fromJson(json as Map<String, dynamic>))
               .toList() ??

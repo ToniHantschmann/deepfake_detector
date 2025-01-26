@@ -34,31 +34,18 @@ class StatisticsRepository {
 
   Future<void> _loadStatistics() async {
     try {
-      final statsMap = <String, dynamic>{};
-
-      _statistics.forEach((pin, stats) {
-        if (!stats.isTemporary) {
-          statsMap[pin.toString()] = {
-            'totalAttempts': stats.totalAttempts,
-            'correctGuesses': stats.correctGuesses,
-            'recentAttempts': stats.recentAttempts
-                .map((attempt) => {
-                      'timestamp': attempt.timestamp.toIso8601String(),
-                      'wasCorrect': attempt.wasCorrect,
-                      'videoIds': attempt.videoIds,
-                      'selectedVideoId': attempt.selectedVideoId,
-                    })
-                .toList(),
-          };
-        }
-      });
-
-      await _storage!.writeJsonFile(
-        Storage.statsFileName,
-        {'statistics': statsMap},
-      );
+      final data = await _storage!.getStatistics();
+      _statistics.addAll(data);
     } catch (e) {
       throw StatisticsException('Error loading statistics: $e');
+    }
+  }
+
+  Future<void> _saveStatistics() async {
+    try {
+      await _storage!.saveStatistics(_statistics);
+    } catch (e) {
+      throw StatisticsException('Failed to save statistics: $e');
     }
   }
 
@@ -136,36 +123,6 @@ class StatisticsRepository {
     _statistics[newPin] = permanentStats;
     await _saveStatistics();
     return permanentStats;
-  }
-
-  Future<void> _saveStatistics() async {
-    try {
-      final statsMap = <String, dynamic>{};
-
-      _statistics.forEach((pin, stats) {
-        if (!stats.isTemporary) {
-          statsMap[pin.toString()] = {
-            'totalAttempts': stats.totalAttempts,
-            'correctGuesses': stats.correctGuesses,
-            'recentAttempts': stats.recentAttempts
-                .map((attempt) => {
-                      'timestamp': attempt.timestamp.toIso8601String(),
-                      'wasCorrect': attempt.wasCorrect,
-                      'videoIds': attempt.videoIds,
-                      'selectedVideoId': attempt.selectedVideoId,
-                    })
-                .toList(),
-          };
-        }
-      });
-
-      await _storage!.writeJsonFile(
-        Storage.statsFileName,
-        {'statistics': statsMap},
-      );
-    } catch (e) {
-      throw StatisticsException('Failed to save statistics: $e');
-    }
   }
 
   Future<void> resetStatistics(int pin) async {
