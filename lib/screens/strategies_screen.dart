@@ -10,6 +10,7 @@ import '../widgets/detection_strategies/blinking_animation.dart';
 import '../widgets/detection_strategies/skin_texture_animation.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import 'pin_overlay.dart';
 
 class StrategiesScreen extends BaseGameScreen {
   const StrategiesScreen({Key? key}) : super(key: key);
@@ -24,6 +25,22 @@ class StrategiesScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
+    if (state.generatedPin != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          barrierColor: Colors.black.withOpacity(0.8),
+          builder: (dialogContext) => BlocProvider.value(
+            value: context.read<GameBloc>(),
+            child: PinOverlay(
+              pin: state.generatedPin.toString(),
+              onClose: () => Navigator.of(dialogContext).pop(),
+            ),
+          ),
+        );
+      });
+    }
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
       body: Column(
@@ -61,11 +78,6 @@ class StrategiesScreen extends BaseGameScreen {
                         _buildStrategiesGrid(context),
                         const SizedBox(height: 24),
                         _buildTipCard(),
-                        if (state.generatedPin != null) ...[
-                          const SizedBox(height: 32),
-                          GeneratedPinDisplay(
-                              pin: state.generatedPin!.toString()),
-                        ],
                         const SizedBox(height: 48),
                         _buildNextButton(context),
                         const SizedBox(height: 32),
