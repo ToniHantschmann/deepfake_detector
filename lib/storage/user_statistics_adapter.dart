@@ -7,13 +7,15 @@ class UserStatisticsAdapter extends TypeAdapter<UserStatistics> {
 
   @override
   UserStatistics read(BinaryReader reader) {
-    final map = reader.readMap();
-    final jsonMap = map.cast<String, dynamic>();
+    final Map<dynamic, dynamic> rawMap = reader.readMap();
+    final Map<String, dynamic> jsonMap = rawMap.cast<String, dynamic>();
     return UserStatistics.fromJson(jsonMap);
   }
 
   @override
   void write(BinaryWriter writer, UserStatistics obj) {
-    writer.writeMap(obj.toJson());
+    final Map<String, dynamic> jsonMap = obj.toJson();
+    final Map<dynamic, dynamic> rawMap = jsonMap.cast<dynamic, dynamic>();
+    writer.writeMap(rawMap);
   }
 }

@@ -11,8 +11,8 @@ class Storage {
   static const String videosFileName = 'assets/data/videos_db.json';
 
   static Storage? _instance;
-  late final Box<Map<int, UserStatistics>> _statsBox;
-  late final Box<List<int>> _usersBox;
+  late final Box _statsBox;
+  late final Box _usersBox;
   bool _initialized = false;
 
   static Future<Storage> getInstance() async {
@@ -27,8 +27,10 @@ class Storage {
     if (!_initialized) {
       try {
         await Hive.initFlutter();
-        _statsBox = await Hive.openBox<Map<int, UserStatistics>>(statsFileName);
-        _usersBox = await Hive.openBox<List<int>>(usersFileName);
+        //await Hive.deleteBoxFromDisk(usersFileName);
+        //await Hive.deleteBoxFromDisk(statsFileName);
+        _statsBox = await Hive.openBox(statsFileName);
+        _usersBox = await Hive.openBox(usersFileName);
         _initialized = true;
       } catch (e) {
         throw StorageException('Failed to initialize storage: $e');
@@ -38,22 +40,40 @@ class Storage {
 
   Future<List<int>> getUsers() async {
     await _ensureInitialized();
-    return _usersBox.get('users', defaultValue: <int>[])!;
+    final List<dynamic> rawData =
+        _usersBox.get('users', defaultValue: <dynamic>[]);
+    return rawData.cast<int>();
   }
 
   Future<void> saveUsers(List<int> users) async {
     await _ensureInitialized();
-    await _usersBox.put('users', users);
+    final List<dynamic> rawData = users.cast<dynamic>();
+    await _usersBox.put('users', rawData);
   }
 
   Future<Map<int, UserStatistics>> getStatistics() async {
     await _ensureInitialized();
-    return _statsBox.get('statistics', defaultValue: <int, UserStatistics>{})!;
+    final Map<dynamic, dynamic> rawData =
+        _statsBox.get('statistics', defaultValue: <dynamic, dynamic>{});
+
+    // Convert Map<dynamic, dynamic> to Map<int, UserStatistics>
+    return rawData.map((key, value) {
+      final int userId = (key as dynamic) as int;
+      final Map<String, dynamic> statsMap =
+          (value as Map<dynamic, dynamic>).cast<String, dynamic>();
+      return MapEntry(userId, UserStatistics.fromJson(statsMap));
+    });
   }
 
   Future<void> saveStatistics(Map<int, UserStatistics> statistics) async {
     await _ensureInitialized();
-    await _statsBox.put('statistics', statistics);
+
+    // Convert to Map<dynamic, dynamic> for storage
+    final Map<dynamic, dynamic> rawData = statistics.map((key, value) {
+      return MapEntry(key as dynamic, value.toJson() as dynamic);
+    });
+
+    await _statsBox.put('statistics', rawData);
   }
 
   Future<Map<String, dynamic>> getVideos() async {

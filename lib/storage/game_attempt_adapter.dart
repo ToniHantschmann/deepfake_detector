@@ -7,13 +7,15 @@ class GameAttemptAdapter extends TypeAdapter<GameAttempt> {
 
   @override
   GameAttempt read(BinaryReader reader) {
-    final map = reader.readMap();
-    final jsonMap = map.cast<String, dynamic>();
+    final Map<dynamic, dynamic> rawMap = reader.readMap();
+    final Map<String, dynamic> jsonMap = rawMap.cast<String, dynamic>();
     return GameAttempt.fromJson(jsonMap);
   }
 
   @override
   void write(BinaryWriter writer, GameAttempt obj) {
-    writer.writeMap(obj.toJson());
+    final Map<String, dynamic> jsonMap = obj.toJson();
+    final Map<dynamic, dynamic> rawMap = jsonMap.cast<dynamic, dynamic>();
+    writer.writeMap(rawMap);
   }
 }
