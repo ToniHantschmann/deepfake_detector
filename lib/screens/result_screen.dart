@@ -17,10 +17,16 @@ class ResultScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    if (state.selectedVideoIndex == null ||
+    if (state.status == GameStatus.loading ||
+        state.selectedVideoIndex == null ||
         state.isCorrectGuess == null ||
         state.videos.isEmpty) {
-      return const Center(child: Text('Error: No result data available'));
+      return const Scaffold(
+        backgroundColor: Color(0xFF171717),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
     final selectedVideo = state.videos[state.selectedVideoIndex!];

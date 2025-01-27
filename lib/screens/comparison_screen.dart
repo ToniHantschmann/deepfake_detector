@@ -18,8 +18,13 @@ class ComparisonScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    if (state.videos.length != 2) {
-      return const Center(child: Text('Error: No videos available'));
+    if (state.status == GameStatus.loading || state.videos.isEmpty) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
     return Scaffold(
