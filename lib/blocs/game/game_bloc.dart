@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 import '../../repositories/video_repository.dart';
 import '../../repositories/statistics_repository.dart';
 import '../../repositories/user_repository.dart';
@@ -47,6 +48,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         videos: videos,
         // Initialisiere temporäre Statistiken
         userStatistics: UserStatistics.temporary(),
+        errorMessage: null,
+        showLoginOverlay: false,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -64,15 +67,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final user = await _userRepository.getUserByPin(event.pin);
       if (user == null) {
         emit(state.copyWith(
-          status: GameStatus.showLogin,
+          status: GameStatus.loginError,
           errorMessage: 'Invalid PIN',
           currentScreen: GameScreen.login,
-          isPinChecking: false,
         ));
         return;
       }
 
-      final statistics = await _statisticsRepository.getStatistics(event.pin);
+      // Get existing statistics and create new instance with empty recentAttempts
+      final existingStats =
+          await _statisticsRepository.getStatistics(event.pin);
+      final statistics = existingStats.copyWith(recentAttempts: []);
+      await _statisticsRepository.resetRecentAttempts(event.pin);
       final videos = await _videoRepository.getRandomVideoPair();
 
       emit(state.copyWith(
@@ -217,26 +223,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(
       status: GameStatus.initial,
       currentScreen: GameScreen.introduction,
-      isPinChecking: false,
     ));
   }
 
   Future<void> _onCheckPin(CheckPin event, Emitter<GameState> emit) async {
-    emit(state.copyWith(isPinChecking: true));
-
+    emit(state.copyWith(status: GameStatus.loading));
     try {
       final user = await _userRepository.getUserByPin(event.pin);
       if (user != null) {
         add(LoginWithPin(event.pin));
       } else {
         emit(state.copyWith(
-            isPinChecking: false,
-            errorMessage: 'Invalid PIN',
-            status: GameStatus.error));
+            errorMessage: 'Invalid PIN', status: GameStatus.error));
       }
     } catch (e) {
       emit(state.copyWith(
-        isPinChecking: false,
         status: GameStatus.error,
         errorMessage: 'Failed to check PIN: ${e.toString()}',
       ));
@@ -328,7 +329,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       selectedVideoIndex: null,
       isCorrectGuess: null,
       errorMessage: null,
-      isPinChecking: false,
       generatedPin: null,
     ));
   }

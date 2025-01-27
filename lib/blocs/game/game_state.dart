@@ -38,6 +38,7 @@ enum GameStatus {
   loading,
   error,
   showLogin,
+  loginError,
   playing,
 }
 
@@ -50,7 +51,6 @@ class GameState {
   final int? selectedVideoIndex;
   final bool? isCorrectGuess;
   final String? errorMessage;
-  final bool isPinChecking;
   final int? generatedPin;
 
   bool get isTemporarySession => currentPin == null;
@@ -70,7 +70,6 @@ class GameState {
     this.selectedVideoIndex,
     this.isCorrectGuess,
     this.errorMessage,
-    this.isPinChecking = false,
     this.generatedPin,
   });
 
@@ -83,7 +82,6 @@ class GameState {
         selectedVideoIndex = null,
         isCorrectGuess = null,
         errorMessage = null,
-        isPinChecking = false,
         generatedPin = null;
 
   GameState copyWith({
@@ -96,7 +94,6 @@ class GameState {
     Object? isCorrectGuess = _sentinel,
     Object? errorMessage = _sentinel,
     bool? showLoginOverlay,
-    bool? isPinChecking,
     Object? generatedPin = _sentinel,
   }) {
     return GameState(
@@ -117,7 +114,6 @@ class GameState {
       errorMessage: errorMessage == _sentinel
           ? this.errorMessage
           : errorMessage as String?,
-      isPinChecking: isPinChecking ?? this.isPinChecking,
       generatedPin:
           generatedPin == _sentinel ? this.generatedPin : generatedPin as int?,
     );
@@ -133,7 +129,6 @@ class GameState {
           currentPin == other.currentPin &&
           selectedVideoIndex == other.selectedVideoIndex &&
           isCorrectGuess == other.isCorrectGuess &&
-          isPinChecking == other.isPinChecking &&
           generatedPin == other.generatedPin;
 
   @override
@@ -143,7 +138,6 @@ class GameState {
       currentPin.hashCode ^
       selectedVideoIndex.hashCode ^
       isCorrectGuess.hashCode ^
-      isPinChecking.hashCode ^
       generatedPin.hashCode;
 
   @override

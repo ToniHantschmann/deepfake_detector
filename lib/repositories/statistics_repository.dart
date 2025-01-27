@@ -136,6 +136,19 @@ class StatisticsRepository {
     }
   }
 
+  Future<void> resetRecentAttempts(int pin) async {
+    if (!_isInitialized) await initialize();
+    try {
+      final stats = _statistics[pin];
+      if (stats != null) {
+        _statistics[pin] = stats.copyWith(recentAttempts: []);
+        await _saveStatistics();
+      }
+    } catch (e) {
+      throw StatisticsException('Failed to reset recent attempts: $e');
+    }
+  }
+
   Future<void> copyStatistics(int fromPin, int toPin) async {
     if (!_isInitialized) await initialize();
 
