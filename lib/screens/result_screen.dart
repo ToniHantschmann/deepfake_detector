@@ -174,10 +174,10 @@ class ResultScreen extends BaseGameScreen {
       return const SizedBox.shrink();
     }
 
-    final currentRunStats = state.userStatistics!.recentAttempts
+    final currentCorrect = state.userStatistics!.recentAttempts
         .where((attempt) => attempt.wasCorrect)
         .length;
-    final totalRunAttempts = state.userStatistics!.recentAttempts.length;
+    final currentAttempts = state.userStatistics!.recentAttempts.length;
     final totalCorrect = state.userStatistics!.correctGuesses;
     final totalAttempts = state.userStatistics!.totalAttempts;
 
@@ -208,7 +208,7 @@ class ResultScreen extends BaseGameScreen {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '$currentRunStats of $totalRunAttempts correct',
+                    '$currentCorrect of $currentAttempts correct',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
