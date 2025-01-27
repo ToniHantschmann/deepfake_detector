@@ -43,12 +43,16 @@ class _GameWrapperViewState extends State<GameWrapperView> {
     return BlocConsumer<GameBloc, GameState>(
       listenWhen: (previous, current) =>
           current.status == GameStatus.showLogin &&
-          current.currentScreen == GameScreen.login,
+          current.currentScreen == GameScreen.login &&
+          previous.status != GameStatus.loginError,
       listener: (context, state) {
         if (state.currentScreen == GameScreen.login) {
           _showLoginDialog(context);
         }
       },
+      buildWhen: (previous, current) =>
+          previous.status != current.status ||
+          previous.currentScreen != current.currentScreen,
       builder: (context, state) {
         if (state.status == GameStatus.loading) {
           return const Scaffold(

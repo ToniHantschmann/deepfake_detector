@@ -56,8 +56,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
       listener: (context, state) {
         if (state.status == GameStatus.playing) {
           Navigator.of(context).pop();
-        } else if (state.status == GameStatus.showLogin &&
-            state.errorMessage != null) {
+        } else if (state.status == GameStatus.loginError) {
           setState(() {
             _errorMessage = state.errorMessage;
             _pin = '';
@@ -98,7 +97,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
             const SizedBox(height: 24),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                //Navigator.of(context).pop();
                 context.read<GameBloc>().add(const QuickStartGame());
               },
               child: const Text(
