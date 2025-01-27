@@ -256,8 +256,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.secondVideo:
-        emit(state.copyWith(currentScreen: GameScreen.comparison));
-        break;
+        if (state.videos.length == 2) {
+          emit(state.copyWith(currentScreen: GameScreen.comparison));
+        }
 
       case GameScreen.comparison:
         if (state.selectedVideoIndex != null) {
