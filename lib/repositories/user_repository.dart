@@ -43,7 +43,8 @@ class UserRepository {
 
   Future<void> _loadUsers() async {
     try {
-      final data = await _storage!.getUsers();
+      final List<int> data = await _storage!.getUsers();
+      debugPrint('runTimeType of user data: ${data.runtimeType.toString()}');
       _users = data.toSet();
     } catch (e) {
       throw UserException('Error when loading users: $e');

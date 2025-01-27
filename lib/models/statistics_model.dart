@@ -18,7 +18,8 @@ class UserStatistics {
   }
 
   void _validateStatistics() {
-    if (!isTemporary && (pin == null || PinGeneratorService.isValidPin(pin!))) {
+    if (!isTemporary &&
+        (pin == null || !PinGeneratorService.isValidPin(pin!))) {
       throw StatisticsException('Permanent statistics require a valid PIN');
     }
 
@@ -72,9 +73,12 @@ class UserStatistics {
       pin: json['pin'] as int?,
       totalAttempts: json['totalAttempts'] as int,
       correctGuesses: json['correctGuesses'] as int,
-      recentAttempts: (json['recentAttempts'] as List)
-          .map((a) => GameAttempt.fromJson(a as Map<String, dynamic>))
-          .toList(),
+      recentAttempts: (json['recentAttempts'] as List).map((a) {
+        // a ist hier Map<dynamic, dynamic>, muss erst gecastet werden
+        final Map<String, dynamic> attemptMap =
+            (a as Map<dynamic, dynamic>).cast<String, dynamic>();
+        return GameAttempt.fromJson(attemptMap);
+      }).toList(),
     );
   }
 
@@ -163,17 +167,10 @@ class GameAttempt {
         throw StatisticsException('Invalid data types in JSON');
       }
 
-      final videoIds = (json['videoIds'] as List).map((id) {
-        if (id is! String) {
-          throw StatisticsException('Video IDs must be strings');
-        }
-        return id;
-      }).toList();
-
       return GameAttempt(
         timestamp: DateTime.parse(json['timestamp'] as String),
         wasCorrect: json['wasCorrect'] as bool,
-        videoIds: videoIds,
+        videoIds: (json['videoIds'] as List).map((id) => id as String).toList(),
         selectedVideoId: json['selectedVideoId'] as String,
       );
     } catch (e) {
