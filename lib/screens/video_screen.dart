@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import '../models/video_model.dart';
-import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
+import '../config/config.dart';
 import 'base_game_screen.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
@@ -83,7 +83,6 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
       }
     } catch (e) {
       debugPrint('Error initializing video: $e');
-      // We don't need to handle the error here as BaseGameScreen will handle it
     }
   }
 
@@ -111,11 +110,8 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   }
 
   Future<void> _handleNavigation(bool isForward) async {
-    // Pausiere das Video
     await _controller.pause();
-    // Setze es auf den Anfang zurück
     await _controller.seekTo(Duration.zero);
-    // Führe die Navigation aus
     if (isForward) {
       widget.onNext();
     } else {
@@ -126,7 +122,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppConfig.colors.backgroundDark,
       body: Column(
         children: [
           ProgressBar(currentScreen: widget.currentScreen),
@@ -136,22 +132,19 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
                 builder: (context, constraints) {
                   return Stack(
                     children: [
-                      // Video Title Card
                       Positioned(
-                        top: 16,
-                        left: 16,
-                        right: 16,
+                        top: AppConfig.layout.spacingMedium,
+                        left: AppConfig.layout.spacingMedium,
+                        right: AppConfig.layout.spacingMedium,
                         child: _buildTitleCard(),
                       ),
-
-                      // Main Video Content
                       _buildMainContent(constraints),
-
-                      // Navigation Arrows
-                      if (_isInitialized) ...[
-                        _buildBackButton(constraints),
-                        _buildNextButton(constraints),
-                      ],
+                      if (_isInitialized)
+                        NavigationButtons.forGameScreen(
+                          onNext: () => _handleNavigation(true),
+                          onBack: () => _handleNavigation(false),
+                          currentScreen: widget.currentScreen,
+                        ),
                     ],
                   );
                 },
@@ -165,36 +158,35 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
 
   Widget _buildTitleCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: EdgeInsets.symmetric(
+        vertical: AppConfig.layout.spacingSmall,
+        horizontal: AppConfig.layout.spacingMedium,
+      ),
       decoration: BoxDecoration(
-        color: const Color(0xCC212121), // grey[900] with 80% opacity
-        borderRadius: BorderRadius.circular(8),
+        color: AppConfig.colors.backgroundLight.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
       ),
       child: Text(
         widget.video.title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
+        style: AppConfig.textStyles.bodyMedium,
       ),
     );
   }
 
   Widget _buildMainContent(BoxConstraints constraints) {
     return Padding(
-      padding: const EdgeInsets.only(top: 64),
+      padding: EdgeInsets.only(top: AppConfig.layout.spacingXLarge * 2),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildVideoPlayer(constraints),
             if (_isInitialized) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: AppConfig.layout.spacingSmall),
               _buildProgressBar(),
-              const SizedBox(height: 16),
+              SizedBox(height: AppConfig.layout.spacingMedium),
               _buildControlButtons(),
-              const SizedBox(height: 16),
+              SizedBox(height: AppConfig.layout.spacingMedium),
             ],
           ],
         ),
@@ -205,10 +197,10 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   Widget _buildVideoPlayer(BoxConstraints constraints) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: constraints.maxHeight - 200,
+        maxHeight: constraints.maxHeight - AppConfig.layout.spacingXLarge * 6,
       ),
       child: AspectRatio(
-        aspectRatio: 16 / 9,
+        aspectRatio: AppConfig.video.minAspectRatio,
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -217,16 +209,16 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
               _buildTapToPlayOverlay(),
             ] else
               Container(
-                color: Colors.black,
-                child: const Center(
+                color: AppConfig.colors.backgroundDark,
+                child: Center(
                   child: CircularProgressIndicator(
-                    color: Colors.white,
+                    color: AppConfig.colors.textPrimary,
                   ),
                 ),
               ),
             if (_isBuffering && _isInitialized)
-              const CircularProgressIndicator(
-                color: Colors.white,
+              CircularProgressIndicator(
+                color: AppConfig.colors.textPrimary,
               ),
           ],
         ),
@@ -241,13 +233,15 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           width: MediaQuery.of(context).size.width * 0.8,
           child: SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              trackHeight: 4,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-              activeTrackColor: Colors.blue,
-              inactiveTrackColor: Colors.grey[800],
-              thumbColor: Colors.blue,
-              overlayColor: const Color(0x4D2196F3),
+              trackHeight: AppConfig.layout.progressBarHeight,
+              thumbShape: RoundSliderThumbShape(
+                  enabledThumbRadius: AppConfig.layout.progressBarHeight * 1.5),
+              overlayShape: RoundSliderOverlayShape(
+                  overlayRadius: AppConfig.layout.progressBarHeight * 3),
+              activeTrackColor: AppConfig.colors.videoProgress,
+              inactiveTrackColor: AppConfig.colors.backgroundLight,
+              thumbColor: AppConfig.colors.videoProgress,
+              overlayColor: AppConfig.colors.primary.withOpacity(0.3),
             ),
             child: Slider(
               value: _position.inMilliseconds.toDouble(),
@@ -263,17 +257,18 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding:
+              EdgeInsets.symmetric(horizontal: AppConfig.layout.spacingXLarge),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 _formatDuration(_position),
-                style: const TextStyle(color: Colors.white),
+                style: AppConfig.textStyles.bodySmall,
               ),
               Text(
                 _formatDuration(_duration),
-                style: const TextStyle(color: Colors.white),
+                style: AppConfig.textStyles.bodySmall,
               ),
             ],
           ),
@@ -300,13 +295,13 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           },
           child: AnimatedOpacity(
             opacity: _controller.value.isPlaying ? 0.0 : 1.0,
-            duration: const Duration(milliseconds: 300),
+            duration: AppConfig.animation.normal,
             child: Icon(
               _controller.value.isPlaying
                   ? Icons.pause_circle_outline
                   : Icons.play_circle_outline,
-              size: 80,
-              color: Colors.white,
+              size: AppConfig.layout.videoControlSize * 1.5,
+              color: AppConfig.colors.textPrimary,
             ),
           ),
         ),
@@ -321,8 +316,8 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
         IconButton(
           icon: Icon(
             _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-            color: Colors.white,
-            size: 32,
+            color: AppConfig.colors.textPrimary,
+            size: AppConfig.layout.videoControlSize,
           ),
           onPressed: () {
             setState(() {
@@ -334,12 +329,12 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
             });
           },
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: AppConfig.layout.spacingMedium),
         IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.replay,
-            color: Colors.white,
-            size: 32,
+            color: AppConfig.colors.textPrimary,
+            size: AppConfig.layout.videoControlSize,
           ),
           onPressed: () {
             _controller.seekTo(Duration.zero);
@@ -347,36 +342,6 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           },
         ),
       ],
-    );
-  }
-
-  Widget _buildBackButton(BoxConstraints constraints) {
-    return Positioned(
-      left: 16,
-      top: constraints.maxHeight / 2 - 28,
-      child: IconButton(
-        icon: const Icon(
-          Icons.chevron_left,
-          color: Colors.white,
-          size: 56,
-        ),
-        onPressed: () => _handleNavigation(false),
-      ),
-    );
-  }
-
-  Widget _buildNextButton(BoxConstraints constraints) {
-    return Positioned(
-      right: 16,
-      top: constraints.maxHeight / 2 - 28,
-      child: IconButton(
-        icon: const Icon(
-          Icons.chevron_right,
-          color: Colors.white,
-          size: 56,
-        ),
-        onPressed: () => _handleNavigation(true),
-      ),
     );
   }
 }
