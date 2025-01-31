@@ -12,6 +12,7 @@ import '../screens/login_overlay.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
+import '../widgets/common/inactivity_wrapper.dart';
 
 /// Wrapper class to manage gameStates and data for all screens
 class GameWrapper extends StatelessWidget {
@@ -85,7 +86,7 @@ class _GameWrapperViewState extends State<GameWrapperView> {
           );
         }
 
-        return _buildCurrentScreen(state);
+        return InactivityWrapper(child: _buildCurrentScreen(state));
       },
     );
   }
