@@ -8,23 +8,127 @@ class AppConfig {
   factory AppConfig() => _instance;
   AppConfig._internal();
 
-  // Color Constants
   static const colors = AppColors();
-
-  // Layout Constants
   static const layout = AppLayout();
-
-  // Animation Constants
   static const animation = AppAnimation();
-
-  // Time Constants
   static const timing = AppTiming();
-
-  // Video Constants
   static const video = AppVideo();
-
-  // Text Style Constants
   static const textStyles = AppTextStyles();
+  static const strings = AppStrings();
+}
+
+class AppStrings {
+  const AppStrings();
+
+  final introduction = const IntroductionScreenStrings();
+  final video = const VideoScreenStrings();
+  final comparison = const ComparisonScreenStrings();
+  final result = const ResultScreenStrings();
+  final statistics = const StatisticsScreenStrings();
+  final auth = const AuthStrings();
+  final common = const CommonStrings();
+  final errors = const ErrorStrings();
+}
+
+class IntroductionScreenStrings {
+  const IntroductionScreenStrings();
+
+  final String title = 'Deepfake Detector';
+  final String subtitle =
+      'Test your ability to detect deepfake videos in this interactive challenge.';
+  final String description =
+      "You'll be shown two videos - one real and one deepfake. Your task is to identify which one is the fake.";
+  final String startButton = 'Start Game';
+  final String loginButton = 'Login with PIN';
+  final String challenge = 'Can you spot the difference?';
+}
+
+class VideoScreenStrings {
+  const VideoScreenStrings();
+
+  final String playButton = 'Play';
+  final String pauseButton = 'Pause';
+  final String replayButton = 'Replay';
+  final String nextButton = 'Next Video';
+  final String backButton = 'Previous Video';
+  final String loading = 'Loading video...';
+  final String buffering = 'Buffering...';
+}
+
+class ComparisonScreenStrings {
+  const ComparisonScreenStrings();
+
+  final String title = 'Which video is the Deepfake?';
+  final String subtitle =
+      'Select the video you think is artificially generated';
+  final String selectionButton = 'This is the Deepfake';
+  final String confirmButton = 'Confirm Selection';
+}
+
+class ResultScreenStrings {
+  const ResultScreenStrings();
+
+  final String correctTitle = 'Correct decision!';
+  final String wrongTitle = 'Wrong decision!';
+  final String explanationTitle = 'Why this was a deepfake:';
+  final String reasonPrefix = 'Reason';
+  final String currentRun = 'Current Run';
+  final String overallStats = 'Overall Statistics';
+  final String correctFormat = 'of';
+  final String nextButton = 'Next';
+}
+
+class StatisticsScreenStrings {
+  const StatisticsScreenStrings();
+
+  final String title = 'How to detect Deepfakes?';
+  final String subtitle =
+      'Learn the key strategies to identify deepfake videos';
+  final String blinkingTitle = 'Natural Blinking';
+  final String blinkingDescription =
+      'Humans typically blink every 4-6 seconds. In deepfakes, blinking patterns are often unnatural or missing completely.';
+  final String skinTextureTitle = 'Skin Texture Analysis';
+  final String skinTextureDescription =
+      'Look for inconsistencies in skin texture. Deepfakes might show unnatural smoothness or aging patterns that don\'t match between different facial features.';
+  final String tip =
+      'Tip: Focus on these features in your next attempt. The more you practice, the better you\'ll become at detecting deepfakes!';
+  final String nextGameButton = 'Next Game';
+  final String getPinButton = 'Get PIN';
+}
+
+class AuthStrings {
+  const AuthStrings();
+
+  final String loginTitle = 'Enter PIN';
+  final String loginSubtitle = 'Enter your 4-digit PIN to continue';
+  final String pinTitle = 'Your PIN';
+  final String pinSubtitle = 'Save this PIN to access your statistics later';
+  final String copyPin = 'Copy PIN';
+  final String pinCopied = 'PIN copied to clipboard';
+  final String continueWithoutPin = 'Continue without PIN';
+  final String startNextGame = 'Start Next Game';
+}
+
+class CommonStrings {
+  const CommonStrings();
+
+  final String retry = 'Retry';
+  final String cancel = 'Cancel';
+  final String confirm = 'Confirm';
+  final String back = 'Back';
+  final String next = 'Next';
+  final String loading = 'Loading...';
+}
+
+class ErrorStrings {
+  const ErrorStrings();
+
+  final String generalError = 'An error occurred';
+  final String videoLoadError = 'Failed to load video';
+  final String invalidPin = 'Invalid PIN';
+  final String networkError = 'Network connection error';
+  final String unknownError = 'Unknown error occurred';
+  final String retryMessage = 'Please try again';
 }
 
 class AppColors {
