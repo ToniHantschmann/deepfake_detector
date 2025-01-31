@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'base_game_screen.dart';
-import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
+import '../config/config.dart';
 
 class IntroductionScreen extends BaseGameScreen {
   const IntroductionScreen({Key? key}) : super(key: key);
@@ -17,16 +16,16 @@ class IntroductionScreen extends BaseGameScreen {
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
     return Scaffold(
-      backgroundColor: const Color(0xFF171717),
+      backgroundColor: AppConfig.colors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(AppConfig.layout.screenPaddingHorizontal),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildHeader(),
-                const SizedBox(height: 32),
+                SizedBox(height: AppConfig.layout.spacingXLarge),
                 _buildContent(context),
               ],
             ),
@@ -36,19 +35,16 @@ class IntroductionScreen extends BaseGameScreen {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => dispatchGameEvent(context, const ShowLogin()),
         icon: const Icon(Icons.login),
-        label: const Text('Login with PIN'),
+        label: Text(AppConfig.strings.introduction.loginButton),
+        backgroundColor: AppConfig.colors.primary,
       ),
     );
   }
 
   Widget _buildHeader() {
-    return const Text(
-      'Deepfake Detector',
-      style: TextStyle(
-        fontSize: 48,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
+    return Text(
+      AppConfig.strings.introduction.title,
+      style: AppConfig.textStyles.h1,
       textAlign: TextAlign.center,
     );
   }
@@ -56,12 +52,12 @@ class IntroductionScreen extends BaseGameScreen {
   Widget _buildContent(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth > 800) {
+        if (constraints.maxWidth > AppConfig.layout.breakpointTablet) {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(child: _buildLeftColumn()),
-              const SizedBox(width: 32),
+              SizedBox(width: AppConfig.layout.spacingXLarge),
               Expanded(child: _buildRightColumn(context)),
             ],
           );
@@ -69,7 +65,7 @@ class IntroductionScreen extends BaseGameScreen {
           return Column(
             children: [
               _buildLeftColumn(),
-              const SizedBox(height: 32),
+              SizedBox(height: AppConfig.layout.spacingXLarge),
               _buildRightColumn(context),
             ],
           );
@@ -82,11 +78,11 @@ class IntroductionScreen extends BaseGameScreen {
     return Column(
       children: [
         AspectRatio(
-          aspectRatio: 16 / 9,
+          aspectRatio: AppConfig.video.minAspectRatio,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(8),
+              color: AppConfig.colors.backgroundLight,
+              borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
             ),
             child: const Center(
               child: Text(
@@ -96,14 +92,17 @@ class IntroductionScreen extends BaseGameScreen {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: AppConfig.layout.spacingMedium),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: const BoxDecoration(color: Color(0xFF7F1D1D)),
-          child: const Text(
-            'Can you spot the difference?',
-            style: TextStyle(fontSize: 20, color: Colors.white),
+          padding:
+              EdgeInsets.symmetric(vertical: AppConfig.layout.spacingMedium),
+          decoration: BoxDecoration(
+            color: AppConfig.colors.wrongAnswer,
+          ),
+          child: Text(
+            AppConfig.strings.introduction.challenge,
+            style: AppConfig.textStyles.bodyLarge,
             textAlign: TextAlign.center,
           ),
         ),
@@ -115,24 +114,16 @@ class IntroductionScreen extends BaseGameScreen {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Test your ability to detect deepfake videos in this interactive challenge.',
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            height: 1.5,
-          ),
+        Text(
+          AppConfig.strings.introduction.subtitle,
+          style: AppConfig.textStyles.bodyLarge,
         ),
-        const SizedBox(height: 16),
-        const Text(
-          "You'll be shown two videos - one real and one deepfake. Your task is to identify which one is the fake.",
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-            height: 1.5,
-          ),
+        SizedBox(height: AppConfig.layout.spacingMedium),
+        Text(
+          AppConfig.strings.introduction.description,
+          style: AppConfig.textStyles.bodyMedium,
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: AppConfig.layout.spacingXLarge),
         _buildQuickStartButton(context),
       ],
     );
@@ -146,23 +137,20 @@ class IntroductionScreen extends BaseGameScreen {
         child: ElevatedButton(
           onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
+            backgroundColor: AppConfig.colors.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
             ),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.play_arrow, color: Colors.white, size: 32),
-              SizedBox(width: 12),
+              Icon(Icons.play_arrow,
+                  color: AppConfig.colors.textPrimary, size: 32),
+              SizedBox(width: AppConfig.layout.spacingMedium),
               Text(
-                'Start Game',
-                style: TextStyle(
-                  fontSize: 22,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
+                AppConfig.strings.introduction.startButton,
+                style: AppConfig.textStyles.buttonLarge,
               ),
             ],
           ),
