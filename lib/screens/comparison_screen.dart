@@ -4,6 +4,7 @@ import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import '../config/config.dart';
 import 'base_game_screen.dart';
 
 class ComparisonScreen extends BaseGameScreen {
@@ -19,138 +20,129 @@ class ComparisonScreen extends BaseGameScreen {
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
     if (state.status == GameStatus.loading || state.videos.isEmpty) {
-      return const Scaffold(
-        backgroundColor: Colors.black,
+      return Scaffold(
+        backgroundColor: AppConfig.colors.backgroundDark,
         body: Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: AppConfig.colors.primary,
+          ),
         ),
       );
     }
 
     return Scaffold(
-        backgroundColor: Colors.black,
-        body: SafeArea(
-          child: Column(
-            children: [
-              ProgressBar(currentScreen: state.currentScreen),
-              Expanded(
-                child: Stack(
-                  children: [
-                    // Main Content Column
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 120.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 24),
-                          const Text(
-                            'Which video is the Deepfake?',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Select the video you think is artificially generated',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          Expanded(
-                            child: _buildVideoComparison(context, state),
-                          ),
-                          // Confirm Button Container (immer sichtbar)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 24.0,
-                              horizontal: 32.0,
-                            ),
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 52, // Feste Höhe für konsistentes Layout
-                              child: state.selectedVideoIndex != null
-                                  ? ElevatedButton(
-                                      onPressed: () {
-                                        // Dispatch SelectDeepfake only when confirming
-                                        dispatchGameEvent(
-                                          context,
-                                          SelectDeepfake(
-                                              state.selectedVideoIndex!),
-                                        );
-                                        handleNextNavigation(context);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blue,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Confirm Selection',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )
-                                  : null, // Kein Button, aber Platz wird reserviert
-                            ),
-                          ),
-                        ],
-                      ),
+      backgroundColor: AppConfig.colors.backgroundDark,
+      body: SafeArea(
+        child: Column(
+          children: [
+            ProgressBar(currentScreen: state.currentScreen),
+            Expanded(
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppConfig.layout.screenPaddingHorizontal,
                     ),
-
-                    // Navigation Buttons
-                    NavigationButtons.forGameScreen(
-                      onNext: () {
-                        dispatchGameEvent(
-                            context, SelectDeepfake(state.selectedVideoIndex!));
-                        handleNextNavigation(context);
-                      },
-                      onBack: () => handleBackNavigation(context),
-                      currentScreen: GameScreen.comparison,
-                      enableNext: state.selectedVideoIndex != null,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: AppConfig.layout.spacingLarge),
+                        Text(
+                          AppConfig.strings.comparison.title,
+                          style: AppConfig.textStyles.h2,
+                        ),
+                        SizedBox(height: AppConfig.layout.spacingSmall),
+                        Text(
+                          AppConfig.strings.comparison.subtitle,
+                          style: AppConfig.textStyles.bodyMedium.copyWith(
+                            color: AppConfig.colors.textSecondary,
+                          ),
+                        ),
+                        SizedBox(height: AppConfig.layout.spacingXLarge),
+                        Expanded(
+                          child: _buildVideoComparison(context, state),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: AppConfig.layout.spacingLarge,
+                            horizontal: AppConfig.layout.spacingXLarge,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: AppConfig.layout.buttonHeight,
+                            child: state.selectedVideoIndex != null
+                                ? ElevatedButton(
+                                    onPressed: () {
+                                      dispatchGameEvent(
+                                        context,
+                                        SelectDeepfake(
+                                            state.selectedVideoIndex!),
+                                      );
+                                      handleNextNavigation(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppConfig.colors.primary,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            AppConfig.layout.buttonRadius),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      AppConfig
+                                          .strings.comparison.confirmButton,
+                                      style: AppConfig.textStyles.buttonLarge,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  NavigationButtons.forGameScreen(
+                    onNext: () {
+                      dispatchGameEvent(
+                          context, SelectDeepfake(state.selectedVideoIndex!));
+                      handleNextNavigation(context);
+                    },
+                    onBack: () => handleBackNavigation(context),
+                    currentScreen: GameScreen.comparison,
+                    enableNext: state.selectedVideoIndex != null,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildVideoComparison(BuildContext context, GameState state) {
     return Row(
       children: [
-        // First Video
         Expanded(
           child: _buildVideoCard(
-              context: context,
-              video: state.videos[0],
-              isSelected: state.selectedVideoIndex == 0,
-              onSelect: () => _handleVideoSelection(context, 0)),
+            context: context,
+            video: state.videos[0],
+            isSelected: state.selectedVideoIndex == 0,
+            onSelect: () => _handleVideoSelection(context, 0),
+          ),
         ),
-        const SizedBox(width: 24),
-        // Second Video
+        SizedBox(width: AppConfig.layout.spacingLarge),
         Expanded(
           child: _buildVideoCard(
-              context: context,
-              video: state.videos[1],
-              isSelected: state.selectedVideoIndex == 1,
-              onSelect: () => _handleVideoSelection(context, 1)),
+            context: context,
+            video: state.videos[1],
+            isSelected: state.selectedVideoIndex == 1,
+            onSelect: () => _handleVideoSelection(context, 1),
+          ),
         ),
       ],
     );
   }
 
   void _handleVideoSelection(BuildContext context, int index) {
-    // Update the state locally without dispatching SelectDeepfake
     dispatchGameEvent(context, UpdateSelectedVideo(index));
   }
 
@@ -162,71 +154,69 @@ class ComparisonScreen extends BaseGameScreen {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF262626),
-        borderRadius: BorderRadius.circular(12),
+        color: AppConfig.colors.backgroundLight,
+        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
         border: Border.all(
-          color: isSelected ? Colors.blue : Colors.transparent,
+          color: isSelected ? AppConfig.colors.primary : Colors.transparent,
           width: 2,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Thumbnail Container mit festem 16:9 Verhältnis
           AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: AppConfig.video.minAspectRatio,
             child: ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(10)),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(AppConfig.layout.cardRadius),
+              ),
               child: Image.asset(
                 video.thumbnailUrl,
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Info Section
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(AppConfig.layout.cardPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   video.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppConfig.textStyles.h3,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: AppConfig.layout.spacingSmall),
                 Text(
                   video.description,
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
+                  style: AppConfig.textStyles.bodyMedium.copyWith(
+                    color: AppConfig.colors.textSecondary,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppConfig.layout.spacingLarge),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: onSelect,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          isSelected ? Colors.blue : Colors.grey[700],
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: isSelected
+                          ? AppConfig.colors.primary
+                          : AppConfig.colors.backgroundLight,
+                      padding: EdgeInsets.symmetric(
+                        vertical: AppConfig.layout.buttonPadding,
+                      ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(
+                            AppConfig.layout.buttonRadius),
                       ),
                     ),
                     child: Text(
-                      'This is the Deepfake',
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[300],
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      AppConfig.strings.comparison.selectionButton,
+                      style: AppConfig.textStyles.buttonMedium.copyWith(
+                        color: isSelected
+                            ? AppConfig.colors.textPrimary
+                            : AppConfig.colors.textSecondary,
                       ),
                     ),
                   ),
