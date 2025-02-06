@@ -1,51 +1,45 @@
 import 'package:flutter/material.dart';
+import '../../config/config.dart';
 
 class PinDisplay extends StatelessWidget {
   final String pin;
-  final int pinLength;
-  final Color? activeColor;
-  final Color? inactiveColor;
 
   const PinDisplay({
     Key? key,
     required this.pin,
-    this.pinLength = 4,
-    this.activeColor,
-    this.inactiveColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(pinLength, (index) {
-        final isActive = index < pin.length;
-
-        return Container(
-          width: 56,
-          height: 56,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFF262626),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isActive
-                  ? (activeColor ?? Colors.blue)
-                  : (inactiveColor ?? Colors.white.withOpacity(0.2)),
-              width: 2,
+      children: List.generate(
+        4,
+        (index) => Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppConfig.layout.pinDigitSpacing / 2,
+          ),
+          child: Container(
+            width: AppConfig.layout.pinDigitSize,
+            height: AppConfig.layout.pinDigitSize * 1.2,
+            decoration: BoxDecoration(
+              color: AppConfig.colors.backgroundLight,
+              borderRadius:
+                  BorderRadius.circular(AppConfig.layout.pinDigitRadius),
+              border: Border.all(
+                color: AppConfig.colors.pinBorder,
+                width: AppConfig.layout.pinDigitBorderWidth,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                index < pin.length ? pin[index] : '•',
+                style: AppConfig.textStyles.pinDigit,
+              ),
             ),
           ),
-          child: Center(
-            child: isActive
-                ? Icon(
-                    Icons.circle,
-                    size: 12,
-                    color: activeColor ?? Colors.blue,
-                  )
-                : null,
-          ),
-        );
-      }),
+        ),
+      ),
     );
   }
 }
