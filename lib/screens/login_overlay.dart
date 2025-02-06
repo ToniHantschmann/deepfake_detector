@@ -6,6 +6,7 @@ import '../blocs/game/game_state.dart';
 import '../widgets/auth/auth_overlay_base.dart';
 import '../widgets/auth/pin_display.dart';
 import '../widgets/auth/number_pad.dart';
+import '../config/config.dart';
 
 class LoginOverlay extends StatefulWidget {
   const LoginOverlay({Key? key}) : super(key: key);
@@ -42,7 +43,6 @@ class _LoginOverlayState extends State<LoginOverlay> {
 
   void _verifyPin() {
     context.read<GameBloc>().add(LoginWithPin(int.parse(_pin)));
-    //Navigator.of(context).pop();
   }
 
   void _handleClose() {
@@ -65,46 +65,41 @@ class _LoginOverlayState extends State<LoginOverlay> {
       },
       builder: (context, state) {
         return AuthOverlayBase(
-          title: 'Enter PIN',
+          title: AppConfig.strings.auth.loginTitle,
           onClose: _handleClose,
           children: [
-            const Text(
-              'Enter your 4-digit PIN to continue',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
-              ),
+            Text(
+              AppConfig.strings.auth.loginSubtitle,
+              style: AppConfig.textStyles.overlaySubtitle,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppConfig.layout.spacingXLarge),
             PinDisplay(pin: _pin),
             if (_errorMessage != null) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: AppConfig.layout.spacingMedium),
               Text(
                 _errorMessage!,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 14,
+                style: TextStyle(
+                  color: AppConfig.colors.error,
+                  fontSize: AppConfig.textStyles.bodySmall.fontSize,
                 ),
                 textAlign: TextAlign.center,
               ),
             ],
-            const SizedBox(height: 32),
+            SizedBox(height: AppConfig.layout.spacingXLarge),
             NumberPad(
               onNumberPressed: _handleNumberInput,
               onBackspacePressed: _handleBackspace,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppConfig.layout.spacingLarge),
             TextButton(
               onPressed: () {
-                //Navigator.of(context).pop();
                 context.read<GameBloc>().add(const QuickStartGame());
               },
-              child: const Text(
-                'Continue without PIN',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
+              child: Text(
+                AppConfig.strings.auth.continueWithoutPin,
+                style: AppConfig.textStyles.bodyMedium.copyWith(
+                  color: AppConfig.colors.textSecondary,
                 ),
               ),
             ),
