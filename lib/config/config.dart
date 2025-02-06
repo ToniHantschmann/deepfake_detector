@@ -99,14 +99,32 @@ class StatisticsScreenStrings {
 class AuthStrings {
   const AuthStrings();
 
+  // Login Overlay
   final String loginTitle = 'Enter PIN';
   final String loginSubtitle = 'Enter your 4-digit PIN to continue';
+  final String continueWithoutPin = 'Continue without PIN';
+  final String invalidPinError = 'Invalid PIN. Please try again.';
+  final String loginButtonText = 'Login';
+  final String closeLoginButton = 'Close';
+
+  // PIN Display
+  final String enterPinPrompt = 'Please enter your 4-digit PIN';
+  final String pinPlaceholder = '•';
+  final String pinInputError = 'PIN must be 4 digits';
+
+  // PIN Overlay
   final String pinTitle = 'Your PIN';
   final String pinSubtitle = 'Save this PIN to access your statistics later';
+  final String pinGeneratedTitle = 'PIN Generated Successfully';
+  final String pinSavePrompt = 'Make sure to save your PIN:';
   final String copyPin = 'Copy PIN';
   final String pinCopied = 'PIN copied to clipboard';
-  final String continueWithoutPin = 'Continue without PIN';
   final String startNextGame = 'Start Next Game';
+  final String closeOverlay = 'Close';
+
+  // Number Pad
+  final String backspace = 'Backspace';
+  final String clear = 'Clear';
 }
 
 class CommonStrings {
@@ -146,6 +164,7 @@ class AppColors {
   final Color backgroundDark = Colors.black;
   final Color backgroundLight = const Color(0xFF262626);
   final Color cardBackground = const Color(0xFF1F1F1F);
+  final Color overlayBackground = const Color(0xFF1A1A1A);
 
   // Text Colors
   final Color textPrimary = Colors.white;
@@ -155,6 +174,7 @@ class AppColors {
   // Border Colors
   final Color border = const Color(0xFF333333);
   final Color borderHighlight = Colors.blue;
+  final Color pinBorder = const Color(0xFF404040);
 
   // Video Player Colors
   final Color videoOverlay = Colors.black54;
@@ -164,6 +184,11 @@ class AppColors {
   // Status Colors
   final Color correctAnswer = const Color(0xFF064E3B);
   final Color wrongAnswer = const Color(0xFF7F1D1D);
+
+  // Number Pad Colors
+  final Color numberPadButton = const Color(0xFF262626);
+  final Color numberPadButtonPressed = const Color(0xFF404040);
+  final Color numberPadText = Colors.white;
 }
 
 class AppLayout {
@@ -202,6 +227,30 @@ class AppLayout {
   final double progressBarHeight = 4.0;
   final double progressBarWidth = 200.0;
 
+  // Overlay Layout
+  final double overlayWidth = 400.0;
+  final double overlayMinHeight = 500.0;
+  final double overlayMaxHeight = 600.0;
+  final double overlayRadius = 16.0;
+  final double overlayPadding = 24.0;
+  final double overlayHeaderHeight = 60.0;
+  final double overlayFooterHeight = 80.0;
+
+  // PIN Display
+  final double pinDigitSize = 48.0;
+  final double pinDigitSpacing = 8.0;
+  final double pinDigitBorderWidth = 2.0;
+  final double pinDigitRadius = 8.0;
+  final double pinDisplayHeight = 64.0;
+  final double pinDisplaySpacing = 16.0;
+
+  // Number Pad
+  final double numberPadButtonSize = 64.0;
+  final double numberPadSpacing = 16.0;
+  final double numberPadMargin = 24.0;
+  final double numberPadIconSize = 24.0;
+  final double numberPadFontSize = 24.0;
+
   // Breakpoints
   final double breakpointMobile = 600.0;
   final double breakpointTablet = 800.0;
@@ -220,6 +269,26 @@ class AppAnimation {
   final Curve standard = Curves.easeInOut;
   final Curve accelerate = Curves.easeIn;
   final Curve decelerate = Curves.easeOut;
+
+  // Overlay Animations
+  final Duration overlayEnter = const Duration(milliseconds: 250);
+  final Duration overlayExit = const Duration(milliseconds: 200);
+  final Curve overlayEnterCurve = Curves.easeOutQuart;
+  final Curve overlayExitCurve = Curves.easeInQuart;
+  final Duration overlayBackdropFade = const Duration(milliseconds: 200);
+
+  // PIN Input Animations
+  final Duration pinInputDuration = const Duration(milliseconds: 150);
+  final Duration pinErrorShake = const Duration(milliseconds: 400);
+  final Duration pinDeleteDuration = const Duration(milliseconds: 100);
+  final Curve pinInputCurve = Curves.easeOutBack;
+  final Curve pinErrorCurve = Curves.elasticIn;
+  final Curve pinDeleteCurve = Curves.easeInQuad;
+
+  // Number Pad Animations
+  final Duration numberPadPressDuration = const Duration(milliseconds: 100);
+  final Curve numberPadPressCurve = Curves.easeInOut;
+  final Duration numberPadFeedbackDuration = const Duration(milliseconds: 50);
 }
 
 class AppTiming {
@@ -229,11 +298,14 @@ class AppTiming {
   final Duration inactivityTimeout = const Duration(seconds: 15);
   final Duration videoBufferingTimeout = const Duration(seconds: 10);
   final Duration loadingTimeout = const Duration(seconds: 5);
+  final Duration overlayTimeout = const Duration(seconds: 30);
 
   // Delays
   final Duration pinDisplayDuration = const Duration(seconds: 3);
   final Duration tooltipDuration = const Duration(seconds: 2);
   final Duration splashScreenDuration = const Duration(seconds: 1);
+  final Duration pinFeedbackDuration = const Duration(milliseconds: 1500);
+  final Duration errorMessageDuration = const Duration(seconds: 3);
 }
 
 class AppVideo {
@@ -301,6 +373,38 @@ class AppTextStyles {
 
   final TextStyle buttonMedium = const TextStyle(
     fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+  );
+
+  // Overlay Text
+  final TextStyle overlayTitle = const TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
+
+  final TextStyle overlaySubtitle = const TextStyle(
+    fontSize: 16,
+    color: Colors.grey,
+    height: 1.5,
+  );
+
+  // PIN Display
+  final TextStyle pinDigit = const TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
+
+  final TextStyle pinLabel = const TextStyle(
+    fontSize: 14,
+    color: Colors.grey,
+  );
+
+  // Number Pad
+  final TextStyle numberPadButton = const TextStyle(
+    fontSize: 24,
     fontWeight: FontWeight.w500,
     color: Colors.white,
   );
