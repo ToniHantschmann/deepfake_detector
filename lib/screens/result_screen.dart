@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/video_model.dart';
-import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import '../config/config.dart';
+import 'base_game_screen.dart';
 
 class ResultScreen extends BaseGameScreen {
   const ResultScreen({Key? key}) : super(key: key);
@@ -21,10 +22,12 @@ class ResultScreen extends BaseGameScreen {
         state.selectedVideoIndex == null ||
         state.isCorrectGuess == null ||
         state.videos.isEmpty) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF171717),
+      return Scaffold(
+        backgroundColor: AppConfig.colors.background,
         body: Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: AppConfig.colors.primary,
+          ),
         ),
       );
     }
@@ -32,62 +35,36 @@ class ResultScreen extends BaseGameScreen {
     final selectedVideo = state.videos[state.selectedVideoIndex!];
 
     return Scaffold(
-      backgroundColor: const Color(0xFF171717),
+      backgroundColor: AppConfig.colors.background,
       body: Column(
         children: [
-          // Progress Bar
           ProgressBar(currentScreen: state.currentScreen),
-
-          // Main Content Area - Scrollable
           Expanded(
             child: Stack(
               children: [
-                // Scrollable Content
                 SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 120.0, vertical: 24.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppConfig.layout.screenPaddingHorizontal,
+                      vertical: AppConfig.layout.screenPaddingVertical,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildResultHeader(state.isCorrectGuess!),
-                        const SizedBox(height: 32),
+                        SizedBox(height: AppConfig.layout.spacingXLarge),
                         _buildDeepfakeExplanation(selectedVideo),
-                        // Add bottom padding to ensure content doesn't get hidden behind statistics
-                        const SizedBox(height: 180),
+                        // Padding für den fixed bottom panel
+                        SizedBox(height: AppConfig.layout.spacingXLarge * 6),
                       ],
                     ),
                   ),
                 ),
-
-                // Navigation Buttons
                 NavigationButtons.forGameScreen(
                   onNext: () => handleNextNavigation(context),
                   currentScreen: GameScreen.result,
                 ),
-
-                // Statistics Panel - Fixed at bottom
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF171717),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 10,
-                          offset: const Offset(0, -2),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: _buildStatistics(state),
-                    ),
-                  ),
-                ),
+                _buildStatisticsPanel(state),
               ],
             ),
           ),
@@ -98,26 +75,25 @@ class ResultScreen extends BaseGameScreen {
 
   Widget _buildResultHeader(bool isCorrect) {
     return Container(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
       decoration: BoxDecoration(
-        color: isCorrect ? const Color(0xFF064E3B) : const Color(0xFF7F1D1D),
-        borderRadius: BorderRadius.circular(12),
+        color:
+            isCorrect ? AppConfig.colors.success : AppConfig.colors.wrongAnswer,
+        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
       ),
       child: Row(
         children: [
           Icon(
             isCorrect ? Icons.check_circle : Icons.error,
-            color: Colors.white,
-            size: 48,
+            color: AppConfig.colors.textPrimary,
+            size: AppConfig.layout.videoControlSize,
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: AppConfig.layout.spacingMedium),
           Text(
-            isCorrect ? 'Correct decision!' : 'Wrong decision!',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
+            isCorrect
+                ? AppConfig.strings.result.correctTitle
+                : AppConfig.strings.result.wrongTitle,
+            style: AppConfig.textStyles.h2,
           ),
         ],
       ),
@@ -128,21 +104,17 @@ class ResultScreen extends BaseGameScreen {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Why this was a deepfake:',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        Text(
+          AppConfig.strings.result.explanationTitle,
+          style: AppConfig.textStyles.h3,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: AppConfig.layout.spacingLarge),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
           decoration: BoxDecoration(
-            color: const Color(0xFF262626),
-            borderRadius: BorderRadius.circular(12),
+            color: AppConfig.colors.backgroundLight,
+            borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,14 +123,12 @@ class ResultScreen extends BaseGameScreen {
                 final index = entry.key + 1;
                 final indicator = entry.value;
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
+                  padding: EdgeInsets.only(
+                    bottom: AppConfig.layout.spacingMedium,
+                  ),
                   child: Text(
-                    'Reason $index: $indicator',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      height: 1.5,
-                    ),
+                    '${AppConfig.strings.result.reasonPrefix} $index: $indicator',
+                    style: AppConfig.textStyles.bodyLarge,
                   ),
                 );
               }).toList(),
@@ -169,10 +139,8 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
-  Widget _buildStatistics(GameState state) {
-    if (state.userStatistics == null) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildStatisticsPanel(GameState state) {
+    if (state.userStatistics == null) return const SizedBox.shrink();
 
     final currentCorrect = state.userStatistics!.recentAttempts
         .where((attempt) => attempt.wasCorrect)
@@ -181,76 +149,69 @@ class ResultScreen extends BaseGameScreen {
     final totalCorrect = state.userStatistics!.correctGuesses;
     final totalAttempts = state.userStatistics!.totalAttempts;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFF262626),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Current Run',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '$currentCorrect of $currentAttempts correct',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppConfig.colors.background,
+          boxShadow: [
+            BoxShadow(
+              color: AppConfig.colors.backgroundDark.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildStatisticsCard(
+                  title: AppConfig.strings.result.currentRun,
+                  stats:
+                      '$currentCorrect ${AppConfig.strings.result.correctFormat} $currentAttempts',
+                ),
+              ),
+              SizedBox(width: AppConfig.layout.spacingLarge),
+              Expanded(
+                child: _buildStatisticsCard(
+                  title: AppConfig.strings.result.overallStats,
+                  stats:
+                      '$totalCorrect ${AppConfig.strings.result.correctFormat} $totalAttempts',
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 24),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFF262626),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Overall Statistics',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '$totalCorrect of $totalAttempts correct',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatisticsCard({
+    required String title,
+    required String stats,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
+      decoration: BoxDecoration(
+        color: AppConfig.colors.backgroundLight,
+        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: AppConfig.textStyles.h3,
+          ),
+          SizedBox(height: AppConfig.layout.spacingSmall),
+          Text(
+            stats,
+            style: AppConfig.textStyles.bodyLarge,
           ),
         ],
       ),
