@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
-import '../widgets/auth/generated_pin_display.dart';
-import 'base_game_screen.dart';
 import '../widgets/detection_strategies/strategy_card.dart';
 import '../widgets/detection_strategies/blinking_animation.dart';
 import '../widgets/detection_strategies/skin_texture_animation.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import '../config/config.dart';
+import 'base_game_screen.dart';
 import 'pin_overlay.dart';
 
 class StrategiesScreen extends BaseGameScreen {
@@ -25,12 +25,13 @@ class StrategiesScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
+    // Show PIN overlay if a new PIN was generated
     if (state.generatedPin != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
           context: context,
           barrierDismissible: true,
-          barrierColor: Colors.black.withOpacity(0.8),
+          barrierColor: AppConfig.colors.backgroundDark.withOpacity(0.8),
           builder: (dialogContext) => BlocProvider.value(
             value: context.read<GameBloc>(),
             child: PinOverlay(
@@ -41,8 +42,9 @@ class StrategiesScreen extends BaseGameScreen {
         );
       });
     }
+
     return Scaffold(
-      backgroundColor: const Color(0xFF171717),
+      backgroundColor: AppConfig.colors.background,
       body: Column(
         children: [
           ProgressBar(currentScreen: state.currentScreen),
@@ -51,36 +53,31 @@ class StrategiesScreen extends BaseGameScreen {
               children: [
                 SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0,
-                      vertical: 24.0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppConfig.layout.screenPaddingHorizontal,
+                      vertical: AppConfig.layout.screenPaddingVertical,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'How to detect Deepfakes?',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        Text(
+                          AppConfig.strings.statistics.title,
+                          style: AppConfig.textStyles.h2,
+                        ),
+                        SizedBox(height: AppConfig.layout.spacingSmall),
+                        Text(
+                          AppConfig.strings.statistics.subtitle,
+                          style: AppConfig.textStyles.bodyMedium.copyWith(
+                            color: AppConfig.colors.textSecondary,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Learn the key strategies to identify deepfake videos',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 32),
+                        SizedBox(height: AppConfig.layout.spacingXLarge),
                         _buildStrategiesGrid(context),
-                        const SizedBox(height: 24),
+                        SizedBox(height: AppConfig.layout.spacingLarge),
                         _buildTipCard(),
-                        const SizedBox(height: 48),
+                        SizedBox(height: AppConfig.layout.spacingXLarge * 2),
                         _buildNextButton(context),
-                        const SizedBox(height: 32),
+                        SizedBox(height: AppConfig.layout.spacingXLarge),
                       ],
                     ),
                   ),
@@ -101,19 +98,19 @@ class StrategiesScreen extends BaseGameScreen {
   Widget _buildStrategiesGrid(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return constraints.maxWidth > 800
+        return constraints.maxWidth > AppConfig.layout.breakpointTablet
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: _buildBlinkingStrategy()),
-                  const SizedBox(width: 24),
+                  SizedBox(width: AppConfig.layout.spacingLarge),
                   Expanded(child: _buildSkinTextureStrategy()),
                 ],
               )
             : Column(
                 children: [
                   _buildBlinkingStrategy(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppConfig.layout.spacingLarge),
                   _buildSkinTextureStrategy(),
                 ],
               );
@@ -122,49 +119,43 @@ class StrategiesScreen extends BaseGameScreen {
   }
 
   Widget _buildBlinkingStrategy() {
-    return const StrategyCard(
-      title: 'Natural Blinking',
-      description: 'Humans typically blink every 4-6 seconds. '
-          'In deepfakes, blinking patterns are often unnatural or missing completely.',
-      child: BlinkingAnimation(),
+    return StrategyCard(
+      title: AppConfig.strings.statistics.blinkingTitle,
+      description: AppConfig.strings.statistics.blinkingDescription,
+      child: const BlinkingAnimation(),
     );
   }
 
   Widget _buildSkinTextureStrategy() {
-    return const StrategyCard(
-      title: 'Skin Texture Analysis',
-      description:
-          'Look for inconsistencies in skin texture. Deepfakes might show '
-          'unnatural smoothness or aging patterns that don\'t match between '
-          'different facial features.',
-      child: SkinTextureAnimation(),
+    return StrategyCard(
+      title: AppConfig.strings.statistics.skinTextureTitle,
+      description: AppConfig.strings.statistics.skinTextureDescription,
+      child: const SkinTextureAnimation(),
     );
   }
 
   Widget _buildTipCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppConfig.layout.cardPadding),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1F1F),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.yellow.withOpacity(0.3)),
+        color: AppConfig.colors.cardBackground,
+        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+        border: Border.all(
+          color: AppConfig.colors.warning.withOpacity(0.3),
+        ),
       ),
       child: Row(
         children: [
           Icon(
             Icons.lightbulb_outline,
-            color: Colors.yellow[600],
+            color: AppConfig.colors.warning,
             size: 24,
           ),
-          const SizedBox(width: 16),
-          const Expanded(
+          SizedBox(width: AppConfig.layout.spacingMedium),
+          Expanded(
             child: Text(
-              'Tip: Focus on these features in your next attempt. '
-              'The more you practice, the better you\'ll become at detecting deepfakes!',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+              AppConfig.strings.statistics.tip,
+              style: AppConfig.textStyles.bodySmall,
             ),
           ),
         ],
@@ -180,19 +171,17 @@ class StrategiesScreen extends BaseGameScreen {
         child: ElevatedButton(
           onPressed: () => handleNextNavigation(context),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            backgroundColor: AppConfig.colors.primary,
+            padding: EdgeInsets.symmetric(
+              vertical: AppConfig.layout.spacingLarge,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
             ),
           ),
-          child: const Text(
-            'Next Game',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            ),
+          child: Text(
+            AppConfig.strings.statistics.nextGameButton,
+            style: AppConfig.textStyles.buttonLarge,
           ),
         ),
       ),
@@ -201,19 +190,16 @@ class StrategiesScreen extends BaseGameScreen {
 
   Widget _buildRegisterButton(BuildContext context) {
     return Positioned(
-      right: 16,
-      bottom: 16,
+      right: AppConfig.layout.spacingMedium,
+      bottom: AppConfig.layout.spacingMedium,
       child: FloatingActionButton.extended(
         onPressed: () => context.read<GameBloc>().add(const GeneratePin()),
         icon: const Icon(Icons.pin_outlined),
-        label: const Text(
-          'Get PIN',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+        label: Text(
+          AppConfig.strings.statistics.getPinButton,
+          style: AppConfig.textStyles.buttonMedium,
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppConfig.colors.primary,
       ),
     );
   }
