@@ -127,28 +127,32 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
         children: [
           ProgressBar(currentScreen: widget.currentScreen),
           Expanded(
-            child: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Stack(
+            child: Stack(
+              children: [
+                // Main content centered
+                Center(
+                  child: Column(
                     children: [
-                      Positioned(
-                        top: AppConfig.layout.spacingMedium,
-                        left: AppConfig.layout.spacingMedium,
-                        right: AppConfig.layout.spacingMedium,
-                        child: _buildTitleCard(),
-                      ),
-                      _buildMainContent(constraints),
-                      if (_isInitialized)
-                        NavigationButtons.forGameScreen(
-                          onNext: () => _handleNavigation(true),
-                          onBack: () => _handleNavigation(false),
-                          currentScreen: widget.currentScreen,
-                        ),
+                      Expanded(child: _buildVideoPlayer()),
+                      if (_isInitialized) ...[
+                        const SizedBox(height: 8),
+                        _buildProgressBar(),
+                        const SizedBox(height: 8),
+                        _buildControlButtons(),
+                        const SizedBox(height: 8),
+                      ],
                     ],
-                  );
-                },
-              ),
+                  ),
+                ),
+
+                // Navigation buttons
+                if (_isInitialized)
+                  NavigationButtons.forGameScreen(
+                    onNext: () => _handleNavigation(true),
+                    onBack: () => _handleNavigation(false),
+                    currentScreen: widget.currentScreen,
+                  ),
+              ],
             ),
           ),
         ],
@@ -156,82 +160,49 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
     );
   }
 
-  Widget _buildTitleCard() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: AppConfig.layout.spacingSmall,
-        horizontal: AppConfig.layout.spacingMedium,
-      ),
-      decoration: BoxDecoration(
-        color: AppConfig.colors.backgroundLight.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
-      ),
-      child: Text(
-        widget.video.title,
-        style: AppConfig.textStyles.bodyMedium,
-      ),
-    );
-  }
+  Widget _buildVideoPlayer() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth * 0.7; // 70% der Bildschirmbreite
+        final height = width / AppConfig.video.minAspectRatio;
 
-  Widget _buildMainContent(BoxConstraints constraints) {
-    return Padding(
-      padding: EdgeInsets.only(top: AppConfig.layout.spacingXLarge * 2),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildVideoPlayer(constraints),
-            if (_isInitialized) ...[
-              SizedBox(height: AppConfig.layout.spacingSmall),
-              _buildProgressBar(),
-              SizedBox(height: AppConfig.layout.spacingMedium),
-              _buildControlButtons(),
-              SizedBox(height: AppConfig.layout.spacingMedium),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVideoPlayer(BoxConstraints constraints) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: constraints.maxHeight - AppConfig.layout.spacingXLarge * 6,
-      ),
-      child: AspectRatio(
-        aspectRatio: AppConfig.video.minAspectRatio,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (_isInitialized) ...[
-              VideoPlayer(_controller),
-              _buildTapToPlayOverlay(),
-            ] else
-              Container(
-                color: AppConfig.colors.backgroundDark,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: AppConfig.colors.textPrimary,
+        return SizedBox(
+          width: width,
+          height: height,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (_isInitialized) ...[
+                VideoPlayer(_controller),
+                _buildTapToPlayOverlay(),
+              ] else
+                Container(
+                  color: AppConfig.colors.backgroundDark,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: AppConfig.colors.textPrimary,
+                    ),
                   ),
                 ),
-              ),
-            if (_isBuffering && _isInitialized)
-              CircularProgressIndicator(
-                color: AppConfig.colors.textPrimary,
-              ),
-          ],
-        ),
-      ),
+              if (_isBuffering && _isInitialized)
+                CircularProgressIndicator(
+                  color: AppConfig.colors.textPrimary,
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildProgressBar() {
-    return Column(
-      children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: SliderTheme(
+    return SizedBox(
+      width: MediaQuery.of(context).size.width *
+          0.7, // Reduziert auf 70% der Bildschirmbreite
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SliderTheme(
             data: SliderTheme.of(context).copyWith(
               trackHeight: AppConfig.layout.progressBarHeight,
               thumbShape: RoundSliderThumbShape(
@@ -255,25 +226,25 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
               },
             ),
           ),
-        ),
-        Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: AppConfig.layout.spacingXLarge),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _formatDuration(_position),
-                style: AppConfig.textStyles.bodySmall,
-              ),
-              Text(
-                _formatDuration(_duration),
-                style: AppConfig.textStyles.bodySmall,
-              ),
-            ],
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: AppConfig.layout.spacingMedium),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _formatDuration(_position),
+                  style: AppConfig.textStyles.bodySmall,
+                ),
+                Text(
+                  _formatDuration(_duration),
+                  style: AppConfig.textStyles.bodySmall,
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -312,6 +283,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   Widget _buildControlButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: Icon(

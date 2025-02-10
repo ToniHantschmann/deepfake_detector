@@ -51,35 +51,34 @@ class StrategiesScreen extends BaseGameScreen {
           Expanded(
             child: Stack(
               children: [
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppConfig.layout.screenPaddingHorizontal,
-                      vertical: AppConfig.layout.screenPaddingVertical,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppConfig.strings.statistics.title,
-                          style: AppConfig.textStyles.h2,
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppConfig.layout.screenPaddingHorizontal,
+                    vertical: AppConfig.layout.screenPaddingVertical,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppConfig.strings.statistics.title,
+                        style: AppConfig.textStyles.h2,
+                      ),
+                      SizedBox(height: AppConfig.layout.spacingSmall),
+                      Text(
+                        AppConfig.strings.statistics.subtitle,
+                        style: AppConfig.textStyles.bodyMedium.copyWith(
+                          color: AppConfig.colors.textSecondary,
                         ),
-                        SizedBox(height: AppConfig.layout.spacingSmall),
-                        Text(
-                          AppConfig.strings.statistics.subtitle,
-                          style: AppConfig.textStyles.bodyMedium.copyWith(
-                            color: AppConfig.colors.textSecondary,
-                          ),
-                        ),
-                        SizedBox(height: AppConfig.layout.spacingXLarge),
-                        _buildStrategiesGrid(context),
-                        SizedBox(height: AppConfig.layout.spacingLarge),
-                        _buildTipCard(),
-                        SizedBox(height: AppConfig.layout.spacingXLarge * 2),
-                        _buildNextButton(context),
-                        SizedBox(height: AppConfig.layout.spacingXLarge),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: AppConfig.layout.spacingXLarge),
+                      Expanded(
+                        child: _buildStrategiesGrid(context),
+                      ),
+                      _buildTipCard(),
+                      SizedBox(height: AppConfig.layout.spacingLarge),
+                      _buildNextButton(context),
+                      SizedBox(height: AppConfig.layout.spacingLarge),
+                    ],
                   ),
                 ),
                 NavigationButtons.forGameScreen(
@@ -100,7 +99,7 @@ class StrategiesScreen extends BaseGameScreen {
       builder: (context, constraints) {
         return constraints.maxWidth > AppConfig.layout.breakpointTablet
             ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(child: _buildBlinkingStrategy()),
                   SizedBox(width: AppConfig.layout.spacingLarge),
@@ -109,9 +108,9 @@ class StrategiesScreen extends BaseGameScreen {
               )
             : Column(
                 children: [
-                  _buildBlinkingStrategy(),
+                  Expanded(child: _buildBlinkingStrategy()),
                   SizedBox(height: AppConfig.layout.spacingLarge),
-                  _buildSkinTextureStrategy(),
+                  Expanded(child: _buildSkinTextureStrategy()),
                 ],
               );
       },
