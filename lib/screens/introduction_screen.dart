@@ -3,6 +3,8 @@ import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
 import '../config/config.dart';
+import '../widgets/common/pulsing_button.dart';
+import '../widgets/common/pulsing_highlight.dart';
 
 class IntroductionScreen extends BaseGameScreen {
   const IntroductionScreen({Key? key}) : super(key: key);
@@ -79,15 +81,28 @@ class IntroductionScreen extends BaseGameScreen {
       children: [
         AspectRatio(
           aspectRatio: AppConfig.video.minAspectRatio,
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppConfig.colors.backgroundLight,
-              borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
-            ),
-            child: const Center(
-              child: Text(
-                'Picture',
-                style: TextStyle(fontSize: 24, color: Colors.grey),
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: PulsingHighlight(
+              color: AppConfig.colors.primary,
+              maxBlurRadius: 30,
+              maxSpreadRadius: 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppConfig.colors.backgroundLight,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppConfig.colors.primary.withOpacity(0.5),
+                    width: 2,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset(
+                    'images/deepfakePope.jpeg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
           ),
@@ -95,10 +110,13 @@ class IntroductionScreen extends BaseGameScreen {
         SizedBox(height: AppConfig.layout.spacingMedium),
         Container(
           width: double.infinity,
-          padding:
-              EdgeInsets.symmetric(vertical: AppConfig.layout.spacingMedium),
+          padding: EdgeInsets.symmetric(
+            vertical: AppConfig.layout.spacingMedium,
+            horizontal: AppConfig.layout.spacingLarge,
+          ),
           decoration: BoxDecoration(
             color: AppConfig.colors.wrongAnswer,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             AppConfig.strings.introduction.challenge,
@@ -131,30 +149,9 @@ class IntroductionScreen extends BaseGameScreen {
 
   Widget _buildQuickStartButton(BuildContext context) {
     return Center(
-      child: SizedBox(
-        width: 400,
-        height: 80,
-        child: ElevatedButton(
-          onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppConfig.colors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(40),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.play_arrow,
-                  color: AppConfig.colors.textPrimary, size: 32),
-              SizedBox(width: AppConfig.layout.spacingMedium),
-              Text(
-                AppConfig.strings.introduction.startButton,
-                style: AppConfig.textStyles.buttonLarge,
-              ),
-            ],
-          ),
-        ),
+      child: PulsingButton(
+        onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
+        text: AppConfig.strings.introduction.startButton,
       ),
     );
   }
