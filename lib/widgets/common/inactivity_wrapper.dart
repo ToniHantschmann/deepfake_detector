@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/game/game_bloc.dart';
 import '../../blocs/game/game_event.dart';
+import '../../config/config.dart';
 
 class InactivityWrapper extends StatefulWidget {
   final Widget child;
@@ -35,7 +36,7 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
 
   void _startTimer() {
     _timer?.cancel();
-    _timer = Timer(widget.timeout, _onInactivityTimeout);
+    _timer = Timer(AppConfig.timing.inactivityTimeout, _onInactivityTimeout);
   }
 
   void _onInactivityTimeout() {
