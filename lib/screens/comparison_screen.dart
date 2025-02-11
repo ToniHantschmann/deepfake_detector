@@ -67,43 +67,53 @@ class ComparisonScreen extends BaseGameScreen {
                             vertical: AppConfig.layout.spacingLarge,
                             horizontal: AppConfig.layout.spacingXLarge,
                           ),
-                          child: SizedBox(
+                          child: Container(
                             width: double.infinity,
-                            height: AppConfig.layout.buttonHeight,
-                            child: state.selectedVideoIndex != null
-                                ? ElevatedButton(
-                                    onPressed: () {
+                            constraints: BoxConstraints(
+                              minHeight: AppConfig.layout.buttonHeight,
+                              maxHeight: AppConfig.layout.buttonHeight * 1.2,
+                            ),
+                            child: ElevatedButton(
+                              onPressed: state.selectedVideoIndex != null
+                                  ? () {
                                       dispatchGameEvent(
                                         context,
                                         SelectDeepfake(
                                             state.selectedVideoIndex!),
                                       );
                                       handleNextNavigation(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppConfig.colors.primary,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            AppConfig.layout.buttonRadius),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      AppConfig
-                                          .strings.comparison.confirmButton,
-                                      style: AppConfig.textStyles.buttonLarge,
-                                    ),
-                                  )
-                                : null,
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppConfig.colors.primary,
+                                disabledBackgroundColor:
+                                    AppConfig.colors.primary.withOpacity(0.3),
+                                disabledForegroundColor: AppConfig
+                                    .colors.textPrimary
+                                    .withOpacity(0.7),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      AppConfig.layout.buttonRadius * 1.5),
+                                ),
+                              ),
+                              child: Text(
+                                AppConfig.strings.comparison.confirmButton,
+                                style: AppConfig.textStyles.buttonLarge,
+                              ),
+                            ),
                           ),
                         ),
+                        SizedBox(height: AppConfig.layout.spacingMedium),
                       ],
                     ),
                   ),
                   NavigationButtons.forGameScreen(
                     onNext: () {
-                      dispatchGameEvent(
-                          context, SelectDeepfake(state.selectedVideoIndex!));
-                      handleNextNavigation(context);
+                      if (state.selectedVideoIndex != null) {
+                        dispatchGameEvent(
+                            context, SelectDeepfake(state.selectedVideoIndex!));
+                        handleNextNavigation(context);
+                      }
                     },
                     onBack: () => handleBackNavigation(context),
                     currentScreen: GameScreen.comparison,
@@ -158,8 +168,17 @@ class ComparisonScreen extends BaseGameScreen {
         borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
         border: Border.all(
           color: isSelected ? AppConfig.colors.primary : Colors.transparent,
-          width: 2,
+          width: 3, // Dickerer Border
         ),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: AppConfig.colors.primary.withOpacity(0.3),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                )
+              ]
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -191,33 +210,49 @@ class ComparisonScreen extends BaseGameScreen {
                   style: AppConfig.textStyles.bodyMedium.copyWith(
                     color: AppConfig.colors.textSecondary,
                   ),
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: AppConfig.layout.spacingLarge),
-                SizedBox(
+                Container(
                   width: double.infinity,
+                  constraints: BoxConstraints(
+                    minHeight: AppConfig.layout.buttonHeight,
+                    maxHeight: AppConfig.layout.buttonHeight * 1.2,
+                  ),
                   child: ElevatedButton(
                     onPressed: onSelect,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isSelected
                           ? AppConfig.colors.primary
-                          : AppConfig.colors.backgroundLight,
+                          : AppConfig.colors
+                              .secondary, // Andere Farbe für nicht ausgewählte Buttons
                       padding: EdgeInsets.symmetric(
-                        vertical: AppConfig.layout.buttonPadding,
+                        vertical: AppConfig.layout.buttonPadding * 1.5,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                            AppConfig.layout.buttonRadius),
+                            AppConfig.layout.buttonRadius * 1.5),
                       ),
                     ),
-                    child: Text(
-                      AppConfig.strings.comparison.selectionButton,
-                      style: AppConfig.textStyles.buttonMedium.copyWith(
-                        color: isSelected
-                            ? AppConfig.colors.textPrimary
-                            : AppConfig.colors.textSecondary,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          isSelected
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: AppConfig.colors.textPrimary,
+                          size: 24,
+                        ),
+                        SizedBox(width: AppConfig.layout.spacingMedium),
+                        Text(
+                          AppConfig.strings.comparison.selectionButton,
+                          style: AppConfig.textStyles.buttonLarge.copyWith(
+                            color: AppConfig.colors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
