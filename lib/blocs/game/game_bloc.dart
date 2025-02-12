@@ -33,6 +33,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<CheckPin>(_onCheckPin);
     on<InitializeGame>(_onInitializeGame);
     on<UpdateSelectedVideo>(_onUpdateSelectedVideo);
+    on<ToggleStrategiesExpanded>(_onToggleStrategiesExpanded);
   }
 
   Future<void> _onQuickStartGame(
@@ -49,7 +50,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         // Initialisiere temporäre Statistiken
         userStatistics: UserStatistics.temporary(),
         errorMessage: null,
-        showLoginOverlay: false,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -338,6 +338,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // Only update the selection without recording the attempt
     emit(state.copyWith(
       selectedVideoIndex: event.videoIndex,
+    ));
+  }
+
+  Future<void> _onToggleStrategiesExpanded(
+      ToggleStrategiesExpanded event, Emitter<GameState> emit) async {
+    emit(state.copyWith(
+      areStrategiesExpanded: !state.areStrategiesExpanded,
     ));
   }
 }

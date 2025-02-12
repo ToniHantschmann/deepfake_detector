@@ -53,3 +53,7 @@ class UpdateSelectedVideo extends GameEvent {
   final int videoIndex;
   const UpdateSelectedVideo(this.videoIndex);
 }
+
+class ToggleStrategiesExpanded extends GameEvent {
+  const ToggleStrategiesExpanded();
+}

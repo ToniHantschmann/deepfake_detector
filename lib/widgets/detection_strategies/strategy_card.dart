@@ -1,47 +1,53 @@
 import 'package:flutter/material.dart';
+import '../../models/strategy_model.dart';
+import '../../config/config.dart';
 
 class StrategyCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final Widget child;
+  final Strategy strategy;
 
   const StrategyCard({
     Key? key,
-    required this.title,
-    required this.description,
-    required this.child,
+    required this.strategy,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF262626),
-        borderRadius: BorderRadius.circular(16),
+        color: AppConfig.colors.backgroundLight,
+        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Padding(
+            padding: EdgeInsets.all(AppConfig.layout.cardPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strategy.title,
+                  style: AppConfig.textStyles.h3,
+                ),
+                SizedBox(height: AppConfig.layout.spacingSmall),
+                Text(
+                  strategy.description,
+                  style: AppConfig.textStyles.bodyMedium.copyWith(
+                    color: AppConfig.colors.textSecondary,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[300],
-              height: 1.5,
+          const Spacer(),
+          Padding(
+            padding: EdgeInsets.all(AppConfig.layout.cardPadding),
+            child: Center(
+              child: strategy.animation,
             ),
           ),
-          const SizedBox(height: 24),
-          Center(child: child),
+          const Spacer(),
         ],
       ),
     );

@@ -46,12 +46,13 @@ class GameState {
   final GameStatus status;
   final GameScreen currentScreen;
   final List<Video> videos;
-  final int? currentPin; // Null bedeutet temporäre Session
+  final int? currentPin;
   final UserStatistics? userStatistics;
   final int? selectedVideoIndex;
   final bool? isCorrectGuess;
   final String? errorMessage;
   final int? generatedPin;
+  final bool areStrategiesExpanded;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -71,6 +72,7 @@ class GameState {
     this.isCorrectGuess,
     this.errorMessage,
     this.generatedPin,
+    this.areStrategiesExpanded = false,
   });
 
   const GameState.initial()
@@ -82,7 +84,8 @@ class GameState {
         selectedVideoIndex = null,
         isCorrectGuess = null,
         errorMessage = null,
-        generatedPin = null;
+        generatedPin = null,
+        areStrategiesExpanded = false;
 
   GameState copyWith({
     GameStatus? status,
@@ -93,8 +96,8 @@ class GameState {
     Object? selectedVideoIndex = _sentinel,
     Object? isCorrectGuess = _sentinel,
     Object? errorMessage = _sentinel,
-    bool? showLoginOverlay,
     Object? generatedPin = _sentinel,
+    bool? areStrategiesExpanded,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -116,6 +119,8 @@ class GameState {
           : errorMessage as String?,
       generatedPin:
           generatedPin == _sentinel ? this.generatedPin : generatedPin as int?,
+      areStrategiesExpanded:
+          areStrategiesExpanded ?? this.areStrategiesExpanded,
     );
   }
 
@@ -129,7 +134,8 @@ class GameState {
           currentPin == other.currentPin &&
           selectedVideoIndex == other.selectedVideoIndex &&
           isCorrectGuess == other.isCorrectGuess &&
-          generatedPin == other.generatedPin;
+          generatedPin == other.generatedPin &&
+          areStrategiesExpanded == other.areStrategiesExpanded;
 
   @override
   int get hashCode =>
@@ -138,11 +144,12 @@ class GameState {
       currentPin.hashCode ^
       selectedVideoIndex.hashCode ^
       isCorrectGuess.hashCode ^
-      generatedPin.hashCode;
+      generatedPin.hashCode ^
+      areStrategiesExpanded.hashCode;
 
   @override
   String toString() =>
-      'GameState(status: $status, screen: $currentScreen, pin: $currentPin)';
+      'GameState(status: $status, screen: $currentScreen, pin: $currentPin, strategiesExpanded: $areStrategiesExpanded)';
 }
 
 const _sentinel = Object();

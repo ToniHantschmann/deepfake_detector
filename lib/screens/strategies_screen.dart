@@ -1,11 +1,12 @@
+// lib/screens/strategies_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
-import '../widgets/detection_strategies/strategy_card.dart';
-import '../widgets/detection_strategies/blinking_animation.dart';
-import '../widgets/detection_strategies/skin_texture_animation.dart';
+import '../models/strategy_model.dart';
+import '../widgets/detection_strategies/expandable_strategies_list.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
 import '../config/config.dart';
@@ -20,7 +21,8 @@ class StrategiesScreen extends BaseGameScreen {
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status ||
         previous.currentPin != current.currentPin ||
-        previous.generatedPin != current.generatedPin;
+        previous.generatedPin != current.generatedPin ||
+        previous.areStrategiesExpanded != current.areStrategiesExpanded;
   }
 
   @override
@@ -51,34 +53,42 @@ class StrategiesScreen extends BaseGameScreen {
           Expanded(
             child: Stack(
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppConfig.layout.screenPaddingHorizontal,
-                    vertical: AppConfig.layout.screenPaddingVertical,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppConfig.strings.statistics.title,
-                        style: AppConfig.textStyles.h2,
-                      ),
-                      SizedBox(height: AppConfig.layout.spacingSmall),
-                      Text(
-                        AppConfig.strings.statistics.subtitle,
-                        style: AppConfig.textStyles.bodyMedium.copyWith(
-                          color: AppConfig.colors.textSecondary,
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppConfig.layout.screenPaddingHorizontal,
+                      vertical: AppConfig.layout.screenPaddingVertical,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppConfig.strings.statistics.title,
+                          style: AppConfig.textStyles.h2,
                         ),
-                      ),
-                      SizedBox(height: AppConfig.layout.spacingXLarge),
-                      Expanded(
-                        child: _buildStrategiesGrid(context),
-                      ),
-                      _buildTipCard(),
-                      SizedBox(height: AppConfig.layout.spacingLarge),
-                      _buildNextButton(context),
-                      SizedBox(height: AppConfig.layout.spacingLarge),
-                    ],
+                        SizedBox(height: AppConfig.layout.spacingSmall),
+                        Text(
+                          AppConfig.strings.statistics.subtitle,
+                          style: AppConfig.textStyles.bodyMedium.copyWith(
+                            color: AppConfig.colors.textSecondary,
+                          ),
+                        ),
+                        SizedBox(height: AppConfig.layout.spacingXLarge),
+                        ExpandableStrategyList(
+                          previewStrategies: implementedStrategies,
+                          expandedStrategies: dummyStrategies.take(3).toList(),
+                          isExpanded: state.areStrategiesExpanded,
+                          onToggleExpand: () => context
+                              .read<GameBloc>()
+                              .add(const ToggleStrategiesExpanded()),
+                        ),
+                        SizedBox(height: AppConfig.layout.spacingLarge),
+                        _buildTipCard(),
+                        SizedBox(height: AppConfig.layout.spacingXLarge * 2),
+                        _buildNextButton(context),
+                        SizedBox(height: AppConfig.layout.spacingXLarge),
+                      ],
+                    ),
                   ),
                 ),
                 NavigationButtons.forGameScreen(
@@ -91,45 +101,6 @@ class StrategiesScreen extends BaseGameScreen {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStrategiesGrid(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return constraints.maxWidth > AppConfig.layout.breakpointTablet
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(child: _buildBlinkingStrategy()),
-                  SizedBox(width: AppConfig.layout.spacingLarge),
-                  Expanded(child: _buildSkinTextureStrategy()),
-                ],
-              )
-            : Column(
-                children: [
-                  Expanded(child: _buildBlinkingStrategy()),
-                  SizedBox(height: AppConfig.layout.spacingLarge),
-                  Expanded(child: _buildSkinTextureStrategy()),
-                ],
-              );
-      },
-    );
-  }
-
-  Widget _buildBlinkingStrategy() {
-    return StrategyCard(
-      title: AppConfig.strings.statistics.blinkingTitle,
-      description: AppConfig.strings.statistics.blinkingDescription,
-      child: const BlinkingAnimation(),
-    );
-  }
-
-  Widget _buildSkinTextureStrategy() {
-    return StrategyCard(
-      title: AppConfig.strings.statistics.skinTextureTitle,
-      description: AppConfig.strings.statistics.skinTextureDescription,
-      child: const SkinTextureAnimation(),
     );
   }
 
