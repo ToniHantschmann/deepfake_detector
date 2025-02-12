@@ -20,7 +20,7 @@ class StrategyCarousel extends StatefulWidget {
   const StrategyCarousel({
     Key? key,
     required this.strategies,
-    this.viewportFraction = 0.8,
+    this.viewportFraction = 0.4,
     this.onPageChanged,
   }) : super(key: key);
 
@@ -35,10 +35,12 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
   @override
   void initState() {
     super.initState();
+    // Starte in der Mitte der "unendlichen" Liste
     _currentPage = widget.strategies.length * 100;
     _pageController = PageController(
-      viewportFraction: widget.viewportFraction,
-      initialPage: _currentPage,
+      viewportFraction:
+          widget.viewportFraction, // Viewport-Fraction beibehalten
+      initialPage: _currentPage, // Starte in der Mitte
     );
   }
 
@@ -81,14 +83,8 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
                     }
                     return Transform.scale(
                       scale: value,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppConfig.layout.spacingMedium,
-                          vertical: AppConfig.layout.spacingLarge,
-                        ),
-                        child: StrategyCard(
-                          strategy: widget.strategies[actualIndex],
-                        ),
+                      child: StrategyCard(
+                        strategy: widget.strategies[actualIndex],
                       ),
                     );
                   },

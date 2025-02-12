@@ -68,20 +68,13 @@ class _BlinkingAnimationState extends State<BlinkingAnimation>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final availableHeight = constraints.maxHeight;
-        final buttonHeight = 36.0; // Höhe für Buttons
-        final spacingHeight = 16.0; // Abstand zwischen Elementen
-        final indicatorHeight = 32.0; // Höhe für den Indikator
-
-        // Berechne die verfügbare Höhe für das Gesicht
-        final faceHeight = availableHeight -
-            (buttonHeight + spacingHeight * 2 + indicatorHeight);
-
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Feste Größe für die Animation
             SizedBox(
-              height: faceHeight,
+              width: 300, // Feste Breite
+              height: 300, // Feste Höhe
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFF262626),
@@ -91,15 +84,16 @@ class _BlinkingAnimationState extends State<BlinkingAnimation>
                   animation: _animation,
                   builder: (context, child) {
                     return CustomPaint(
+                      size: Size(300, 300), // Feste Größe für das CustomPaint
                       painter: FacePainter(_animation.value),
                     );
                   },
                 ),
               ),
             ),
-            SizedBox(height: spacingHeight),
+            SizedBox(height: 16),
             SizedBox(
-              height: buttonHeight,
+              height: 36,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -109,9 +103,9 @@ class _BlinkingAnimationState extends State<BlinkingAnimation>
                 ],
               ),
             ),
-            SizedBox(height: spacingHeight),
+            SizedBox(height: 16),
             SizedBox(
-              height: indicatorHeight,
+              height: 32,
               child: _buildBlinkingIndicator(),
             ),
           ],

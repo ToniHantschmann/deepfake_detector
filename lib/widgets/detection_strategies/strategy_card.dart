@@ -20,7 +20,6 @@ class StrategyCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             strategy.title,
@@ -36,13 +35,9 @@ class StrategyCard extends StatelessWidget {
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: AppConfig.layout.spacingLarge),
           Expanded(
             child: Center(
-              child: SizedBox(
-                height: 300, // Fixed height for animation container
-                child: strategy.animation,
-              ),
+              child: strategy.animation,
             ),
           ),
         ],

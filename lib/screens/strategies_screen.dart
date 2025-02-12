@@ -52,11 +52,6 @@ class StrategiesScreen extends BaseGameScreen {
               children: [
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    final headerHeight = 120.0; // Geschätzte Höhe für Header
-                    final buttonHeight = 120.0; // Höhe für Button + Padding
-                    final carouselHeight =
-                        constraints.maxHeight - headerHeight - buttonHeight;
-
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -85,8 +80,7 @@ class StrategiesScreen extends BaseGameScreen {
                           ),
                         ),
                         // Carousel
-                        SizedBox(
-                          height: carouselHeight,
+                        Expanded(
                           child: StrategyCarousel(
                             strategies: [
                               ...implementedStrategies,
