@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../config/config.dart';
-import '../widgets/detection_strategies/blinking_animation.dart';
-import '../widgets/detection_strategies/skin_texture_animation.dart';
+import '../widgets/detection_strategies/animations/blinking_animation.dart';
+import '../widgets/detection_strategies/animations/skin_texture_animation.dart';
 
 class Strategy {
   final String id;

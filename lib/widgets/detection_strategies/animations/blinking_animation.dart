@@ -1,5 +1,3 @@
-// lib/widgets/detection_strategies/blinking_animation.dart
-
 import 'package:flutter/material.dart';
 import 'face_painter.dart';
 
@@ -14,7 +12,7 @@ class _BlinkingAnimationState extends State<BlinkingAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  bool _showingNatural = false; // Start mit unnatürlichem Blinzeln
+  bool _showingNatural = false;
   static const double _minEyeOpen = 0.1;
 
   @override
@@ -22,8 +20,7 @@ class _BlinkingAnimationState extends State<BlinkingAnimation>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(
-          milliseconds: 100), // Schnellere Animation für unnatürliches Blinzeln
+      duration: const Duration(milliseconds: 100),
     );
 
     _animation = Tween<double>(
@@ -39,9 +36,8 @@ class _BlinkingAnimationState extends State<BlinkingAnimation>
 
   void _startBlinking() {
     final interval = _showingNatural
-        ? (const Duration(
-            seconds: 4)) // Natürliches Blinzeln ca. alle 4 Sekunden
-        : (const Duration(milliseconds: 800)); // Unnatürlich schnelles Blinzeln
+        ? (const Duration(seconds: 4))
+        : (const Duration(milliseconds: 800));
 
     Future.delayed(interval, () {
       if (!mounted) return;
@@ -70,40 +66,57 @@ class _BlinkingAnimationState extends State<BlinkingAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 300, // Feste Höhe für das Gesicht
-          width: 300, // Feste Breite für das Gesicht
-          decoration: BoxDecoration(
-            color: const Color(0xFF262626),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: FacePainter(_animation.value),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 24),
-        _buildControls(),
-        const SizedBox(height: 16),
-        _buildBlinkingIndicator(),
-      ],
-    );
-  }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableHeight = constraints.maxHeight;
+        final buttonHeight = 36.0; // Höhe für Buttons
+        final spacingHeight = 16.0; // Abstand zwischen Elementen
+        final indicatorHeight = 32.0; // Höhe für den Indikator
 
-  Widget _buildControls() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildModeButton('Unnatural', false), // Unnatürlich zuerst
-        const SizedBox(width: 16),
-        _buildModeButton('Natural', true),
-      ],
+        // Berechne die verfügbare Höhe für das Gesicht
+        final faceHeight = availableHeight -
+            (buttonHeight + spacingHeight * 2 + indicatorHeight);
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: faceHeight,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF262626),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) {
+                    return CustomPaint(
+                      painter: FacePainter(_animation.value),
+                    );
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: spacingHeight),
+            SizedBox(
+              height: buttonHeight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildModeButton('Unnatural', false),
+                  const SizedBox(width: 16),
+                  _buildModeButton('Natural', true),
+                ],
+              ),
+            ),
+            SizedBox(height: spacingHeight),
+            SizedBox(
+              height: indicatorHeight,
+              child: _buildBlinkingIndicator(),
+            ),
+          ],
+        );
+      },
     );
   }
 

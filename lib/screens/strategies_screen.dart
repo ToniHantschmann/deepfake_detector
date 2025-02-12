@@ -1,12 +1,10 @@
-// lib/screens/strategies_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
 import '../models/strategy_model.dart';
-import '../widgets/detection_strategies/expandable_strategies_list.dart';
+import '../widgets/detection_strategies/strategy_carousel/strategy_carousel.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
 import '../config/config.dart';
@@ -22,12 +20,11 @@ class StrategiesScreen extends BaseGameScreen {
         previous.status != current.status ||
         previous.currentPin != current.currentPin ||
         previous.generatedPin != current.generatedPin ||
-        previous.areStrategiesExpanded != current.areStrategiesExpanded;
+        previous.currentStrategyIndex != current.currentStrategyIndex;
   }
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    // Show PIN overlay if a new PIN was generated
     if (state.generatedPin != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
@@ -53,43 +50,67 @@ class StrategiesScreen extends BaseGameScreen {
           Expanded(
             child: Stack(
               children: [
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppConfig.layout.screenPaddingHorizontal,
-                      vertical: AppConfig.layout.screenPaddingVertical,
-                    ),
-                    child: Column(
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final headerHeight = 120.0; // Geschätzte Höhe für Header
+                    final buttonHeight = 120.0; // Höhe für Button + Padding
+                    final carouselHeight =
+                        constraints.maxHeight - headerHeight - buttonHeight;
+
+                    return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          AppConfig.strings.statistics.title,
-                          style: AppConfig.textStyles.h2,
-                        ),
-                        SizedBox(height: AppConfig.layout.spacingSmall),
-                        Text(
-                          AppConfig.strings.statistics.subtitle,
-                          style: AppConfig.textStyles.bodyMedium.copyWith(
-                            color: AppConfig.colors.textSecondary,
+                        // Header
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal:
+                                AppConfig.layout.screenPaddingHorizontal,
+                            vertical: AppConfig.layout.screenPaddingVertical,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppConfig.strings.statistics.title,
+                                style: AppConfig.textStyles.h2,
+                              ),
+                              SizedBox(height: AppConfig.layout.spacingSmall),
+                              Text(
+                                AppConfig.strings.statistics.subtitle,
+                                style: AppConfig.textStyles.bodyMedium.copyWith(
+                                  color: AppConfig.colors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(height: AppConfig.layout.spacingXLarge),
-                        ExpandableStrategyList(
-                          previewStrategies: implementedStrategies,
-                          expandedStrategies: dummyStrategies.take(3).toList(),
-                          isExpanded: state.areStrategiesExpanded,
-                          onToggleExpand: () => context
-                              .read<GameBloc>()
-                              .add(const ToggleStrategiesExpanded()),
+                        // Carousel
+                        SizedBox(
+                          height: carouselHeight,
+                          child: StrategyCarousel(
+                            strategies: [
+                              ...implementedStrategies,
+                              ...dummyStrategies
+                            ],
+                            onPageChanged: (index) {
+                              context
+                                  .read<GameBloc>()
+                                  .add(StrategyIndexChanged(index));
+                            },
+                          ),
                         ),
-                        SizedBox(height: AppConfig.layout.spacingLarge),
-                        _buildTipCard(),
-                        SizedBox(height: AppConfig.layout.spacingXLarge * 2),
-                        _buildNextButton(context),
-                        SizedBox(height: AppConfig.layout.spacingXLarge),
+                        // Button
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal:
+                                AppConfig.layout.screenPaddingHorizontal,
+                            vertical: AppConfig.layout.spacingLarge,
+                          ),
+                          child: _buildNextButton(context),
+                        ),
                       ],
-                    ),
-                  ),
+                    );
+                  },
                 ),
                 NavigationButtons.forGameScreen(
                   onBack: () => handleBackNavigation(context),
@@ -97,35 +118,6 @@ class StrategiesScreen extends BaseGameScreen {
                 ),
                 if (state.currentPin == null) _buildRegisterButton(context),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTipCard() {
-    return Container(
-      padding: EdgeInsets.all(AppConfig.layout.cardPadding),
-      decoration: BoxDecoration(
-        color: AppConfig.colors.cardBackground,
-        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
-        border: Border.all(
-          color: AppConfig.colors.warning.withOpacity(0.3),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.lightbulb_outline,
-            color: AppConfig.colors.warning,
-            size: 24,
-          ),
-          SizedBox(width: AppConfig.layout.spacingMedium),
-          Expanded(
-            child: Text(
-              AppConfig.strings.statistics.tip,
-              style: AppConfig.textStyles.bodySmall,
             ),
           ),
         ],

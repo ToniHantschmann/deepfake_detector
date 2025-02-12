@@ -52,7 +52,7 @@ class GameState {
   final bool? isCorrectGuess;
   final String? errorMessage;
   final int? generatedPin;
-  final bool areStrategiesExpanded;
+  final int currentStrategyIndex;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -72,7 +72,7 @@ class GameState {
     this.isCorrectGuess,
     this.errorMessage,
     this.generatedPin,
-    this.areStrategiesExpanded = false,
+    required this.currentStrategyIndex,
   });
 
   const GameState.initial()
@@ -85,7 +85,7 @@ class GameState {
         isCorrectGuess = null,
         errorMessage = null,
         generatedPin = null,
-        areStrategiesExpanded = false;
+        currentStrategyIndex = 0;
 
   GameState copyWith({
     GameStatus? status,
@@ -97,7 +97,7 @@ class GameState {
     Object? isCorrectGuess = _sentinel,
     Object? errorMessage = _sentinel,
     Object? generatedPin = _sentinel,
-    bool? areStrategiesExpanded,
+    int? currentStrategyIndex,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -119,8 +119,7 @@ class GameState {
           : errorMessage as String?,
       generatedPin:
           generatedPin == _sentinel ? this.generatedPin : generatedPin as int?,
-      areStrategiesExpanded:
-          areStrategiesExpanded ?? this.areStrategiesExpanded,
+      currentStrategyIndex: currentStrategyIndex ?? this.currentStrategyIndex,
     );
   }
 
@@ -135,7 +134,7 @@ class GameState {
           selectedVideoIndex == other.selectedVideoIndex &&
           isCorrectGuess == other.isCorrectGuess &&
           generatedPin == other.generatedPin &&
-          areStrategiesExpanded == other.areStrategiesExpanded;
+          currentStrategyIndex == other.currentStrategyIndex;
 
   @override
   int get hashCode =>
@@ -145,11 +144,11 @@ class GameState {
       selectedVideoIndex.hashCode ^
       isCorrectGuess.hashCode ^
       generatedPin.hashCode ^
-      areStrategiesExpanded.hashCode;
+      currentStrategyIndex.hashCode;
 
   @override
   String toString() =>
-      'GameState(status: $status, screen: $currentScreen, pin: $currentPin, strategiesExpanded: $areStrategiesExpanded)';
+      'GameState(status: $status, screen: $currentScreen, pin: $currentPin, currentStrategyIndex: $currentStrategyIndex)';
 }
 
 const _sentinel = Object();

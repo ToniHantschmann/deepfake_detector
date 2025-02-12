@@ -33,7 +33,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<CheckPin>(_onCheckPin);
     on<InitializeGame>(_onInitializeGame);
     on<UpdateSelectedVideo>(_onUpdateSelectedVideo);
-    on<ToggleStrategiesExpanded>(_onToggleStrategiesExpanded);
+    on<StrategyIndexChanged>(_onStrategyIndexChanged);
   }
 
   Future<void> _onQuickStartGame(
@@ -330,6 +330,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       isCorrectGuess: null,
       errorMessage: null,
       generatedPin: null,
+      currentStrategyIndex: 0,
     ));
   }
 
@@ -341,10 +342,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     ));
   }
 
-  Future<void> _onToggleStrategiesExpanded(
-      ToggleStrategiesExpanded event, Emitter<GameState> emit) async {
+  Future<void> _onStrategyIndexChanged(
+      StrategyIndexChanged event, Emitter<GameState> emit) async {
     emit(state.copyWith(
-      areStrategiesExpanded: !state.areStrategiesExpanded,
+      currentStrategyIndex: event.newIndex,
     ));
   }
 }

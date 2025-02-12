@@ -13,41 +13,38 @@ class StrategyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(AppConfig.layout.cardPadding),
       decoration: BoxDecoration(
         color: AppConfig.colors.backgroundLight,
         borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: EdgeInsets.all(AppConfig.layout.cardPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  strategy.title,
-                  style: AppConfig.textStyles.h3,
-                ),
-                SizedBox(height: AppConfig.layout.spacingSmall),
-                Text(
-                  strategy.description,
-                  style: AppConfig.textStyles.bodyMedium.copyWith(
-                    color: AppConfig.colors.textSecondary,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            strategy.title,
+            style: AppConfig.textStyles.h3,
           ),
-          const Spacer(),
-          Padding(
-            padding: EdgeInsets.all(AppConfig.layout.cardPadding),
+          SizedBox(height: AppConfig.layout.spacingSmall),
+          Text(
+            strategy.description,
+            style: AppConfig.textStyles.bodyMedium.copyWith(
+              color: AppConfig.colors.textSecondary,
+              height: 1.5,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: AppConfig.layout.spacingLarge),
+          Expanded(
             child: Center(
-              child: strategy.animation,
+              child: SizedBox(
+                height: 300, // Fixed height for animation container
+                child: strategy.animation,
+              ),
             ),
           ),
-          const Spacer(),
         ],
       ),
     );

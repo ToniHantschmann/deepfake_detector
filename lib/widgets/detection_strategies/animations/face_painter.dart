@@ -1,5 +1,3 @@
-// lib/widgets/detection_strategies/face_painter.dart
-
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -13,18 +11,23 @@ class FacePainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+      ..strokeWidth =
+          math.min(size.width, size.height) * 0.01; // Relative Strichstärke
 
     final fillPaint = Paint()
       ..color = const Color(0xFF262626)
       ..style = PaintingStyle.fill;
 
-    _drawHead(canvas, size, paint, fillPaint);
-    _drawEyes(canvas, size, paint, fillPaint);
-    _drawMouth(canvas, size, paint);
+    // Skalierungsfaktor basierend auf der Größe
+    final scale = math.min(size.width, size.height);
+
+    _drawHead(canvas, size, paint, fillPaint, scale);
+    _drawEyes(canvas, size, paint, fillPaint, scale);
+    _drawMouth(canvas, size, paint, scale);
   }
 
-  void _drawHead(Canvas canvas, Size size, Paint paint, Paint fillPaint) {
+  void _drawHead(
+      Canvas canvas, Size size, Paint paint, Paint fillPaint, double scale) {
     final path = Path();
 
     // Startpunkt am Kinn
@@ -32,48 +35,49 @@ class FacePainter extends CustomPainter {
 
     // Linke Gesichtshälfte
     path.cubicTo(
-        size.width * 0.3,
-        size.height * 0.85, // Kinnlinie links
-        size.width * 0.25,
-        size.height * 0.6, // Wangenlinie links
-        size.width * 0.25,
-        size.height * 0.35 // Schläfe links
-        );
+      size.width * 0.3,
+      size.height * 0.85,
+      size.width * 0.25,
+      size.height * 0.6,
+      size.width * 0.25,
+      size.height * 0.35,
+    );
 
-    // Oberer Kopfbereich (sanft gerundet)
+    // Oberer Kopfbereich
     path.cubicTo(
-        size.width * 0.25,
-        size.height * 0.2, // Oberhalb der Schläfe
-        size.width * 0.4,
-        size.height * 0.15, // Kopfseite links
-        size.width * 0.5,
-        size.height * 0.15 // Kopfmitte
-        );
+      size.width * 0.25,
+      size.height * 0.2,
+      size.width * 0.4,
+      size.height * 0.15,
+      size.width * 0.5,
+      size.height * 0.15,
+    );
 
-    // Rechte Gesichtshälfte (gespiegelt)
+    // Rechte Gesichtshälfte
     path.cubicTo(
-        size.width * 0.6,
-        size.height * 0.15, // Kopfseite rechts
-        size.width * 0.75,
-        size.height * 0.2, // Oberhalb der Schläfe
-        size.width * 0.75,
-        size.height * 0.35 // Schläfe rechts
-        );
+      size.width * 0.6,
+      size.height * 0.15,
+      size.width * 0.75,
+      size.height * 0.2,
+      size.width * 0.75,
+      size.height * 0.35,
+    );
 
     path.cubicTo(
-        size.width * 0.75,
-        size.height * 0.6, // Wangenlinie rechts
-        size.width * 0.7,
-        size.height * 0.85, // Kinnlinie rechts
-        size.width * 0.5,
-        size.height * 0.85 // Zurück zum Kinn
-        );
+      size.width * 0.75,
+      size.height * 0.6,
+      size.width * 0.7,
+      size.height * 0.85,
+      size.width * 0.5,
+      size.height * 0.85,
+    );
 
     canvas.drawPath(path, fillPaint);
     canvas.drawPath(path, paint);
   }
 
-  void _drawEyes(Canvas canvas, Size size, Paint paint, Paint fillPaint) {
+  void _drawEyes(
+      Canvas canvas, Size size, Paint paint, Paint fillPaint, double scale) {
     final leftEyeCenter = Offset(size.width * 0.35, size.height * 0.45);
     final rightEyeCenter = Offset(size.width * 0.65, size.height * 0.45);
     final eyeWidth = size.width * 0.12;
@@ -83,12 +87,12 @@ class FacePainter extends CustomPainter {
       // Linkes Auge
       _drawEyeShape(
           canvas, leftEyeCenter, eyeWidth, eyeHeight, paint, fillPaint);
-      _drawIrisAndPupil(canvas, leftEyeCenter, size);
+      _drawIrisAndPupil(canvas, leftEyeCenter, size, scale);
 
       // Rechtes Auge
       _drawEyeShape(
           canvas, rightEyeCenter, eyeWidth, eyeHeight, paint, fillPaint);
-      _drawIrisAndPupil(canvas, rightEyeCenter, size);
+      _drawIrisAndPupil(canvas, rightEyeCenter, size, scale);
     }
   }
 
@@ -104,7 +108,8 @@ class FacePainter extends CustomPainter {
     canvas.drawOval(rect, paint);
   }
 
-  void _drawIrisAndPupil(Canvas canvas, Offset center, Size size) {
+  void _drawIrisAndPupil(
+      Canvas canvas, Offset center, Size size, double scale) {
     // Iris
     final irisPaint = Paint()
       ..color = Colors.blue.withOpacity(0.7)
@@ -122,20 +127,25 @@ class FacePainter extends CustomPainter {
       ..color = Colors.white.withOpacity(0.8)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(
-        Offset(center.dx - size.width * 0.01, center.dy - size.width * 0.01),
-        size.width * 0.008,
-        highlightPaint);
+      Offset(center.dx - size.width * 0.01, center.dy - size.width * 0.01),
+      size.width * 0.008,
+      highlightPaint,
+    );
   }
 
-  void _drawMouth(Canvas canvas, Size size, Paint paint) {
+  void _drawMouth(Canvas canvas, Size size, Paint paint, double scale) {
     final path = Path();
     final centerX = size.width * 0.5;
     final centerY = size.height * 0.65;
 
     // Leicht lächelnder Mund
     path.moveTo(centerX - size.width * 0.15, centerY);
-    path.quadraticBezierTo(centerX, centerY + size.height * 0.03,
-        centerX + size.width * 0.15, centerY);
+    path.quadraticBezierTo(
+      centerX,
+      centerY + size.height * 0.03,
+      centerX + size.width * 0.15,
+      centerY,
+    );
 
     canvas.drawPath(path, paint);
   }
