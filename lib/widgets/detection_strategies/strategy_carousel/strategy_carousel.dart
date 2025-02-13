@@ -31,17 +31,28 @@ class StrategyCarousel extends StatefulWidget {
 class _StrategyCarouselState extends State<StrategyCarousel> {
   late PageController _pageController;
   int _currentPage = 0;
+  static const int _baseMultiplier = 100;
 
   @override
   void initState() {
     super.initState();
-    // Starte in der Mitte der "unendlichen" Liste
-    _currentPage = widget.strategies.length * 100;
+    // Berechne die initiale Seite als Vielfaches der Strategieanzahl
+    _currentPage = widget.strategies.length * _baseMultiplier;
+
+    // Initialisiere den PageController mit der korrekten initialen Seite
     _pageController = PageController(
-      viewportFraction:
-          widget.viewportFraction, // Viewport-Fraction beibehalten
-      initialPage: _currentPage, // Starte in der Mitte
+      viewportFraction: widget.viewportFraction,
+      initialPage: _currentPage,
     );
+
+    // Korrigiere die Position und triggere die Animation nach dem ersten Frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _pageController.hasClients) {
+        setState(() {
+          // Force rebuild to apply initial scaling
+        });
+      }
+    });
   }
 
   @override
@@ -54,8 +65,23 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
     setState(() {
       _currentPage = page;
     });
+
     if (widget.onPageChanged != null) {
       widget.onPageChanged!(page % widget.strategies.length);
+    }
+
+    // Überprüfe, ob wir uns zu weit vom Basismultiplikator entfernt haben
+    final basePosition = widget.strategies.length * _baseMultiplier;
+    final offset = (page - basePosition).abs();
+
+    if (offset > widget.strategies.length * 10) {
+      // Springe zurück zur Basismultiplikator-Position
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _pageController.hasClients) {
+          final targetPage = basePosition + (page % widget.strategies.length);
+          _pageController.jumpToPage(targetPage);
+        }
+      });
     }
   }
 
@@ -79,12 +105,20 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
                     double value = 1.0;
                     if (_pageController.position.haveDimensions) {
                       value = _pageController.page! - index;
-                      value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
+                    } else {
+                      // Provide initial scaling before scrolling
+                      value = _currentPage.toDouble() - index;
                     }
+                    value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
                     return Transform.scale(
                       scale: value,
-                      child: StrategyCard(
-                        strategy: widget.strategies[actualIndex],
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppConfig.layout.spacingMedium,
+                        ),
+                        child: StrategyCard(
+                          strategy: widget.strategies[actualIndex],
+                        ),
                       ),
                     );
                   },
@@ -94,7 +128,10 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(bottom: AppConfig.layout.spacingMedium),
+          padding: EdgeInsets.only(
+            top: AppConfig.layout.spacingLarge,
+            bottom: AppConfig.layout.spacingMedium,
+          ),
           child: _buildPageIndicator(),
         ),
       ],
