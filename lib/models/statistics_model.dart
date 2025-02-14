@@ -2,18 +2,22 @@ import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/utils/pin_generator_service.dart';
 
 class UserStatistics {
-  final int? pin; // Optional PIN für temporäre Statistiken
+  final int? pin;
   final int totalAttempts;
   final int correctGuesses;
   final List<GameAttempt> recentAttempts;
-  final bool isTemporary; // Neues Flag für temporäre Statistiken
+  final bool isTemporary;
+  final Set<String> seenVideoIds;
 
   UserStatistics({
     this.pin,
     required this.totalAttempts,
     required this.correctGuesses,
     required this.recentAttempts,
-  }) : isTemporary = pin == null {
+    Set<String>? seenVideoIds, // Make optional with default empty set
+    bool? isTemporary,
+  })  : seenVideoIds = seenVideoIds ?? {},
+        isTemporary = isTemporary ?? (pin == null) {
     _validateStatistics();
   }
 
@@ -65,7 +69,7 @@ class UserStatistics {
         'totalAttempts': totalAttempts,
         'correctGuesses': correctGuesses,
         'recentAttempts': recentAttempts.map((a) => a.toJson()).toList(),
-        'isTemporary': isTemporary,
+        'seenVideoIds': seenVideoIds.toList(),
       };
 
   factory UserStatistics.fromJson(Map<String, dynamic> json) {
@@ -79,6 +83,8 @@ class UserStatistics {
             (a as Map<dynamic, dynamic>).cast<String, dynamic>();
         return GameAttempt.fromJson(attemptMap);
       }).toList(),
+      seenVideoIds:
+          (json['seenVideoIds'] as List?)?.cast<String>().toSet() ?? {},
     );
   }
 
@@ -87,12 +93,14 @@ class UserStatistics {
     int? totalAttempts,
     int? correctGuesses,
     List<GameAttempt>? recentAttempts,
+    Set<String>? seenVideoIds,
   }) {
     return UserStatistics(
       pin: pin ?? this.pin,
       totalAttempts: totalAttempts ?? this.totalAttempts,
       correctGuesses: correctGuesses ?? this.correctGuesses,
       recentAttempts: recentAttempts ?? List.from(this.recentAttempts),
+      seenVideoIds: seenVideoIds ?? Set.from(this.seenVideoIds),
     );
   }
 
