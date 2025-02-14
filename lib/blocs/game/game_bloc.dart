@@ -40,7 +40,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       QuickStartGame event, Emitter<GameState> emit) async {
     emit(state.copyWith(status: GameStatus.loading));
     try {
-      final videos = await _videoRepository.getRandomVideoPair();
+      final videos = await _videoRepository.getRandomVideoPair({});
 
       emit(state.copyWith(
         status: GameStatus.playing,
@@ -77,9 +77,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       // Get existing statistics and create new instance with empty recentAttempts
       final existingStats =
           await _statisticsRepository.getStatistics(event.pin);
+      final videos =
+          await _videoRepository.getRandomVideoPair(existingStats.seenVideoIds);
+
       final statistics = existingStats.copyWith(recentAttempts: []);
       await _statisticsRepository.resetRecentAttempts(event.pin);
-      final videos = await _videoRepository.getRandomVideoPair();
 
       emit(state.copyWith(
           status: GameStatus.playing,
@@ -179,7 +181,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
-      final videos = await _videoRepository.getRandomVideoPair();
       UserStatistics? statistics;
 
       if (currentPin != null) {
@@ -192,6 +193,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         // Erstelle neue temporäre Statistiken nur wenn keine existieren
         statistics = UserStatistics.temporary();
       }
+
+      final videos =
+          await _videoRepository.getRandomVideoPair(statistics.seenVideoIds);
 
       emit(state.copyWith(
         status: GameStatus.playing,
