@@ -97,29 +97,45 @@ class VideoRepository {
     }
   }
 
-  /// get a random pair of real/deepfake video
-  /// returns a [list] of two [video] objects
-  /// throws exeption when loading the videos failed
-  Future<List<Video>> getRandomVideoPair() async {
+  Future<List<Video>> getRandomVideoPair(Set<String> seenVideoIds) async {
     await _ensureInitialized();
     try {
-      // sort _videos for only real/deepfakes and add them to list
-      final realVideos = _videos.where((e) => !e.isDeepfake).toList();
-      final fakeVideos = _videos.where((e) => e.isDeepfake).toList();
+      // Split videos into seen and unseen
+      final unseenRealVideos = _videos
+          .where((v) => !v.isDeepfake && !seenVideoIds.contains(v.id))
+          .toList();
+      final unseenFakeVideos = _videos
+          .where((v) => v.isDeepfake && !seenVideoIds.contains(v.id))
+          .toList();
 
-      // shuffle lists to get random video
-      realVideos.shuffle();
-      fakeVideos.shuffle();
+      final realVideos = _videos.where((v) => !v.isDeepfake).toList();
+      final fakeVideos = _videos.where((v) => v.isDeepfake).toList();
 
-      if (realVideos.isEmpty || fakeVideos.isEmpty) {
-        throw VideoException(
-            'Not enough videos available (real: ${realVideos.length}, fake: ${fakeVideos.length})');
+      // Try to get unseen videos first
+      Video realVideo;
+      Video fakeVideo;
+
+      if (unseenRealVideos.isNotEmpty) {
+        unseenRealVideos.shuffle();
+        realVideo = unseenRealVideos.first;
+      } else {
+        // If all videos have been seen, use the full pool
+        realVideos.shuffle();
+        realVideo = realVideos.first;
       }
 
-      return [realVideos.first, fakeVideos.first];
+      if (unseenFakeVideos.isNotEmpty) {
+        unseenFakeVideos.shuffle();
+        fakeVideo = unseenFakeVideos.first;
+      } else {
+        // If all videos have been seen, use the full pool
+        fakeVideos.shuffle();
+        fakeVideo = fakeVideos.first;
+      }
+
+      return [realVideo, fakeVideo];
     } catch (e) {
-      if (e is VideoException) rethrow;
-      throw VideoException("Failed to load video pair: $e");
+      throw VideoException('Failed to load video pair: $e');
     }
   }
 

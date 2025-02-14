@@ -89,6 +89,7 @@ class StatisticsRepository {
         ...currentStats.recentAttempts,
         attempt,
       ].take(10).toList(),
+      seenVideoIds: {...currentStats.seenVideoIds, ...attempt.videoIds.toSet()},
     );
   }
 
@@ -102,6 +103,7 @@ class StatisticsRepository {
         ...stats.recentAttempts,
         attempt,
       ].take(10).toList(),
+      seenVideoIds: {...stats.seenVideoIds, ...attempt.videoIds.toSet()},
     );
 
     _statistics[pin] = updatedStats;
