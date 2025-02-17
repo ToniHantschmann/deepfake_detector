@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../storage/internal_statistics_storage.dart';
 import '../exceptions/app_exceptions.dart';
 import '../models/internal_statistics_model.dart';
-import 'dart:convert';
 import 'dart:js' as js;
 import 'dart:html' as html;
 
@@ -10,13 +10,11 @@ class InternalStatisticsRepository {
   InternalStatisticsStorage? _storage;
   bool _isInitialized = false;
 
-  // Singleton pattern
   static final InternalStatisticsRepository _instance =
       InternalStatisticsRepository._internal();
   factory InternalStatisticsRepository() => _instance;
   InternalStatisticsRepository._internal();
 
-  // Test constructor for dependency injection
   @visibleForTesting
   factory InternalStatisticsRepository.withStorage(
       InternalStatisticsStorage storage) {
@@ -40,16 +38,70 @@ class InternalStatisticsRepository {
     if (!_isInitialized) await initialize();
   }
 
-  // Hauptmethoden für die Spielstatistiken
-  Future<void> recordGameStart(String playerId) async {
+  // Grundlegende Datenzugriffsmethoden
+  Future<InternalStatistics> _loadStatistics() async {
     await _ensureInitialized();
     try {
-      await _storage!.recordGameCompletion(
-        playerId: playerId,
-        wasCorrect: false,
-        completedFullGame: false,
-        hasPinRegistered: false,
-      );
+      final jsonString = await _storage!.getRawData();
+      if (jsonString == null) {
+        return InternalStatistics(players: []);
+      }
+      return InternalStatistics.fromJson(jsonDecode(jsonString));
+    } catch (e) {
+      debugPrint('Error loading statistics: $e');
+      return InternalStatistics(players: []);
+    }
+  }
+
+  Future<void> _saveStatistics(InternalStatistics statistics) async {
+    await _ensureInitialized();
+    try {
+      final jsonString = jsonEncode(statistics.toJson());
+      await _storage!.saveRawData(jsonString);
+    } catch (e) {
+      throw RepositoryException('Failed to save statistics: $e');
+    }
+  }
+
+  // Spieler-bezogene Methoden
+  Future<InternalPlayerStatistics?> getPlayerStatistics(String playerId) async {
+    final statistics = await _loadStatistics();
+    return statistics.players.where((p) => p.id == playerId).firstOrNull;
+  }
+
+  Future<void> _updatePlayer(InternalPlayerStatistics player) async {
+    final statistics = await _loadStatistics();
+    final updatedStats = statistics.updatePlayer(player);
+    await _saveStatistics(updatedStats);
+  }
+
+  // Öffentliche API-Methoden
+  Future<void> recordGameStart(String playerId) async {
+    try {
+      final currentStats = await getPlayerStatistics(playerId);
+      final now = DateTime.now();
+
+      final InternalPlayerStatistics updatedStats;
+      if (currentStats != null) {
+        updatedStats = currentStats.copyWith(
+          gamesPlayed: currentStats.gamesPlayed + 1,
+          lastGameTimestamp: now,
+        );
+      } else {
+        updatedStats = InternalPlayerStatistics(
+          id: playerId,
+          gamesPlayed: 1,
+          correctGuesses: 0,
+          loginCount: 0,
+          hasCompletedGame: false,
+          hasPinRegistered: false,
+          hasReturnedWithPin: false,
+          firstGameTimestamp: now,
+          lastGameTimestamp: now,
+        );
+      }
+
+      await _updatePlayer(updatedStats);
     } catch (e) {
       throw RepositoryException('Failed to record game start: $e');
     }
@@ -61,14 +113,34 @@ class InternalStatisticsRepository {
     required bool completedFullGame,
     required bool hasPinRegistered,
   }) async {
-    await _ensureInitialized();
     try {
-      await _storage!.recordGameCompletion(
-        playerId: playerId,
-        wasCorrect: wasCorrect,
-        completedFullGame: completedFullGame,
-        hasPinRegistered: hasPinRegistered,
-      );
+      final currentStats = await getPlayerStatistics(playerId);
+      final now = DateTime.now();
+
+      final InternalPlayerStatistics updatedStats;
+      if (currentStats != null) {
+        updatedStats = currentStats.copyWith(
+          gamesPlayed: currentStats.gamesPlayed + (completedFullGame ? 1 : 0),
+          correctGuesses: currentStats.correctGuesses + (wasCorrect ? 1 : 0),
+          hasCompletedGame: currentStats.hasCompletedGame || completedFullGame,
+          hasPinRegistered: currentStats.hasPinRegistered || hasPinRegistered,
+          lastGameTimestamp: now,
+        );
+      } else {
+        updatedStats = InternalPlayerStatistics(
+          id: playerId,
+          gamesPlayed: completedFullGame ? 1 : 0,
+          correctGuesses: wasCorrect ? 1 : 0,
+          loginCount: 0,
+          hasCompletedGame: completedFullGame,
+          hasPinRegistered: hasPinRegistered,
+          hasReturnedWithPin: false,
+          firstGameTimestamp: now,
+          lastGameTimestamp: now,
+        );
+      }
+
+      await _updatePlayer(updatedStats);
     } catch (e) {
       throw RepositoryException('Failed to record game completion: $e');
     }
@@ -76,15 +148,14 @@ class InternalStatisticsRepository {
 
   Future<void> recordPinRegistration(
       String oldPlayerId, String newPinId) async {
-    await _ensureInitialized();
     try {
-      final currentStats = await _storage!.getPlayerStatistics(oldPlayerId);
+      final currentStats = await getPlayerStatistics(oldPlayerId);
       if (currentStats != null) {
         final updatedStats = currentStats.copyWith(
           id: newPinId,
           hasPinRegistered: true,
         );
-        await _storage!.updatePlayerStatistics(updatedStats);
+        await _updatePlayer(updatedStats);
       }
     } catch (e) {
       throw RepositoryException('Failed to record PIN registration: $e');
@@ -92,40 +163,45 @@ class InternalStatisticsRepository {
   }
 
   Future<void> recordPinLogin(String playerId) async {
-    await _ensureInitialized();
     try {
-      await _storage!.recordPinLogin(playerId);
+      final currentStats = await getPlayerStatistics(playerId);
+      final now = DateTime.now();
+
+      final InternalPlayerStatistics updatedStats;
+      if (currentStats != null) {
+        updatedStats = currentStats.copyWith(
+          loginCount: currentStats.loginCount + 1,
+          hasReturnedWithPin: true,
+          lastGameTimestamp: now,
+        );
+      } else {
+        updatedStats = InternalPlayerStatistics(
+          id: playerId,
+          gamesPlayed: 0,
+          correctGuesses: 0,
+          loginCount: 1,
+          hasCompletedGame: false,
+          hasPinRegistered: true,
+          hasReturnedWithPin: true,
+          firstGameTimestamp: now,
+          lastGameTimestamp: now,
+        );
+      }
+
+      await _updatePlayer(updatedStats);
     } catch (e) {
-      throw RepositoryException('Failed to record PIN login: $e');
+      throw RepositoryException('Failed to record pin login: $e');
     }
   }
 
-  // Methoden zum Abrufen der Statistiken
+  // Statistik-Abruf-Methoden
   Future<InternalStatistics> getOverallStatistics() async {
-    await _ensureInitialized();
-    try {
-      return await _storage!.getStatistics();
-    } catch (e) {
-      throw RepositoryException('Failed to get overall statistics: $e');
-    }
+    return await _loadStatistics();
   }
 
-  Future<InternalPlayerStatistics?> getPlayerStatistics(String playerId) async {
-    await _ensureInitialized();
-    try {
-      return await _storage!.getPlayerStatistics(playerId);
-    } catch (e) {
-      if (e is PlayerNotFoundException) return null;
-      throw RepositoryException('Failed to get player statistics: $e');
-    }
-  }
-
-  // Neue Methode um formatierte Statistiken zu erhalten
   Future<Map<String, dynamic>> getFormattedStatistics() async {
-    await _ensureInitialized();
     try {
       final stats = await getOverallStatistics();
-
       return {
         'metadata': {
           'totalPlayers': stats.players.length,
@@ -158,46 +234,56 @@ class InternalStatisticsRepository {
     }
   }
 
-  // Methode zum Registrieren der Konsolen-Funktionen
   void registerConsoleCommands() {
-    // Füge die getStats Funktion zum window-Objekt hinzu
+    // Bestehende Download-Funktion
     js.context['getDeepfakeStats'] = () async {
+      final stats = await getFormattedStatistics();
+      final jsonString = JsonEncoder.withIndent('  ').convert(stats);
+
+      final blob = html.Blob([jsonString], 'text/plain');
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+
+      final anchor = html.AnchorElement()
+        ..href = url
+        ..download = 'deepfake_stats_$timestamp.json'
+        ..style.display = 'none';
+
+      html.document.body?.children.add(anchor);
+      anchor.click();
+      html.document.body?.children.remove(anchor);
+      html.Url.revokeObjectUrl(url);
+    };
+
+    // Neue Reset-Funktion
+    js.context['resetDeepfakeStats'] = () async {
       try {
-        final stats = await getFormattedStatistics();
-        final jsonString = JsonEncoder.withIndent('  ').convert(stats);
-        js.context.callMethod('console.log', ['Deepfake Statistics:']);
-        js.context.callMethod('console.log', [jsonString]);
+        await clear();
+        print('Deepfake statistics have been reset successfully.');
 
-        // Erstelle einen Blob und einen Download-Link
-        final blob = html.Blob([jsonString], 'text/plain');
-        final url = html.Url.createObjectUrlFromBlob(blob);
-        final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+        // Optional: Zeige aktuelle (leere) Statistiken
+        final newStats = await getFormattedStatistics();
+        print('Current statistics:');
+        print(JsonEncoder.withIndent('  ').convert(newStats));
 
-        final anchor = html.AnchorElement()
-          ..href = url
-          ..download = 'deepfake_stats_$timestamp.json'
-          ..style.display = 'none';
-
-        html.document.body?.children.add(anchor);
-        anchor.click();
-        html.document.body?.children.remove(anchor);
-        html.Url.revokeObjectUrl(url);
-
-        return stats;
+        return true;
       } catch (e) {
-        js.context.callMethod(
-            'console.error', ['Error getting statistics: ${e.toString()}']);
-        return null;
+        print('Error resetting deepfake statistics: $e');
+        return false;
       }
     };
 
-    // Dokumentation in der Konsole ausgeben
-    js.context.callMethod('console.info', [
-      '''
-Available commands for Deepfake Statistics:
-- getDeepfakeStats(): Logs and downloads the current statistics
-    '''
-    ]);
+    // Hilfsfunktion zum Anzeigen der aktuellen Statistiken
+    js.context['showDeepfakeStats'] = () async {
+      try {
+        final stats = await getFormattedStatistics();
+        print(JsonEncoder.withIndent('  ').convert(stats));
+        return true;
+      } catch (e) {
+        print('Error showing deepfake statistics: $e');
+        return false;
+      }
+    };
   }
 
   @visibleForTesting
