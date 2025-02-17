@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import '../../repositories/video_repository.dart';
 import '../../repositories/statistics_repository.dart';
 import '../../repositories/user_repository.dart';
+import '../../repositories/internal_statistics_repository.dart';
+
 import '../../models/statistics_model.dart';
 import '../../exceptions/app_exceptions.dart';
 import 'game_event.dart';
@@ -12,14 +16,17 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   final VideoRepository _videoRepository;
   final StatisticsRepository _statisticsRepository;
   final UserRepository _userRepository;
+  final InternalStatisticsRepository _internalStatsRepository;
 
   GameBloc({
     required VideoRepository videoRepository,
     required StatisticsRepository statisticsRepository,
     required UserRepository userRepository,
+    required InternalStatisticsRepository internalStatsRepository,
   })  : _videoRepository = videoRepository,
         _statisticsRepository = statisticsRepository,
         _userRepository = userRepository,
+        _internalStatsRepository = internalStatsRepository,
         super(const GameState.initial()) {
     on<QuickStartGame>(_onQuickStartGame);
     on<LoginWithPin>(_onLoginWithPin);
@@ -39,17 +46,22 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Future<void> _onQuickStartGame(
       QuickStartGame event, Emitter<GameState> emit) async {
     emit(state.copyWith(status: GameStatus.loading));
+
     try {
+      final playerId = _generatePlayerId();
       final videos = await _videoRepository.getRandomVideoPair({});
+
+      // Record start of new game in internal statistics
+      await _internalStatsRepository.recordGameStart(playerId);
 
       emit(state.copyWith(
         status: GameStatus.playing,
         currentScreen: GameScreen.firstVideo,
         currentPin: null,
         videos: videos,
-        // Initialisiere temporäre Statistiken
         userStatistics: UserStatistics.temporary(),
         errorMessage: null,
+        playerId: playerId,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -74,6 +86,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         return;
       }
 
+      await _internalStatsRepository.recordPinLogin(event.pin.toString());
+
       // Get existing statistics and create new instance with empty recentAttempts
       final existingStats =
           await _statisticsRepository.getStatistics(event.pin);
@@ -84,12 +98,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       await _statisticsRepository.resetRecentAttempts(event.pin);
 
       emit(state.copyWith(
-          status: GameStatus.playing,
-          currentScreen: GameScreen.firstVideo,
-          currentPin: event.pin,
-          userStatistics: statistics,
-          videos: videos,
-          errorMessage: null));
+        status: GameStatus.playing,
+        currentScreen: GameScreen.firstVideo,
+        currentPin: event.pin,
+        userStatistics: statistics,
+        videos: videos,
+        errorMessage: null,
+        playerId: event.pin.toString(),
+      ));
     } catch (e) {
       emit(state.copyWith(
           status: GameStatus.error,
@@ -102,7 +118,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     try {
       final pin = await _userRepository.createNewUser();
 
-      // Konvertiere temporäre Statistiken wenn vorhanden
+      // Update internal statistics to mark pin registration
+      if (state.playerId != null) {
+        await _internalStatsRepository.recordPinRegistration(
+          state.playerId!,
+          pin.toString(),
+        );
+      }
+
+      // Convert temporary statistics if available
       if (state.userStatistics != null && state.userStatistics!.isTemporary) {
         final permanentStats =
             await _statisticsRepository.convertTemporaryStats(
@@ -115,15 +139,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           generatedPin: pin,
           userStatistics: permanentStats,
           status: GameStatus.playing,
+          playerId: pin.toString(),
         ));
       } else {
-        // Erstelle neue permanente Statistiken
         final newStats = UserStatistics.withPin(pin);
         emit(state.copyWith(
           currentPin: pin,
           generatedPin: pin,
           userStatistics: newStats,
           status: GameStatus.playing,
+          playerId: pin.toString(),
         ));
       }
     } catch (e) {
@@ -158,6 +183,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         attempt,
         pin: state.currentPin,
         stats: state.userStatistics,
+      );
+
+      // Update internal statistics
+      await _internalStatsRepository.recordGameCompletion(
+        playerId: state.playerId!,
+        wasCorrect: isCorrect,
+        completedFullGame: false,
+        hasPinRegistered: state.currentPin != null,
       );
 
       emit(state.copyWith(
@@ -272,6 +305,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.result:
+        if (state.playerId != null) {
+          await _internalStatsRepository.recordGameCompletion(
+            playerId: state.playerId!,
+            wasCorrect: state.isCorrectGuess ?? false,
+            completedFullGame: true,
+            hasPinRegistered: state.currentPin != null,
+          );
+        }
         emit(state.copyWith(currentScreen: GameScreen.statistics));
         break;
 
@@ -351,5 +392,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(
       currentStrategyIndex: event.newIndex,
     ));
+  }
+
+  String _generatePlayerId() {
+    if (state.currentPin != null) {
+      return state.currentPin.toString();
+    }
+    return 'temp_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}';
   }
 }

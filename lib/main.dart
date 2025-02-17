@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import './storage/game_attempt_adapter.dart';
 import './storage/user_statistics_adapter.dart';
+import 'repositories/internal_statistics_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initStorage();
+  InternalStatisticsRepository().registerConsoleCommands();
   runApp(const DeepfakeDetectorApp());
 }
 

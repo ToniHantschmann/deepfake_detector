@@ -37,3 +37,15 @@ class PinException implements Exception {
   @override
   String toString() => 'PinException: $message';
 }
+
+class PlayerNotFoundException implements Exception {
+  @override
+  String toString() => 'Player not found in internal statistics';
+}
+
+class RepositoryException implements Exception {
+  final String message;
+  RepositoryException(this.message);
+  @override
+  String toString() => 'RepositoryException: $message';
+}

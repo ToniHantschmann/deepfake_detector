@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repositories/statistics_repository.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/video_repository.dart';
+import '../repositories/internal_statistics_repository.dart';
 import '../screens/video_screen.dart';
 import '../screens/introduction_screen.dart';
 import '../screens/comparison_screen.dart';
@@ -25,6 +26,8 @@ class GameWrapper extends StatelessWidget {
         videoRepository: VideoRepository(),
         statisticsRepository: StatisticsRepository(),
         userRepository: UserRepository(),
+        internalStatsRepository:
+            InternalStatisticsRepository(), // Neu hinzugefügt
       ),
       child: const GameWrapperView(),
     );

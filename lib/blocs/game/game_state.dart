@@ -53,6 +53,7 @@ class GameState {
   final String? errorMessage;
   final int? generatedPin;
   final int currentStrategyIndex;
+  final String? playerId; // Neue Variable für das Tracking
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -73,6 +74,7 @@ class GameState {
     this.errorMessage,
     this.generatedPin,
     required this.currentStrategyIndex,
+    this.playerId, // Neue Variable im Konstruktor
   });
 
   const GameState.initial()
@@ -85,7 +87,8 @@ class GameState {
         isCorrectGuess = null,
         errorMessage = null,
         generatedPin = null,
-        currentStrategyIndex = 0;
+        currentStrategyIndex = 0,
+        playerId = null; // Initial null
 
   GameState copyWith({
     GameStatus? status,
@@ -98,6 +101,7 @@ class GameState {
     Object? errorMessage = _sentinel,
     Object? generatedPin = _sentinel,
     int? currentStrategyIndex,
+    Object? playerId = _sentinel, // Neue Variable in copyWith
   }) {
     return GameState(
       status: status ?? this.status,
@@ -120,6 +124,9 @@ class GameState {
       generatedPin:
           generatedPin == _sentinel ? this.generatedPin : generatedPin as int?,
       currentStrategyIndex: currentStrategyIndex ?? this.currentStrategyIndex,
+      playerId: playerId == _sentinel
+          ? this.playerId
+          : playerId as String?, // Neue Variable in return
     );
   }
 
@@ -134,7 +141,8 @@ class GameState {
           selectedVideoIndex == other.selectedVideoIndex &&
           isCorrectGuess == other.isCorrectGuess &&
           generatedPin == other.generatedPin &&
-          currentStrategyIndex == other.currentStrategyIndex;
+          currentStrategyIndex == other.currentStrategyIndex &&
+          playerId == other.playerId; // Neue Variable im Vergleich
 
   @override
   int get hashCode =>
@@ -144,11 +152,12 @@ class GameState {
       selectedVideoIndex.hashCode ^
       isCorrectGuess.hashCode ^
       generatedPin.hashCode ^
-      currentStrategyIndex.hashCode;
+      currentStrategyIndex.hashCode ^
+      playerId.hashCode; // Neue Variable im Hash
 
   @override
   String toString() =>
-      'GameState(status: $status, screen: $currentScreen, pin: $currentPin, currentStrategyIndex: $currentStrategyIndex)';
+      'GameState(status: $status, screen: $currentScreen, pin: $currentPin, playerId: $playerId, currentStrategyIndex: $currentStrategyIndex)';
 }
 
 const _sentinel = Object();
