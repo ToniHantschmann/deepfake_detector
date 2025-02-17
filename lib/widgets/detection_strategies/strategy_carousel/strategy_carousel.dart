@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../models/strategy_model.dart';
 import '../../../config/config.dart';
 import '../strategy_card.dart';
+import 'dart:math';
 
 class AppScrollBehavior extends MaterialScrollBehavior {
   @override
@@ -36,8 +37,13 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
   @override
   void initState() {
     super.initState();
-    // Berechne die initiale Seite als Vielfaches der Strategieanzahl
-    _currentPage = widget.strategies.length * _baseMultiplier;
+
+    // Generiere einen zufälligen Index innerhalb der Strategieanzahl
+    final random = Random();
+    final randomIndex = random.nextInt(widget.strategies.length);
+
+    // Berechne die initiale Seite als Vielfaches der Strategieanzahl plus den zufälligen Index
+    _currentPage = widget.strategies.length * _baseMultiplier + randomIndex;
 
     // Initialisiere den PageController mit der korrekten initialen Seite
     _pageController = PageController(
