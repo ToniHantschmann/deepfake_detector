@@ -162,105 +162,114 @@ class ComparisonScreen extends BaseGameScreen {
     required bool isSelected,
     required VoidCallback onSelect,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppConfig.colors.backgroundLight,
-        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
-        border: Border.all(
-          color: isSelected ? AppConfig.colors.primary : Colors.transparent,
-          width: 3, // Dickerer Border
-        ),
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: AppConfig.colors.primary.withOpacity(0.3),
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                )
-              ]
-            : null,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AspectRatio(
-            aspectRatio: AppConfig.video.minAspectRatio,
-            child: ClipRRect(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppConfig.layout.cardRadius),
-              ),
-              child: Image.asset(
-                video.thumbnailUrl,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(AppConfig.layout.cardPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  video.title,
-                  style: AppConfig.textStyles.h3,
+    return Material(
+        color: Colors.transparent,
+        child: InkWell(
+            onTap: onSelect,
+            borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppConfig.colors.backgroundLight,
+                borderRadius:
+                    BorderRadius.circular(AppConfig.layout.cardRadius),
+                border: Border.all(
+                  color: isSelected
+                      ? AppConfig.colors.primary
+                      : Colors.transparent,
+                  width: 3, // Dickerer Border
                 ),
-                SizedBox(height: AppConfig.layout.spacingSmall),
-                Text(
-                  video.description,
-                  style: AppConfig.textStyles.bodyMedium.copyWith(
-                    color: AppConfig.colors.textSecondary,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: AppConfig.layout.spacingLarge),
-                Container(
-                  width: double.infinity,
-                  constraints: BoxConstraints(
-                    minHeight: AppConfig.layout.buttonHeight,
-                    maxHeight: AppConfig.layout.buttonHeight * 1.2,
-                  ),
-                  child: ElevatedButton(
-                    onPressed: onSelect,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isSelected
-                          ? AppConfig.colors.primary
-                          : AppConfig.colors
-                              .secondary, // Andere Farbe für nicht ausgewählte Buttons
-                      padding: EdgeInsets.symmetric(
-                        vertical: AppConfig.layout.buttonPadding * 1.5,
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppConfig.colors.primary.withOpacity(0.3),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        )
+                      ]
+                    : null,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AspectRatio(
+                    aspectRatio: AppConfig.video.minAspectRatio,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(AppConfig.layout.cardRadius),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            AppConfig.layout.buttonRadius * 1.5),
+                      child: Image.asset(
+                        video.thumbnailUrl,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(AppConfig.layout.cardPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          isSelected
-                              ? Icons.check_circle
-                              : Icons.radio_button_unchecked,
-                          color: AppConfig.colors.textPrimary,
-                          size: 24,
-                        ),
-                        SizedBox(width: AppConfig.layout.spacingMedium),
                         Text(
-                          AppConfig.strings.comparison.selectionButton,
-                          style: AppConfig.textStyles.buttonLarge.copyWith(
-                            color: AppConfig.colors.textPrimary,
+                          video.title,
+                          style: AppConfig.textStyles.h3,
+                        ),
+                        SizedBox(height: AppConfig.layout.spacingSmall),
+                        Text(
+                          video.description,
+                          style: AppConfig.textStyles.bodyMedium.copyWith(
+                            color: AppConfig.colors.textSecondary,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: AppConfig.layout.spacingLarge),
+                        Container(
+                          width: double.infinity,
+                          constraints: BoxConstraints(
+                            minHeight: AppConfig.layout.buttonHeight,
+                            maxHeight: AppConfig.layout.buttonHeight * 1.2,
+                          ),
+                          child: ElevatedButton(
+                            onPressed: onSelect,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? AppConfig.colors.primary
+                                  : AppConfig.colors
+                                      .secondary, // Andere Farbe für nicht ausgewählte Buttons
+                              padding: EdgeInsets.symmetric(
+                                vertical: AppConfig.layout.buttonPadding * 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    AppConfig.layout.buttonRadius * 1.5),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  isSelected
+                                      ? Icons.check_circle
+                                      : Icons.radio_button_unchecked,
+                                  color: AppConfig.colors.textPrimary,
+                                  size: 24,
+                                ),
+                                SizedBox(width: AppConfig.layout.spacingMedium),
+                                Text(
+                                  AppConfig.strings.comparison.selectionButton,
+                                  style:
+                                      AppConfig.textStyles.buttonLarge.copyWith(
+                                    color: AppConfig.colors.textPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+                ],
+              ),
+            )));
   }
 }
