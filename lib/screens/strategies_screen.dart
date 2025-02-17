@@ -7,6 +7,7 @@ import '../models/strategy_model.dart';
 import '../widgets/detection_strategies/strategy_carousel/strategy_carousel.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import '../widgets/tutorial/swipe_tutorial_overlay.dart';
 import '../config/config.dart';
 import 'base_game_screen.dart';
 import 'pin_overlay.dart';
@@ -42,80 +43,96 @@ class StrategiesScreen extends BaseGameScreen {
       });
     }
 
-    return Scaffold(
-      backgroundColor: AppConfig.colors.background,
-      body: Column(
-        children: [
-          ProgressBar(currentScreen: state.currentScreen),
-          Expanded(
-            child: Stack(
-              children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal:
-                                AppConfig.layout.screenPaddingHorizontal,
-                            vertical: AppConfig.layout.screenPaddingVertical,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppConfig.strings.statistics.title,
-                                style: AppConfig.textStyles.h2,
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppConfig.colors.background,
+          body: Column(
+            children: [
+              ProgressBar(currentScreen: state.currentScreen),
+              Expanded(
+                child: Stack(
+                  children: [
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Header
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    AppConfig.layout.screenPaddingHorizontal,
+                                vertical:
+                                    AppConfig.layout.screenPaddingVertical,
                               ),
-                              SizedBox(height: AppConfig.layout.spacingSmall),
-                              Text(
-                                AppConfig.strings.statistics.subtitle,
-                                style: AppConfig.textStyles.bodyMedium.copyWith(
-                                  color: AppConfig.colors.textSecondary,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    AppConfig.strings.statistics.title,
+                                    style: AppConfig.textStyles.h2,
+                                  ),
+                                  SizedBox(
+                                      height: AppConfig.layout.spacingSmall),
+                                  Text(
+                                    AppConfig.strings.statistics.subtitle,
+                                    style: AppConfig.textStyles.bodyMedium
+                                        .copyWith(
+                                      color: AppConfig.colors.textSecondary,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                        // Carousel
-                        Expanded(
-                          child: StrategyCarousel(
-                            strategies: [
-                              ...implementedStrategies,
-                              ...dummyStrategies
-                            ],
-                            onPageChanged: (index) {
-                              context
-                                  .read<GameBloc>()
-                                  .add(StrategyIndexChanged(index));
-                            },
-                          ),
-                        ),
-                        // Button
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal:
-                                AppConfig.layout.screenPaddingHorizontal,
-                            vertical: AppConfig.layout.spacingLarge,
-                          ),
-                          child: _buildNextButton(context),
-                        ),
-                      ],
-                    );
-                  },
+                            ),
+                            // Carousel
+                            Expanded(
+                              child: StrategyCarousel(
+                                strategies: [
+                                  ...implementedStrategies,
+                                  ...dummyStrategies
+                                ],
+                                onPageChanged: (index) {
+                                  context.read<GameBloc>().add(
+                                        StrategyIndexChanged(index),
+                                      );
+                                },
+                              ),
+                            ),
+                            // Next Game Button
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    AppConfig.layout.screenPaddingHorizontal,
+                                vertical: AppConfig.layout.spacingLarge,
+                              ),
+                              child: _buildNextButton(context),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    NavigationButtons.forGameScreen(
+                      onBack: () => handleBackNavigation(context),
+                      currentScreen: GameScreen.statistics,
+                    ),
+                    if (state.currentPin == null) _buildRegisterButton(context),
+                  ],
                 ),
-                NavigationButtons.forGameScreen(
-                  onBack: () => handleBackNavigation(context),
-                  currentScreen: GameScreen.statistics,
-                ),
-                if (state.currentPin == null) _buildRegisterButton(context),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        // Tutorial Overlay
+        if (state.isTemporarySession &&
+            state.userStatistics != null &&
+            state.userStatistics!.totalAttempts == 0)
+          SwipeTutorialOverlay(
+            onComplete: () {
+              // Tutorial will automatically hide after completion
+            },
+          ),
+      ],
     );
   }
 
