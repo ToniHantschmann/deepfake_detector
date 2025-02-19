@@ -43,12 +43,10 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay>
       curve: const Interval(0.0, 0.2, curve: Curves.easeIn),
     ));
 
-    // Start the animation after a short delay
     Future.delayed(const Duration(milliseconds: 500), () {
       _controller.repeat(reverse: true);
     });
 
-    // Automatically dismiss after 5 seconds
     Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
         _dismiss();
@@ -70,8 +68,8 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay>
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: GestureDetector(
-        onTap: _dismiss,
+      child: InkWell(
+        onTap: _dismiss, // Simple tap/click handler
         child: Container(
           color: AppConfig.colors.backgroundDark.withOpacity(0.8),
           child: Center(
@@ -107,14 +105,14 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      'Nach links und rechts wischen\nfür mehr Strategien',
+                      'Swipe to see more strategies!',
                       style: AppConfig.textStyles.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Tippen zum Fortfahren',
+                    'Touch anywhere to continue',
                     style: AppConfig.textStyles.bodySmall.copyWith(
                       color: AppConfig.colors.textSecondary,
                     ),

@@ -305,15 +305,40 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.result:
-        if (state.playerId != null) {
-          await _internalStatsRepository.recordGameCompletion(
-            playerId: state.playerId!,
-            wasCorrect: state.isCorrectGuess ?? false,
-            completedFullGame: true,
-            hasPinRegistered: state.currentPin != null,
-          );
+        try {
+          if (state.playerId != null) {
+            await _internalStatsRepository.recordGameCompletion(
+              playerId: state.playerId!,
+              wasCorrect: state.isCorrectGuess ?? false,
+              completedFullGame: true,
+              hasPinRegistered: state.currentPin != null,
+            );
+
+            // Aktualisiere die Statistiken vor dem Screen-Wechsel
+            if (state.userStatistics != null) {
+              UserStatistics updatedStats;
+              if (state.currentPin != null) {
+                updatedStats = await _statisticsRepository
+                    .getStatistics(state.currentPin!);
+              } else {
+                // Für temporäre Nutzer behalten wir die existierenden Statistiken
+                updatedStats = state.userStatistics!;
+              }
+              emit(state.copyWith(
+                  userStatistics: updatedStats,
+                  currentScreen: GameScreen.statistics));
+            } else {
+              emit(state.copyWith(currentScreen: GameScreen.statistics));
+            }
+          } else {
+            emit(state.copyWith(currentScreen: GameScreen.statistics));
+          }
+        } catch (e) {
+          emit(state.copyWith(
+            status: GameStatus.error,
+            errorMessage: 'Failed to update statistics: $e',
+          ));
         }
-        emit(state.copyWith(currentScreen: GameScreen.statistics));
         break;
 
       case GameScreen.statistics:

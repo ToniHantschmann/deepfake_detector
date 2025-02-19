@@ -26,7 +26,55 @@ class StrategiesScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    if (state.generatedPin != null) {
+    return _StrategiesScreenContent(state: state);
+  }
+}
+
+class _StrategiesScreenContent extends StatefulWidget {
+  final GameState state;
+
+  const _StrategiesScreenContent({
+    Key? key,
+    required this.state,
+  }) : super(key: key);
+
+  @override
+  State<_StrategiesScreenContent> createState() =>
+      _StrategiesScreenContentState();
+}
+
+class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
+  bool _showTutorial = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _showTutorial = widget.state.isTemporarySession &&
+        widget.state.userStatistics != null &&
+        widget.state.userStatistics!.totalAttempts == 1;
+  }
+
+  void _handleTutorialComplete() {
+    setState(() {
+      _showTutorial = false;
+    });
+  }
+
+  void _handleNextNavigation() {
+    context.read<GameBloc>().add(const NextScreen());
+  }
+
+  void _handleBackNavigation() {
+    context.read<GameBloc>().add(const PreviousScreen());
+  }
+
+  void _handlePinGeneration() {
+    context.read<GameBloc>().add(const GeneratePin());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.state.generatedPin != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
           context: context,
@@ -35,7 +83,7 @@ class StrategiesScreen extends BaseGameScreen {
           builder: (dialogContext) => BlocProvider.value(
             value: context.read<GameBloc>(),
             child: PinOverlay(
-              pin: state.generatedPin.toString(),
+              pin: widget.state.generatedPin.toString(),
               onClose: () => Navigator.of(dialogContext).pop(),
             ),
           ),
@@ -49,7 +97,7 @@ class StrategiesScreen extends BaseGameScreen {
           backgroundColor: AppConfig.colors.background,
           body: Column(
             children: [
-              ProgressBar(currentScreen: state.currentScreen),
+              ProgressBar(currentScreen: widget.state.currentScreen),
               Expanded(
                 child: Stack(
                   children: [
@@ -70,13 +118,13 @@ class StrategiesScreen extends BaseGameScreen {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppConfig.strings.statistics.title,
+                                    AppConfig.strings.strategies.title,
                                     style: AppConfig.textStyles.h2,
                                   ),
                                   SizedBox(
                                       height: AppConfig.layout.spacingSmall),
                                   Text(
-                                    AppConfig.strings.statistics.subtitle,
+                                    AppConfig.strings.strategies.subtitle,
                                     style: AppConfig.textStyles.bodyMedium
                                         .copyWith(
                                       color: AppConfig.colors.textSecondary,
@@ -106,74 +154,63 @@ class StrategiesScreen extends BaseGameScreen {
                                     AppConfig.layout.screenPaddingHorizontal,
                                 vertical: AppConfig.layout.spacingLarge,
                               ),
-                              child: _buildNextButton(context),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 200,
+                                  height: 80,
+                                  child: ElevatedButton(
+                                    onPressed: _handleNextNavigation,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppConfig.colors.primary,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: AppConfig.layout.spacingLarge,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(40),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      AppConfig
+                                          .strings.strategies.nextGameButton,
+                                      style: AppConfig.textStyles.buttonLarge,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         );
                       },
                     ),
                     NavigationButtons.forGameScreen(
-                      onBack: () => handleBackNavigation(context),
-                      currentScreen: GameScreen.statistics,
+                      onBack: _handleBackNavigation,
+                      currentScreen: widget.state.currentScreen,
                     ),
-                    if (state.currentPin == null) _buildRegisterButton(context),
+                    if (widget.state.currentPin == null)
+                      Positioned(
+                        right: AppConfig.layout.spacingMedium,
+                        bottom: AppConfig.layout.spacingMedium,
+                        child: FloatingActionButton.extended(
+                          onPressed: _handlePinGeneration,
+                          icon: const Icon(Icons.pin_outlined),
+                          label: Text(
+                            AppConfig.strings.strategies.getPinButton,
+                            style: AppConfig.textStyles.buttonMedium,
+                          ),
+                          backgroundColor: AppConfig.colors.primary,
+                        ),
+                      ),
                   ],
                 ),
               ),
             ],
           ),
         ),
-        // Tutorial Overlay
-        if (state.isTemporarySession &&
-            state.userStatistics != null &&
-            state.userStatistics!.totalAttempts == 0)
+        if (_showTutorial)
           SwipeTutorialOverlay(
-            onComplete: () {
-              // Tutorial will automatically hide after completion
-            },
+            onComplete: _handleTutorialComplete,
           ),
       ],
-    );
-  }
-
-  Widget _buildNextButton(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 200,
-        height: 80,
-        child: ElevatedButton(
-          onPressed: () => handleNextNavigation(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppConfig.colors.primary,
-            padding: EdgeInsets.symmetric(
-              vertical: AppConfig.layout.spacingLarge,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(40),
-            ),
-          ),
-          child: Text(
-            AppConfig.strings.statistics.nextGameButton,
-            style: AppConfig.textStyles.buttonLarge,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRegisterButton(BuildContext context) {
-    return Positioned(
-      right: AppConfig.layout.spacingMedium,
-      bottom: AppConfig.layout.spacingMedium,
-      child: FloatingActionButton.extended(
-        onPressed: () => context.read<GameBloc>().add(const GeneratePin()),
-        icon: const Icon(Icons.pin_outlined),
-        label: Text(
-          AppConfig.strings.statistics.getPinButton,
-          style: AppConfig.textStyles.buttonMedium,
-        ),
-        backgroundColor: AppConfig.colors.primary,
-      ),
     );
   }
 }
