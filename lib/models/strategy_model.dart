@@ -3,6 +3,7 @@ import '../../config/config.dart';
 import '../widgets/detection_strategies/animations/blinking_animation.dart';
 import '../widgets/detection_strategies/animations/skin_texture_animation.dart';
 import '../widgets/detection_strategies/animations/face_manipulation_animation.dart';
+import '../widgets/detection_strategies/animations/facial_features_animation.dart';
 
 class Strategy {
   final String id;
@@ -47,6 +48,12 @@ final List<Strategy> dummyStrategies = [
 ];
 
 final List<Strategy> implementedStrategies = [
+  Strategy(
+    id: 'facial_features',
+    title: AppConfig.strings.strategyCard.faceManipulationTitle,
+    description: AppConfig.strings.strategyCard.faceManipulationDescription,
+    animation: const FacialFeaturesAnimation(),
+  ),
   Strategy(
     id: 'blinking',
     title: AppConfig.strings.strategyCard.blinkingTitle,
