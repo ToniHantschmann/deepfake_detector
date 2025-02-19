@@ -24,10 +24,11 @@ class AppStrings {
   final video = const VideoScreenStrings();
   final comparison = const ComparisonScreenStrings();
   final result = const ResultScreenStrings();
-  final statistics = const StatisticsScreenStrings();
+  final strategies = const StrategyScreenStrings();
   final auth = const AuthStrings();
   final common = const CommonStrings();
   final errors = const ErrorStrings();
+  final strategyCard = const StrategyCardStrings();
 }
 
 class IntroductionScreenStrings {
@@ -73,13 +74,13 @@ class ResultScreenStrings {
   final String explanationTitle = 'Why this was a deepfake:';
   final String reasonPrefix = 'Reason';
   final String currentRun = 'Current Run';
-  final String overallStats = 'Overall Statistics';
+  final String overallStats = 'Overall strategies';
   final String correctFormat = 'of';
   final String nextButton = 'Next';
 }
 
-class StatisticsScreenStrings {
-  const StatisticsScreenStrings();
+class StrategyScreenStrings {
+  const StrategyScreenStrings();
 
   final String title = 'How to detect Deepfakes?';
   final String subtitle =
@@ -114,7 +115,7 @@ class AuthStrings {
 
   // PIN Overlay
   final String pinTitle = 'Your PIN';
-  final String pinSubtitle = 'Save this PIN to access your statistics later';
+  final String pinSubtitle = 'Save this PIN to access your strategies later';
   final String pinGeneratedTitle = 'PIN Generated Successfully';
   final String pinSavePrompt = 'Make sure to save your PIN:';
   final String copyPin = 'Copy PIN';
@@ -147,6 +148,44 @@ class ErrorStrings {
   final String networkError = 'Network connection error';
   final String unknownError = 'Unknown error occurred';
   final String retryMessage = 'Please try again';
+}
+
+class StrategyCardStrings {
+  const StrategyCardStrings();
+
+  // Face Manipulation
+  final String faceManipulationTitle = 'Gesichtsmanipulation erkennen';
+  final String faceManipulationDescription =
+      'Achten Sie auf das Gesicht. Hochwertige DeepFake-Manipulationen zeigen oft subtile Artefakte und Verzerrungen in den Gesichtszügen.';
+  final String faceManipulationOriginal = 'Originales Gesicht';
+  final String faceManipulationModified = 'Manipuliertes Gesicht';
+  final String faceManipulationIndicatorNormal = 'Natürliche Gesichtszüge';
+  final String faceManipulationIndicatorManipulated =
+      'Manipulierte Gesichtszüge';
+
+  // Blinking
+  final String blinkingTitle = 'Natürliches Blinzeln';
+  final String blinkingDescription =
+      'Menschen blinzeln typischerweise alle 4-6 Sekunden. Bei Deepfakes sind die Blinzelmuster oft unnatürlich oder fehlen komplett.';
+  final String blinkingNatural = 'Natürlich';
+  final String blinkingUnnatural = 'Unnatürlich';
+  final String blinkingIndicatorNormal = 'Normales Blinzelintervall (~ 4s)';
+  final String blinkingIndicatorFast = 'Unnatürlich schnelles Blinzeln';
+
+  // Skin Texture
+  final String skinTextureTitle = 'Hauttextur-Analyse';
+  final String skinTextureDescription =
+      'Achten Sie auf Unstimmigkeiten in der Hauttextur. Deepfakes zeigen oft unnatürliche Glättung oder Alterungsmuster, die nicht mit anderen Gesichtsmerkmalen übereinstimmen.';
+  final String skinTextureNatural = 'Natürlich';
+  final String skinTextureArtificial = 'Künstlich';
+  final String skinTextureIndicatorNormal = 'Realistische Hauttextur';
+  final String skinTextureIndicatorArtificial = 'Inkonsistente Hautstruktur';
+
+  // General Strategy UI
+  final String toggleOriginal = 'Original';
+  final String toggleManipulated = 'Manipuliert';
+  final String indicatorNormal = 'Natürlich';
+  final String indicatorArtificial = 'Künstlich';
 }
 
 class AppColors {

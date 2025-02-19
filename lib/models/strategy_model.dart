@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../config/config.dart';
 import '../widgets/detection_strategies/animations/blinking_animation.dart';
 import '../widgets/detection_strategies/animations/skin_texture_animation.dart';
+import '../widgets/detection_strategies/animations/face_manipulation_animation.dart';
 
 class Strategy {
   final String id;
@@ -48,14 +49,20 @@ final List<Strategy> dummyStrategies = [
 final List<Strategy> implementedStrategies = [
   Strategy(
     id: 'blinking',
-    title: AppConfig.strings.statistics.blinkingTitle,
-    description: AppConfig.strings.statistics.blinkingDescription,
+    title: AppConfig.strings.strategyCard.blinkingTitle,
+    description: AppConfig.strings.strategyCard.blinkingDescription,
     animation: const BlinkingAnimation(),
   ),
   Strategy(
     id: 'skin',
-    title: AppConfig.strings.statistics.skinTextureTitle,
-    description: AppConfig.strings.statistics.skinTextureDescription,
+    title: AppConfig.strings.strategyCard.skinTextureTitle,
+    description: AppConfig.strings.strategyCard.skinTextureDescription,
     animation: const SkinTextureAnimation(),
+  ),
+  Strategy(
+    id: 'face_manipulation',
+    title: AppConfig.strings.strategyCard.faceManipulationTitle,
+    description: AppConfig.strings.strategyCard.faceManipulationDescription,
+    animation: const FaceManipulationAnimation(),
   ),
 ];
