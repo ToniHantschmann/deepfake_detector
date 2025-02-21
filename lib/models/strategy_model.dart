@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../config/config.dart';
-import '../widgets/detection_strategies/animations/blinking_animation.dart';
-import '../widgets/detection_strategies/animations/skin_texture_animation.dart';
-import '../widgets/detection_strategies/animations/face_manipulation_animation.dart';
-import '../widgets/detection_strategies/animations/facial_features_animation.dart';
+import '../widgets/detection_strategies/animations/blinking/blinking_animation.dart';
+import '../widgets/detection_strategies/animations/face_manipulation/face_manipulation_animation.dart';
+import '../widgets/detection_strategies/animations/facial_features/facial_features_animation.dart';
+import '../widgets/detection_strategies/animations/eye_shadow/eye_shadow_animation.dart';
+import '../widgets/detection_strategies/animations/glasses/glasses_animation.dart';
+import '../widgets/detection_strategies/animations/facial_hair/facial_hair_animation.dart';
+import '../widgets/detection_strategies/animations/moles/moles_animation.dart';
+import '../widgets/detection_strategies/animations/lip/lip_animation.dart';
 
 class Strategy {
   final String id;
@@ -38,21 +42,42 @@ class Strategy {
   }
 }
 
-// Eine globale Liste von Dummy-Strategien für die Entwicklung
-final List<Strategy> dummyStrategies = [
-  Strategy.dummy(id: 'blinking', title: 'Natural Blinking Pattern'),
-  Strategy.dummy(id: 'skin', title: 'Skin Texture Analysis'),
-  Strategy.dummy(id: 'voice', title: 'Voice Synchronization'),
-  Strategy.dummy(id: 'background', title: 'Background Consistency'),
-  Strategy.dummy(id: 'expressions', title: 'Facial Expressions'),
-];
-
 final List<Strategy> implementedStrategies = [
+  Strategy(
+    id: 'face_manipulation',
+    title: AppConfig.strings.strategyCard.faceManipulationTitle,
+    description: AppConfig.strings.strategyCard.faceManipulationDescription,
+    animation: const FaceManipulationAnimation(),
+  ),
   Strategy(
     id: 'facial_features',
     title: AppConfig.strings.strategyCard.faceManipulationTitle,
     description: AppConfig.strings.strategyCard.faceManipulationDescription,
     animation: const FacialFeaturesAnimation(),
+  ),
+  Strategy(
+    id: 'eyes',
+    title: AppConfig.strings.strategyCard.eyeTitle,
+    description: AppConfig.strings.strategyCard.eyeDescription,
+    animation: const EyeShadowAnimation(),
+  ),
+  Strategy(
+    id: 'glasses',
+    title: AppConfig.strings.strategyCard.glassesTitle,
+    description: AppConfig.strings.strategyCard.glassesDescription,
+    animation: const GlassesAnimation(),
+  ),
+  Strategy(
+    id: 'facial_hair',
+    title: AppConfig.strings.strategyCard.facialHairTitle,
+    description: AppConfig.strings.strategyCard.facialHairDescription,
+    animation: const FacialHairAnimation(),
+  ),
+  Strategy(
+    id: 'moles',
+    title: AppConfig.strings.strategyCard.molesTitle,
+    description: AppConfig.strings.strategyCard.molesDescription,
+    animation: const MolesAnimation(),
   ),
   Strategy(
     id: 'blinking',
@@ -61,15 +86,9 @@ final List<Strategy> implementedStrategies = [
     animation: const BlinkingAnimation(),
   ),
   Strategy(
-    id: 'skin',
-    title: AppConfig.strings.strategyCard.skinTextureTitle,
-    description: AppConfig.strings.strategyCard.skinTextureDescription,
-    animation: const SkinTextureAnimation(),
-  ),
-  Strategy(
-    id: 'face_manipulation',
-    title: AppConfig.strings.strategyCard.faceManipulationTitle,
-    description: AppConfig.strings.strategyCard.faceManipulationDescription,
-    animation: const FaceManipulationAnimation(),
+    id: 'lip_sync',
+    title: AppConfig.strings.strategyCard.lipSyncTitle,
+    description: AppConfig.strings.strategyCard.lipSyncDescription,
+    animation: const LipSyncAnimation(),
   ),
 ];

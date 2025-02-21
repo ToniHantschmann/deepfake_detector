@@ -138,7 +138,6 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                               child: StrategyCarousel(
                                 strategies: [
                                   ...implementedStrategies,
-                                  ...dummyStrategies
                                 ],
                                 onPageChanged: (index) {
                                   context.read<GameBloc>().add(
