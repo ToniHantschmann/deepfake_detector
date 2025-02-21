@@ -1,5 +1,6 @@
 // lib/config/app_config.dart
 
+import 'package:deepfake_detector/config/strategy_card_strings.dart';
 import 'package:flutter/material.dart';
 
 class AppConfig {
@@ -148,44 +149,6 @@ class ErrorStrings {
   final String networkError = 'Network connection error';
   final String unknownError = 'Unknown error occurred';
   final String retryMessage = 'Please try again';
-}
-
-class StrategyCardStrings {
-  const StrategyCardStrings();
-
-  // Face Manipulation
-  final String faceManipulationTitle = 'Gesichtsmanipulation erkennen';
-  final String faceManipulationDescription =
-      'Achten Sie auf das Gesicht. Hochwertige DeepFake-Manipulationen zeigen oft subtile Artefakte und Verzerrungen in den Gesichtszügen.';
-  final String faceManipulationOriginal = 'Originales Gesicht';
-  final String faceManipulationModified = 'Manipuliertes Gesicht';
-  final String faceManipulationIndicatorNormal = 'Natürliche Gesichtszüge';
-  final String faceManipulationIndicatorManipulated =
-      'Manipulierte Gesichtszüge';
-
-  // Blinking
-  final String blinkingTitle = 'Natürliches Blinzeln';
-  final String blinkingDescription =
-      'Menschen blinzeln typischerweise alle 4-6 Sekunden. Bei Deepfakes sind die Blinzelmuster oft unnatürlich oder fehlen komplett.';
-  final String blinkingNatural = 'Natürlich';
-  final String blinkingUnnatural = 'Unnatürlich';
-  final String blinkingIndicatorNormal = 'Normales Blinzelintervall (~ 4s)';
-  final String blinkingIndicatorFast = 'Unnatürlich schnelles Blinzeln';
-
-  // Skin Texture
-  final String skinTextureTitle = 'Hauttextur-Analyse';
-  final String skinTextureDescription =
-      'Achten Sie auf Unstimmigkeiten in der Hauttextur. Deepfakes zeigen oft unnatürliche Glättung oder Alterungsmuster, die nicht mit anderen Gesichtsmerkmalen übereinstimmen.';
-  final String skinTextureNatural = 'Natürlich';
-  final String skinTextureArtificial = 'Künstlich';
-  final String skinTextureIndicatorNormal = 'Realistische Hauttextur';
-  final String skinTextureIndicatorArtificial = 'Inkonsistente Hautstruktur';
-
-  // General Strategy UI
-  final String toggleOriginal = 'Original';
-  final String toggleManipulated = 'Manipuliert';
-  final String indicatorNormal = 'Natürlich';
-  final String indicatorArtificial = 'Künstlich';
 }
 
 class AppColors {
