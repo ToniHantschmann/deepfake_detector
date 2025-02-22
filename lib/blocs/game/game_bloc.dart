@@ -186,10 +186,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       );
 
       // Update internal statistics
-      await _internalStatsRepository.recordGameCompletion(
+      await _internalStatsRepository.recordGameAttempt(
         playerId: state.playerId!,
         wasCorrect: isCorrect,
-        completedFullGame: false,
         hasPinRegistered: state.currentPin != null,
       );
 
@@ -309,7 +308,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           if (state.playerId != null) {
             await _internalStatsRepository.recordGameCompletion(
               playerId: state.playerId!,
-              wasCorrect: state.isCorrectGuess ?? false,
               completedFullGame: true,
               hasPinRegistered: state.currentPin != null,
             );

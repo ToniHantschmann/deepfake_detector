@@ -107,10 +107,9 @@ class InternalStatisticsRepository {
     }
   }
 
-  Future<void> recordGameCompletion({
+  Future<void> recordGameAttempt({
     required String playerId,
     required bool wasCorrect,
-    required bool completedFullGame,
     required bool hasPinRegistered,
   }) async {
     try {
@@ -120,19 +119,18 @@ class InternalStatisticsRepository {
       final InternalPlayerStatistics updatedStats;
       if (currentStats != null) {
         updatedStats = currentStats.copyWith(
-          gamesPlayed: currentStats.gamesPlayed + (completedFullGame ? 1 : 0),
+          gamesPlayed: currentStats.gamesPlayed + 1,
           correctGuesses: currentStats.correctGuesses + (wasCorrect ? 1 : 0),
-          hasCompletedGame: currentStats.hasCompletedGame || completedFullGame,
           hasPinRegistered: currentStats.hasPinRegistered || hasPinRegistered,
           lastGameTimestamp: now,
         );
       } else {
         updatedStats = InternalPlayerStatistics(
           id: playerId,
-          gamesPlayed: completedFullGame ? 1 : 0,
+          gamesPlayed: 1,
           correctGuesses: wasCorrect ? 1 : 0,
           loginCount: 0,
-          hasCompletedGame: completedFullGame,
+          hasCompletedGame: false,
           hasPinRegistered: hasPinRegistered,
           hasReturnedWithPin: false,
           firstGameTimestamp: now,
@@ -141,6 +139,29 @@ class InternalStatisticsRepository {
       }
 
       await _updatePlayer(updatedStats);
+    } catch (e) {
+      throw RepositoryException('Failed to record game attempt: $e');
+    }
+  }
+
+  // Für die Aufzeichnung der kompletten Spieldurchführung
+  Future<void> recordGameCompletion({
+    required String playerId,
+    required bool completedFullGame,
+    required bool hasPinRegistered,
+  }) async {
+    try {
+      final currentStats = await getPlayerStatistics(playerId);
+      final now = DateTime.now();
+
+      if (currentStats != null) {
+        final updatedStats = currentStats.copyWith(
+          hasCompletedGame: currentStats.hasCompletedGame || completedFullGame,
+          hasPinRegistered: currentStats.hasPinRegistered || hasPinRegistered,
+          lastGameTimestamp: now,
+        );
+        await _updatePlayer(updatedStats);
+      }
     } catch (e) {
       throw RepositoryException('Failed to record game completion: $e');
     }
