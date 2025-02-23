@@ -84,13 +84,12 @@ class InternalStatisticsRepository {
       final InternalPlayerStatistics updatedStats;
       if (currentStats != null) {
         updatedStats = currentStats.copyWith(
-          gamesPlayed: currentStats.gamesPlayed + 1,
           lastGameTimestamp: now,
         );
       } else {
         updatedStats = InternalPlayerStatistics(
           id: playerId,
-          gamesPlayed: 1,
+          gamesPlayed: 0, // Start mit 0
           correctGuesses: 0,
           loginCount: 0,
           hasCompletedGame: false,

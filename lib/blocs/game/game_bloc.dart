@@ -87,6 +87,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
 
       await _internalStatsRepository.recordPinLogin(event.pin.toString());
+      await _internalStatsRepository.recordGameStart(event.pin.toString());
 
       // Get existing statistics and create new instance with empty recentAttempts
       final existingStats =
@@ -213,6 +214,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(status: GameStatus.loading));
 
     try {
+      await _internalStatsRepository.recordGameStart(state.playerId!);
       UserStatistics? statistics;
 
       if (currentPin != null) {
