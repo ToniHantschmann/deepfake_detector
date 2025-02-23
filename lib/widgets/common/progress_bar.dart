@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../blocs/game/game_state.dart';
+import '../../config/config.dart';
 
 class ProgressBar extends StatelessWidget {
   final GameScreen currentScreen;
@@ -9,39 +10,34 @@ class ProgressBar extends StatelessWidget {
     required this.currentScreen,
   }) : super(key: key);
 
-  // Check if a screen is completed (all previous screens are done)
   bool _isScreenCompleted(GameScreen screen) {
-    // Introduction, login and register screens don't count for progress
     if (screen == GameScreen.introduction || screen == GameScreen.login) {
       return false;
     }
     return currentScreen.index > screen.index;
   }
 
-  // Check if this is the currently active screen
   bool _isScreenActive(GameScreen screen) {
     return currentScreen == screen;
   }
 
-  // Get the display label for each screen
   String _getScreenLabel(GameScreen screen) {
     switch (screen) {
       case GameScreen.firstVideo:
-        return 'Video 1';
+        return AppConfig.strings.progressBar.firstVideo;
       case GameScreen.secondVideo:
-        return 'Video 2';
+        return AppConfig.strings.progressBar.secondVideo;
       case GameScreen.comparison:
-        return 'Comparison';
+        return AppConfig.strings.progressBar.comparison;
       case GameScreen.result:
-        return 'Feedback';
+        return AppConfig.strings.progressBar.feedback;
       case GameScreen.statistics:
-        return 'Strategies';
+        return AppConfig.strings.progressBar.strategies;
       default:
         return '';
     }
   }
 
-  // List of screens to show in the progress bar
   List<GameScreen> get _progressScreens => [
         GameScreen.firstVideo,
         GameScreen.secondVideo,
@@ -52,7 +48,6 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Hide progress bar for intro/auth screens
     if (currentScreen == GameScreen.introduction ||
         currentScreen == GameScreen.login) {
       return const SizedBox.shrink();
@@ -93,7 +88,6 @@ class ProgressBar extends StatelessWidget {
     return Expanded(
       child: Row(
         children: [
-          // Circle with number or checkmark
           Container(
             width: 24,
             height: 24,
@@ -121,7 +115,6 @@ class ProgressBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          // Screen label
           Text(
             _getScreenLabel(screen),
             style: TextStyle(
@@ -129,7 +122,6 @@ class ProgressBar extends StatelessWidget {
               fontSize: 14,
             ),
           ),
-          // Connector line between items
           if (showConnector) ...[
             Expanded(
               child: Container(

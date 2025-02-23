@@ -30,6 +30,7 @@ class AppStrings {
   final common = const CommonStrings();
   final errors = const ErrorStrings();
   final strategyCard = const StrategyCardStrings();
+  final progressBar = const ProgressBarStrings();
 }
 
 class IntroductionScreenStrings {
@@ -417,4 +418,14 @@ class AppTextStyles {
     color: Colors.grey,
     height: 1.4,
   );
+}
+
+class ProgressBarStrings {
+  const ProgressBarStrings();
+
+  final String firstVideo = 'Video 1';
+  final String secondVideo = 'Video 2';
+  final String comparison = 'Comparison';
+  final String feedback = 'Feedback';
+  final String strategies = 'Strategies';
 }
