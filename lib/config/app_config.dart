@@ -1,7 +1,10 @@
 // lib/config/app_config.dart
 
-import 'package:deepfake_detector/config/strategy_card_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:deepfake_detector/config/localization/app_locale.dart';
+import 'package:deepfake_detector/config/localization/english_strings.dart';
+import 'package:deepfake_detector/config/localization/german_strings.dart';
+import 'package:deepfake_detector/config/localization/string_types.dart';
 
 class AppConfig {
   // Singleton-Pattern
@@ -15,164 +18,17 @@ class AppConfig {
   static const timing = AppTiming();
   static const video = AppVideo();
   static const textStyles = AppTextStyles();
-  static const strings = AppStrings();
-}
 
-class AppStrings {
-  const AppStrings();
-
-  final introduction = const IntroductionScreenStrings();
-  final video = const VideoScreenStrings();
-  final comparison = const ComparisonScreenStrings();
-  final result = const ResultScreenStrings();
-  final strategies = const StrategyScreenStrings();
-  final auth = const AuthStrings();
-  final common = const CommonStrings();
-  final errors = const ErrorStrings();
-  final strategyCard = const StrategyCardStrings();
-  final progressBar = const ProgressBarStrings();
-  final pinDisplay = const PinDisplayStrings();
-  final tutorial = const TutorialStrings();
-}
-
-class IntroductionScreenStrings {
-  const IntroductionScreenStrings();
-
-  final String title = 'Deepfake Detector';
-  final String subtitle =
-      'Test your ability to detect deepfake videos in this interactive challenge.';
-  final String description =
-      "You'll be shown two videos - one real and one deepfake. Your task is to identify which one is the fake.";
-  final String startButton = 'Start Game';
-  final String loginButton = 'Login with PIN';
-  final String challenge = 'Can you spot the difference?';
-}
-
-class VideoScreenStrings {
-  const VideoScreenStrings();
-
-  final String playButton = 'Play';
-  final String pauseButton = 'Pause';
-  final String replayButton = 'Replay';
-  final String nextButton = 'Next Video';
-  final String backButton = 'Previous Video';
-  final String loading = 'Loading video...';
-  final String buffering = 'Buffering...';
-}
-
-class ComparisonScreenStrings {
-  const ComparisonScreenStrings();
-
-  final String title = 'Which video is the Deepfake?';
-  final String subtitle =
-      'Select the video you think is artificially generated';
-  final String selectionButton = 'This is the Deepfake';
-  final String confirmButton = 'Confirm Selection';
-}
-
-class ResultScreenStrings {
-  const ResultScreenStrings();
-
-  final String correctTitle = 'Correct decision!';
-  final String wrongTitle = 'Wrong decision!';
-  final String explanationTitle = 'Why this was a deepfake:';
-  final String reasonPrefix = 'Reason';
-  final String currentRun = 'Current Run';
-  final String overallStats = 'Overall strategies';
-  final String correctFormat = 'of';
-  final String nextButton = 'Next';
-}
-
-class StrategyScreenStrings {
-  const StrategyScreenStrings();
-
-  final String title = 'How to detect Deepfakes?';
-  final String subtitle =
-      'Learn the key strategies to identify deepfake videos';
-  final String blinkingTitle = 'Natural Blinking';
-  final String blinkingDescription =
-      'Humans typically blink every 4-6 seconds. In deepfakes, blinking patterns are often unnatural or missing completely.';
-  final String skinTextureTitle = 'Skin Texture Analysis';
-  final String skinTextureDescription =
-      'Look for inconsistencies in skin texture. Deepfakes might show unnatural smoothness or aging patterns that don\'t match between different facial features.';
-  final String tip =
-      'Tip: Focus on these features in your next attempt. The more you practice, the better you\'ll become at detecting deepfakes!';
-  final String nextGameButton = 'Next Game';
-  final String getPinButton = 'Get PIN';
-}
-
-class AuthStrings {
-  const AuthStrings();
-
-  // Login Overlay
-  final String loginTitle = 'Enter PIN';
-  final String loginSubtitle = 'Enter your 4-digit PIN to continue';
-  final String continueWithoutPin = 'Continue without PIN';
-  final String invalidPinError = 'Invalid PIN. Please try again.';
-  final String loginButtonText = 'Login';
-  final String closeLoginButton = 'Close';
-
-  // PIN Display
-  final String enterPinPrompt = 'Please enter your 4-digit PIN';
-  final String pinPlaceholder = '•';
-  final String pinInputError = 'PIN must be 4 digits';
-
-  // PIN Overlay
-  final String pinTitle = 'Your PIN';
-  final String pinSubtitle = 'Save this PIN to access your strategies later';
-  final String pinGeneratedTitle = 'PIN Generated Successfully';
-  final String pinSavePrompt = 'Make sure to save your PIN:';
-  final String copyPin = 'Copy PIN';
-  final String pinCopied = 'PIN copied to clipboard';
-  final String startNextGame = 'Start Next Game';
-  final String closeOverlay = 'Close';
-
-  // Number Pad
-  final String backspace = 'Backspace';
-  final String clear = 'Clear';
-}
-
-class CommonStrings {
-  const CommonStrings();
-
-  final String retry = 'Retry';
-  final String cancel = 'Cancel';
-  final String confirm = 'Confirm';
-  final String back = 'Back';
-  final String next = 'Next';
-  final String loading = 'Loading...';
-}
-
-class ErrorStrings {
-  const ErrorStrings();
-
-  final String generalError = 'An error occurred';
-  final String videoLoadError = 'Failed to load video';
-  final String invalidPin = 'Invalid PIN';
-  final String networkError = 'Network connection error';
-  final String unknownError = 'Unknown error occurred';
-  final String retryMessage = 'Please try again';
-}
-
-class PinDisplayStrings {
-  const PinDisplayStrings();
-
-  final String pinGeneratedTitle = 'PIN Generated Successfully';
-  final String pinSavePrompt = 'Make sure to save your PIN:';
-  final String pinDisplayTitle = 'Your PIN has been generated!';
-  final String pinDisplayInstructions =
-      'Use this PIN to access your statistics on your next visit.';
-  final String copyPin = 'Copy PIN';
-  final String pinCopied = 'PIN copied to clipboard';
-  final String startNextGame = 'Start Next Game';
-  final String closeOverlay = 'Close';
-}
-
-class TutorialStrings {
-  const TutorialStrings();
-
-  final String swipeTooltip = 'Swipe to see more strategies!';
-  final String touchToContinue = 'Touch anywhere to continue';
+  // Localization
+  static AppStrings getStrings(AppLocale locale) {
+    switch (locale) {
+      case AppLocale.de:
+        return const GermanStrings();
+      case AppLocale.en:
+      default:
+        return const EnglishStrings();
+    }
+  }
 }
 
 class AppColors {
@@ -277,6 +133,12 @@ class AppLayout {
   final double numberPadIconSize = 24.0;
   final double numberPadFontSize = 24.0;
 
+  // Language Selector
+  final double languageButtonHeight = 36.0;
+  final double languageButtonWidth = 48.0;
+  final double languageButtonRadius = 8.0;
+  final double languageButtonSpacing = 8.0;
+
   // Breakpoints
   final double breakpointMobile = 600.0;
   final double breakpointTablet = 800.0;
@@ -315,6 +177,10 @@ class AppAnimation {
   final Duration numberPadPressDuration = const Duration(milliseconds: 100);
   final Curve numberPadPressCurve = Curves.easeInOut;
   final Duration numberPadFeedbackDuration = const Duration(milliseconds: 50);
+
+  // Language Change Animation
+  final Duration languageChangeDuration = const Duration(milliseconds: 300);
+  final Curve languageChangeCurve = Curves.easeInOut;
 }
 
 class AppTiming {
@@ -435,20 +301,17 @@ class AppTextStyles {
     color: Colors.white,
   );
 
+  // Language Selector
+  final TextStyle languageButton = const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+  );
+
   // Caption Text
   final TextStyle caption = const TextStyle(
     fontSize: 12,
     color: Colors.grey,
     height: 1.4,
   );
-}
-
-class ProgressBarStrings {
-  const ProgressBarStrings();
-
-  final String firstVideo = 'Video 1';
-  final String secondVideo = 'Video 2';
-  final String comparison = 'Comparison';
-  final String feedback = 'Feedback';
-  final String strategies = 'Strategies';
 }
