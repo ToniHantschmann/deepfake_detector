@@ -13,6 +13,16 @@ class StrategyCardStrings {
   final String faceManipulationIndicatorManipulated =
       'Manipulierte Gesichtszüge';
 
+  // Facial Features Strategy
+  final String facialFeaturesTitle = 'Altersmerkmale prüfen';
+  final String facialFeaturesDescription =
+      'Achten Sie auf die Wangen und die Stirn. Wirkt die Haut zu glatt oder zu faltig? Ist das Alter der Haut ähnlich wie das Alter der Haare und Augen? DeepFakes können in einigen Dimensionen inkongruent sein.';
+  final String facialFeaturesOriginal = 'Natürliche Alterung';
+  final String facialFeaturesModified = 'Inkonsistente Alterung';
+  final String facialFeaturesIndicatorNormal = 'Stimmige Altersmerkmale';
+  final String facialFeaturesIndicatorManipulated =
+      'Widersprüchliche Alterungszeichen';
+
   // Blinking
   final String blinkingTitle = 'Natürliches Blinzeln';
   final String blinkingDescription =

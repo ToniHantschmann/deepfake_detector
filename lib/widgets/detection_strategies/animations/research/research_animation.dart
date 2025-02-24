@@ -1,10 +1,10 @@
 // lib/widgets/detection_strategies/animations/research/research_animation.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../common/animation_base.dart';
+import '../common/animation_base_generic.dart';
 import 'research_painter.dart';
 
-class ResearchAnimation extends StrategyAnimationBase {
+class ResearchAnimation extends GenericStrategyAnimationBase {
   const ResearchAnimation({Key? key}) : super(key: key);
 
   @override
@@ -12,21 +12,20 @@ class ResearchAnimation extends StrategyAnimationBase {
 }
 
 class ResearchAnimationState
-    extends StrategyAnimationBaseState<ResearchAnimation> {
+    extends GenericStrategyAnimationBaseState<ResearchAnimation> {
   int _currentStep = 0;
   Timer? _stepTimer;
 
   @override
   void initState() {
     super.initState();
-    // Überschreibe die Standard-Animationsdauer
     animationController.duration = const Duration(milliseconds: 1500);
   }
 
   @override
-  void updateMode(bool manipulated) {
-    super.updateMode(manipulated);
-    if (manipulated) {
+  void updateActiveState(bool active) {
+    super.updateActiveState(active);
+    if (active) {
       _startStepAnimation();
     } else {
       _stopStepAnimation();
@@ -69,7 +68,7 @@ class ResearchAnimationState
           painter: ResearchPainter(
             progress: animation.value,
             currentStep: _currentStep,
-            isActive: showingManipulated,
+            isActive: isActive,
           ),
           size: const Size(300, 300),
         );

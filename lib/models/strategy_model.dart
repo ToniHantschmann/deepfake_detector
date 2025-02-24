@@ -8,6 +8,7 @@ import '../widgets/detection_strategies/animations/glasses/glasses_animation.dar
 import '../widgets/detection_strategies/animations/facial_hair/facial_hair_animation.dart';
 import '../widgets/detection_strategies/animations/moles/moles_animation.dart';
 import '../widgets/detection_strategies/animations/lip/lip_animation.dart';
+import '../widgets/detection_strategies/animations/research/research_animation.dart';
 
 class Strategy {
   final String id;
@@ -51,8 +52,8 @@ final List<Strategy> implementedStrategies = [
   ),
   Strategy(
     id: 'facial_features',
-    title: AppConfig.strings.strategyCard.faceManipulationTitle,
-    description: AppConfig.strings.strategyCard.faceManipulationDescription,
+    title: AppConfig.strings.strategyCard.facialFeaturesTitle,
+    description: AppConfig.strings.strategyCard.facialFeaturesDescription,
     animation: const FacialFeaturesAnimation(),
   ),
   Strategy(
@@ -91,4 +92,12 @@ final List<Strategy> implementedStrategies = [
     description: AppConfig.strings.strategyCard.lipSyncDescription,
     animation: const LipSyncAnimation(),
   ),
+  /*
+  Strategy(
+    id: 'research',
+    title: AppConfig.strings.strategyCard.researchTitle,
+    description: AppConfig.strings.strategyCard.researchDescription,
+    animation: const ResearchAnimation(),
+  ),
+  */
 ];
