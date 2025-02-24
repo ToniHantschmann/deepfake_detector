@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../config/config.dart';
 
 class GeneratedPinDisplay extends StatelessWidget {
   final String pin;
@@ -13,38 +14,38 @@ class GeneratedPinDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = accentColor ?? Colors.blue;
+    final color = accentColor ?? AppConfig.colors.primary;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(AppConfig.layout.overlayPadding),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         border: Border.all(color: color.withOpacity(0.3)),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppConfig.layout.overlayRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Your PIN has been generated!',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+          Text(
+            AppConfig.strings.pinDisplay.pinDisplayTitle,
+            style: AppConfig.textStyles.overlayTitle,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: AppConfig.layout.spacingLarge),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ...pin.split('').map((digit) => Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: 48,
-                    height: 56,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: AppConfig.layout.pinDigitSpacing / 2,
+                    ),
+                    width: AppConfig.layout.pinDigitSize,
+                    height: AppConfig.layout.pinDigitSize * 1.2,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF262626),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppConfig.colors.backgroundLight,
+                      borderRadius: BorderRadius.circular(
+                        AppConfig.layout.pinDigitRadius,
+                      ),
                       border: Border.all(
                         color: color.withOpacity(0.3),
                       ),
@@ -52,42 +53,36 @@ class GeneratedPinDisplay extends StatelessWidget {
                     child: Center(
                       child: Text(
                         digit,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: AppConfig.textStyles.pinDigit,
                       ),
                     ),
                   )),
             ],
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Use this PIN to access your statistics on your next visit.',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 16,
-            ),
+          SizedBox(height: AppConfig.layout.spacingLarge),
+          Text(
+            AppConfig.strings.pinDisplay.pinDisplayInstructions,
+            style: AppConfig.textStyles.overlaySubtitle,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: AppConfig.layout.spacingMedium),
           ElevatedButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: pin));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('PIN copied to clipboard'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(AppConfig.strings.pinDisplay.pinCopied),
+                  duration: AppConfig.timing.pinFeedbackDuration,
+                  backgroundColor: AppConfig.colors.success,
                 ),
               );
             },
             icon: const Icon(Icons.copy),
-            label: const Text('Copy PIN'),
+            label: Text(AppConfig.strings.pinDisplay.copyPin),
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 12,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppConfig.layout.buttonPadding * 1.5,
+                vertical: AppConfig.layout.buttonPadding,
               ),
             ),
           ),

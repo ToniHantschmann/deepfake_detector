@@ -31,6 +31,7 @@ class AppStrings {
   final errors = const ErrorStrings();
   final strategyCard = const StrategyCardStrings();
   final progressBar = const ProgressBarStrings();
+  final pinDisplay = const PinDisplayStrings();
 }
 
 class IntroductionScreenStrings {
@@ -428,4 +429,18 @@ class ProgressBarStrings {
   final String comparison = 'Comparison';
   final String feedback = 'Feedback';
   final String strategies = 'Strategies';
+}
+
+class PinDisplayStrings {
+  const PinDisplayStrings();
+
+  final String pinGeneratedTitle = 'PIN Generated Successfully';
+  final String pinSavePrompt = 'Make sure to save your PIN:';
+  final String pinDisplayTitle = 'Your PIN has been generated!';
+  final String pinDisplayInstructions =
+      'Use this PIN to access your statistics on your next visit.';
+  final String copyPin = 'Copy PIN';
+  final String pinCopied = 'PIN copied to clipboard';
+  final String startNextGame = 'Start Next Game';
+  final String closeOverlay = 'Close';
 }
