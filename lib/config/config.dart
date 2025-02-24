@@ -32,6 +32,7 @@ class AppStrings {
   final strategyCard = const StrategyCardStrings();
   final progressBar = const ProgressBarStrings();
   final pinDisplay = const PinDisplayStrings();
+  final tutorial = const TutorialStrings();
 }
 
 class IntroductionScreenStrings {
@@ -443,4 +444,11 @@ class PinDisplayStrings {
   final String pinCopied = 'PIN copied to clipboard';
   final String startNextGame = 'Start Next Game';
   final String closeOverlay = 'Close';
+}
+
+class TutorialStrings {
+  const TutorialStrings();
+
+  final String swipeTooltip = 'Swipe to see more strategies!';
+  final String touchToContinue = 'Touch anywhere to continue';
 }

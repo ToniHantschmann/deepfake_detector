@@ -69,7 +69,7 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay>
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: _dismiss, // Simple tap/click handler
+        onTap: _dismiss,
         child: Container(
           color: AppConfig.colors.backgroundDark.withOpacity(0.8),
           child: Center(
@@ -105,14 +105,14 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      'Swipe to see more strategies!',
+                      AppConfig.strings.tutorial.swipeTooltip,
                       style: AppConfig.textStyles.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Touch anywhere to continue',
+                    AppConfig.strings.tutorial.touchToContinue,
                     style: AppConfig.textStyles.bodySmall.copyWith(
                       color: AppConfig.colors.textSecondary,
                     ),
