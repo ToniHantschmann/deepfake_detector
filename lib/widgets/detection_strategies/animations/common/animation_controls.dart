@@ -1,5 +1,6 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
-import '../../../../config/config.dart';
+import '../../../../config/app_config.dart';
 
 class AnimationControls extends StatelessWidget {
   final bool isManipulated;
@@ -13,16 +14,17 @@ class AnimationControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).strategyCard;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildModeButton(
-          AppConfig.strings.strategyCard.toggleOriginal,
+          strings.toggleOriginal,
           false,
         ),
         SizedBox(width: AppConfig.layout.spacingMedium),
         _buildModeButton(
-          AppConfig.strings.strategyCard.toggleManipulated,
+          strings.toggleManipulated,
           true,
         ),
       ],

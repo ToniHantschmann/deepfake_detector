@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/strategy_model.dart';
-import '../../config/config.dart';
+import '../../config/app_config.dart';
 
 class StrategyCard extends StatelessWidget {
   final Strategy strategy;

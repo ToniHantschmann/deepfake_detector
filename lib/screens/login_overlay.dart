@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
@@ -6,7 +7,7 @@ import '../blocs/game/game_state.dart';
 import '../widgets/auth/auth_overlay_base.dart';
 import '../widgets/auth/pin_display.dart';
 import '../widgets/auth/number_pad.dart';
-import '../config/config.dart';
+import '../config/app_config.dart';
 
 class LoginOverlay extends StatefulWidget {
   const LoginOverlay({Key? key}) : super(key: key);
@@ -52,6 +53,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).auth;
     return BlocConsumer<GameBloc, GameState>(
       listener: (context, state) {
         if (state.status == GameStatus.playing) {
@@ -65,11 +67,11 @@ class _LoginOverlayState extends State<LoginOverlay> {
       },
       builder: (context, state) {
         return AuthOverlayBase(
-          title: AppConfig.strings.auth.loginTitle,
+          title: strings.loginTitle,
           onClose: _handleClose,
           children: [
             Text(
-              AppConfig.strings.auth.loginSubtitle,
+              strings.loginSubtitle,
               style: AppConfig.textStyles.overlaySubtitle,
               textAlign: TextAlign.center,
             ),
@@ -97,7 +99,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
                 context.read<GameBloc>().add(const QuickStartGame());
               },
               child: Text(
-                AppConfig.strings.auth.continueWithoutPin,
+                strings.continueWithoutPin,
                 style: AppConfig.textStyles.bodyMedium.copyWith(
                   color: AppConfig.colors.textSecondary,
                 ),

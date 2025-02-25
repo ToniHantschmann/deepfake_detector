@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../models/strategy_model.dart';
-import '../../../config/config.dart';
+import '../../../config/app_config.dart';
 import '../strategy_card.dart';
 import 'dart:math';
 

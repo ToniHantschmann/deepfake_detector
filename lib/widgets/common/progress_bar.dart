@@ -1,6 +1,8 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
+import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import '../../blocs/game/game_state.dart';
-import '../../config/config.dart';
+import '../../config/app_config.dart';
 
 class ProgressBar extends StatelessWidget {
   final GameScreen currentScreen;
@@ -21,18 +23,18 @@ class ProgressBar extends StatelessWidget {
     return currentScreen == screen;
   }
 
-  String _getScreenLabel(GameScreen screen) {
+  String _getScreenLabel(GameScreen screen, ProgressBarStrings strings) {
     switch (screen) {
       case GameScreen.firstVideo:
-        return AppConfig.strings.progressBar.firstVideo;
+        return strings.firstVideo;
       case GameScreen.secondVideo:
-        return AppConfig.strings.progressBar.secondVideo;
+        return strings.secondVideo;
       case GameScreen.comparison:
-        return AppConfig.strings.progressBar.comparison;
+        return strings.comparison;
       case GameScreen.result:
-        return AppConfig.strings.progressBar.feedback;
+        return strings.feedback;
       case GameScreen.statistics:
-        return AppConfig.strings.progressBar.strategies;
+        return strings.strategies;
       default:
         return '';
     }
@@ -48,6 +50,7 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).progressBar;
     if (currentScreen == GameScreen.introduction ||
         currentScreen == GameScreen.login) {
       return const SizedBox.shrink();
@@ -71,6 +74,7 @@ class ProgressBar extends StatelessWidget {
               isActive: _isScreenActive(screen),
               isCompleted: _isScreenCompleted(screen),
               showConnector: !isLast,
+              strings: strings,
             );
           }).toList(),
         ),
@@ -84,6 +88,7 @@ class ProgressBar extends StatelessWidget {
     required bool isActive,
     required bool isCompleted,
     required bool showConnector,
+    required ProgressBarStrings strings,
   }) {
     return Expanded(
       child: Row(
@@ -116,7 +121,7 @@ class ProgressBar extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            _getScreenLabel(screen),
+            _getScreenLabel(screen, strings),
             style: TextStyle(
               color: isActive || isCompleted ? Colors.white : Colors.grey,
               fontSize: 14,

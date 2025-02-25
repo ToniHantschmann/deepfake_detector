@@ -1,10 +1,12 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
+import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../widgets/auth/auth_overlay_base.dart';
-import '../config/config.dart';
+import '../config/app_config.dart';
 
 class PinOverlay extends StatelessWidget {
   final String pin;
@@ -16,40 +18,30 @@ class PinOverlay extends StatelessWidget {
     required this.onClose,
   }) : super(key: key);
 
-  void _copyPinToClipboard(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: pin));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppConfig.strings.auth.pinCopied),
-        duration: AppConfig.timing.tooltipDuration,
-        backgroundColor: AppConfig.colors.success,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).auth;
     return AuthOverlayBase(
-      title: AppConfig.strings.auth.pinTitle,
+      title: strings.pinTitle,
       onClose: onClose,
       children: [
         Text(
-          AppConfig.strings.auth.pinSubtitle,
+          strings.pinSubtitle,
           style: AppConfig.textStyles.overlaySubtitle,
           textAlign: TextAlign.center,
         ),
         SizedBox(height: AppConfig.layout.spacingXLarge),
         Text(
-          AppConfig.strings.auth.pinSavePrompt,
+          strings.pinSavePrompt,
           style: AppConfig.textStyles.bodyMedium,
           textAlign: TextAlign.center,
         ),
         SizedBox(height: AppConfig.layout.spacingLarge),
         _buildPinDisplay(),
         SizedBox(height: AppConfig.layout.spacingLarge),
-        _buildCopyButton(context),
+        _buildCopyButton(context, strings),
         SizedBox(height: AppConfig.layout.spacingXLarge),
-        _buildStartGameButton(context),
+        _buildStartGameButton(context, strings),
       ],
     );
   }
@@ -85,15 +77,15 @@ class PinOverlay extends StatelessWidget {
     );
   }
 
-  Widget _buildCopyButton(BuildContext context) {
+  Widget _buildCopyButton(BuildContext context, AuthStrings strings) {
     return ElevatedButton.icon(
-      onPressed: () => _copyPinToClipboard(context),
+      onPressed: () => _copyPinToClipboard(context, strings),
       icon: Icon(
         Icons.copy,
         color: AppConfig.colors.textPrimary,
       ),
       label: Text(
-        AppConfig.strings.auth.copyPin,
+        strings.copyPin,
         style: AppConfig.textStyles.buttonMedium,
       ),
       style: ElevatedButton.styleFrom(
@@ -109,7 +101,7 @@ class PinOverlay extends StatelessWidget {
     );
   }
 
-  Widget _buildStartGameButton(BuildContext context) {
+  Widget _buildStartGameButton(BuildContext context, AuthStrings strings) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -127,9 +119,20 @@ class PinOverlay extends StatelessWidget {
           ),
         ),
         child: Text(
-          AppConfig.strings.auth.startNextGame,
+          strings.startNextGame,
           style: AppConfig.textStyles.buttonLarge,
         ),
+      ),
+    );
+  }
+
+  void _copyPinToClipboard(BuildContext context, AuthStrings strings) {
+    Clipboard.setData(ClipboardData(text: pin));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(strings.pinCopied),
+        duration: AppConfig.timing.tooltipDuration,
+        backgroundColor: AppConfig.colors.success,
       ),
     );
   }

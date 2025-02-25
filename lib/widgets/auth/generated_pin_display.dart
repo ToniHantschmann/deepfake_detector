@@ -1,6 +1,7 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../config/config.dart';
+import '../../config/app_config.dart';
 
 class GeneratedPinDisplay extends StatelessWidget {
   final String pin;
@@ -14,6 +15,7 @@ class GeneratedPinDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).auth;
     final color = accentColor ?? AppConfig.colors.primary;
 
     return Container(
@@ -28,7 +30,7 @@ class GeneratedPinDisplay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            AppConfig.strings.pinDisplay.pinDisplayTitle,
+            strings.pinTitle,
             style: AppConfig.textStyles.overlayTitle,
           ),
           SizedBox(height: AppConfig.layout.spacingLarge),
@@ -61,7 +63,7 @@ class GeneratedPinDisplay extends StatelessWidget {
           ),
           SizedBox(height: AppConfig.layout.spacingLarge),
           Text(
-            AppConfig.strings.pinDisplay.pinDisplayInstructions,
+            strings.pinSubtitle,
             style: AppConfig.textStyles.overlaySubtitle,
           ),
           SizedBox(height: AppConfig.layout.spacingMedium),
@@ -70,14 +72,14 @@ class GeneratedPinDisplay extends StatelessWidget {
               Clipboard.setData(ClipboardData(text: pin));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(AppConfig.strings.pinDisplay.pinCopied),
+                  content: Text(strings.pinCopied),
                   duration: AppConfig.timing.pinFeedbackDuration,
                   backgroundColor: AppConfig.colors.success,
                 ),
               );
             },
             icon: const Icon(Icons.copy),
-            label: Text(AppConfig.strings.pinDisplay.copyPin),
+            label: Text(strings.copyPin),
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
               padding: EdgeInsets.symmetric(
