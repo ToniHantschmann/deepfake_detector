@@ -268,6 +268,22 @@ class GermanStrategyCardStrings implements StrategyCardStrings {
   String get faceManipulationIndicatorManipulated =>
       'Manipulierte Gesichtszüge';
 
+  // Facial Features Strategy
+  @override
+  String get facialFeaturesTitle => 'Altersmerkmale prüfen';
+  @override
+  String get facialFeaturesDescription =>
+      'Achten Sie auf die Wangen und die Stirn. Wirkt die Haut zu glatt oder zu faltig? Ist das Alter der Haut ähnlich wie das Alter der Haare und Augen? DeepFakes können in einigen Dimensionen inkongruent sein.';
+  @override
+  String get facialFeaturesOriginal => 'Natürliche Alterung';
+  @override
+  String get facialFeaturesModified => 'Inkonsistente Alterung';
+  @override
+  String get facialFeaturesIndicatorNormal => 'Stimmige Altersmerkmale';
+  @override
+  String get facialFeaturesIndicatorManipulated =>
+      'Widersprüchliche Alterungszeichen';
+
   // Blinking
   @override
   String get blinkingTitle => 'Natürliches Blinzeln';
@@ -358,6 +374,29 @@ class GermanStrategyCardStrings implements StrategyCardStrings {
   String get lipSyncIndicatorNormal => 'Natürliche Lippenbewegung';
   @override
   String get lipSyncIndicatorArtificial => 'Verzögerte Lippenbewegung';
+
+  // Internet Research
+  @override
+  String get researchTitle => 'Internet-Recherche';
+  @override
+  String get researchDescription =>
+      'Überprüfe im Zweifelsfall die Authentizität eines Videos, indem du online nach der Quelle und dem Kontext suchst. Verwende vertrauenswürdige Faktenprüfungs-Websites und Rückwärtsbildsuche-Tools.';
+  @override
+  String get researchStepSearch => 'Online suchen';
+  @override
+  String get researchStepVerify => 'Quellen überprüfen';
+  @override
+  String get researchStepAnalyze => 'Kontext analysieren';
+  @override
+  String get researchButtonText => 'Recherche starten';
+  @override
+  String get researchTip => 'Denke daran, mehrere Quellen abzugleichen';
+  @override
+  String get researchStatusNone => 'Recherche nicht gestartet';
+  @override
+  String get researchStatusInProgress => 'Recherchiere...';
+  @override
+  String get researchStatusComplete => 'Recherche abgeschlossen';
 
   // General Strategy UI
   @override

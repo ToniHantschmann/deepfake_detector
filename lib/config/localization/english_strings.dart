@@ -265,6 +265,21 @@ class EnglishStrategyCardStrings implements StrategyCardStrings {
   String get faceManipulationIndicatorManipulated =>
       'Manipulated facial features';
 
+  // Facial Features Strategy
+  @override
+  String get facialFeaturesTitle => 'Check Aging Features';
+  @override
+  String get facialFeaturesDescription =>
+      'Pay attention to the cheeks and forehead. Does the skin look too smooth or too wrinkled? Is the age of the skin similar to the age of the hair and eyes? Deepfakes can be incongruent in some dimensions.';
+  @override
+  String get facialFeaturesOriginal => 'Natural Aging';
+  @override
+  String get facialFeaturesModified => 'Inconsistent Aging';
+  @override
+  String get facialFeaturesIndicatorNormal => 'Coherent aging features';
+  @override
+  String get facialFeaturesIndicatorManipulated => 'Contradictory aging signs';
+
   // Blinking
   @override
   String get blinkingTitle => 'Natural Blinking';
@@ -354,6 +369,29 @@ class EnglishStrategyCardStrings implements StrategyCardStrings {
   String get lipSyncIndicatorNormal => 'Natural lip movement';
   @override
   String get lipSyncIndicatorArtificial => 'Delayed lip movement';
+
+  // Internet Research
+  @override
+  String get researchTitle => 'Internet Research';
+  @override
+  String get researchDescription =>
+      'When in doubt, verify the authenticity of a video by searching for its source and context online. Use trusted fact-checking websites and reverse image search tools.';
+  @override
+  String get researchStepSearch => 'Search Online';
+  @override
+  String get researchStepVerify => 'Verify Sources';
+  @override
+  String get researchStepAnalyze => 'Analyze Context';
+  @override
+  String get researchButtonText => 'Start Research';
+  @override
+  String get researchTip => 'Remember to cross-reference multiple sources';
+  @override
+  String get researchStatusNone => 'Research not started';
+  @override
+  String get researchStatusInProgress => 'Researching...';
+  @override
+  String get researchStatusComplete => 'Research complete';
 
   // General Strategy UI
   @override

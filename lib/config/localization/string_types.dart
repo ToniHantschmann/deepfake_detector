@@ -165,6 +165,14 @@ abstract class StrategyCardStrings {
   String get faceManipulationIndicatorNormal;
   String get faceManipulationIndicatorManipulated;
 
+  // Facial Features
+  String get facialFeaturesTitle;
+  String get facialFeaturesDescription;
+  String get facialFeaturesOriginal;
+  String get facialFeaturesModified;
+  String get facialFeaturesIndicatorNormal;
+  String get facialFeaturesIndicatorManipulated;
+
   // Blinking
   String get blinkingTitle;
   String get blinkingDescription;
@@ -212,6 +220,18 @@ abstract class StrategyCardStrings {
   String get lipSyncArtificial;
   String get lipSyncIndicatorNormal;
   String get lipSyncIndicatorArtificial;
+
+  // Internet research
+  String get researchTitle;
+  String get researchDescription;
+  String get researchStepSearch;
+  String get researchStepVerify;
+  String get researchStepAnalyze;
+  String get researchButtonText;
+  String get researchTip;
+  String get researchStatusNone;
+  String get researchStatusInProgress;
+  String get researchStatusComplete;
 
   // General Strategy UI
   String get toggleOriginal;
