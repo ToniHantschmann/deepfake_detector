@@ -1,3 +1,5 @@
+import '../../config/localization/app_locale.dart';
+
 abstract class GameEvent {
   const GameEvent();
 }
@@ -57,4 +59,9 @@ class UpdateSelectedVideo extends GameEvent {
 class StrategyIndexChanged extends GameEvent {
   final int newIndex;
   const StrategyIndexChanged(this.newIndex);
+}
+
+class ChangeLanguage extends GameEvent {
+  final AppLocale locale;
+  const ChangeLanguage(this.locale);
 }

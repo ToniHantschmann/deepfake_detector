@@ -1,5 +1,6 @@
 import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
+import '../../config/localization/app_locale.dart';
 
 enum GameScreen {
   introduction,
@@ -54,7 +55,8 @@ class GameState {
   final String? errorMessage;
   final int? generatedPin;
   final int currentStrategyIndex;
-  final String? playerId; // Neue Variable für das Tracking
+  final String? playerId;
+  final AppLocale locale;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -75,7 +77,8 @@ class GameState {
     this.errorMessage,
     this.generatedPin,
     required this.currentStrategyIndex,
-    this.playerId, // Neue Variable im Konstruktor
+    this.playerId,
+    required this.locale,
   });
 
   const GameState.initial()
@@ -89,7 +92,8 @@ class GameState {
         errorMessage = null,
         generatedPin = null,
         currentStrategyIndex = 0,
-        playerId = null; // Initial null
+        playerId = null,
+        locale = AppLocale.de;
 
   GameState copyWith({
     GameStatus? status,
@@ -102,7 +106,8 @@ class GameState {
     Object? errorMessage = _sentinel,
     Object? generatedPin = _sentinel,
     int? currentStrategyIndex,
-    Object? playerId = _sentinel, // Neue Variable in copyWith
+    Object? playerId = _sentinel,
+    AppLocale? locale,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -125,9 +130,8 @@ class GameState {
       generatedPin:
           generatedPin == _sentinel ? this.generatedPin : generatedPin as int?,
       currentStrategyIndex: currentStrategyIndex ?? this.currentStrategyIndex,
-      playerId: playerId == _sentinel
-          ? this.playerId
-          : playerId as String?, // Neue Variable in return
+      playerId: playerId == _sentinel ? this.playerId : playerId as String?,
+      locale: locale ?? this.locale,
     );
   }
 
