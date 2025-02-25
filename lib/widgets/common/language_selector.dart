@@ -1,6 +1,6 @@
 // lib/widgets/common/language_selector.dart
 import 'package:flutter/material.dart';
-import 'package:deepfake_detector/config/config.dart';
+import 'package:deepfake_detector/config/app_config.dart';
 import 'package:deepfake_detector/config/localization/app_locale.dart';
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 

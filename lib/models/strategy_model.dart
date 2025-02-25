@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../config/config.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../blocs/game/game_bloc.dart';
+import '../../config/app_config.dart';
+import '../config/localization/string_types.dart';
 import '../widgets/detection_strategies/animations/blinking/blinking_animation.dart';
 import '../widgets/detection_strategies/animations/face_manipulation/face_manipulation_animation.dart';
 import '../widgets/detection_strategies/animations/facial_features/facial_features_animation.dart';
@@ -42,53 +45,64 @@ class Strategy {
   }
 }
 
-final List<Strategy> implementedStrategies = [
-  Strategy(
-    id: 'face_manipulation',
-    title: AppConfig.strings.strategyCard.faceManipulationTitle,
-    description: AppConfig.strings.strategyCard.faceManipulationDescription,
-    animation: const FaceManipulationAnimation(),
-  ),
-  Strategy(
-    id: 'facial_features',
-    title: AppConfig.strings.strategyCard.faceManipulationTitle,
-    description: AppConfig.strings.strategyCard.faceManipulationDescription,
-    animation: const FacialFeaturesAnimation(),
-  ),
-  Strategy(
-    id: 'eyes',
-    title: AppConfig.strings.strategyCard.eyeTitle,
-    description: AppConfig.strings.strategyCard.eyeDescription,
-    animation: const EyeShadowAnimation(),
-  ),
-  Strategy(
-    id: 'glasses',
-    title: AppConfig.strings.strategyCard.glassesTitle,
-    description: AppConfig.strings.strategyCard.glassesDescription,
-    animation: const GlassesAnimation(),
-  ),
-  Strategy(
-    id: 'facial_hair',
-    title: AppConfig.strings.strategyCard.facialHairTitle,
-    description: AppConfig.strings.strategyCard.facialHairDescription,
-    animation: const FacialHairAnimation(),
-  ),
-  Strategy(
-    id: 'moles',
-    title: AppConfig.strings.strategyCard.molesTitle,
-    description: AppConfig.strings.strategyCard.molesDescription,
-    animation: const MolesAnimation(),
-  ),
-  Strategy(
-    id: 'blinking',
-    title: AppConfig.strings.strategyCard.blinkingTitle,
-    description: AppConfig.strings.strategyCard.blinkingDescription,
-    animation: const BlinkingAnimation(),
-  ),
-  Strategy(
-    id: 'lip_sync',
-    title: AppConfig.strings.strategyCard.lipSyncTitle,
-    description: AppConfig.strings.strategyCard.lipSyncDescription,
-    animation: const LipSyncAnimation(),
-  ),
-];
+// Hilfsfunktion zum Abrufen der lokalisierten String-Ressourcen
+AppStrings getLocalizedStrings(BuildContext context) {
+  final currentLocale = context.read<GameBloc>().state.locale;
+  return AppConfig.getStrings(currentLocale);
+}
+
+// Methode zum Erstellen der implementierten Strategien basierend auf der aktuellen Sprache
+List<Strategy> getImplementedStrategies(BuildContext context) {
+  final strings = getLocalizedStrings(context).strategyCard;
+
+  return [
+    Strategy(
+      id: 'face_manipulation',
+      title: strings.faceManipulationTitle,
+      description: strings.faceManipulationDescription,
+      animation: const FaceManipulationAnimation(),
+    ),
+    Strategy(
+      id: 'facial_features',
+      title: strings.facialFeaturesTitle,
+      description: strings.faceManipulationDescription,
+      animation: const FacialFeaturesAnimation(),
+    ),
+    Strategy(
+      id: 'eyes',
+      title: strings.eyeTitle,
+      description: strings.eyeDescription,
+      animation: const EyeShadowAnimation(),
+    ),
+    Strategy(
+      id: 'glasses',
+      title: strings.glassesTitle,
+      description: strings.glassesDescription,
+      animation: const GlassesAnimation(),
+    ),
+    Strategy(
+      id: 'facial_hair',
+      title: strings.facialHairTitle,
+      description: strings.facialHairDescription,
+      animation: const FacialHairAnimation(),
+    ),
+    Strategy(
+      id: 'moles',
+      title: strings.molesTitle,
+      description: strings.molesDescription,
+      animation: const MolesAnimation(),
+    ),
+    Strategy(
+      id: 'blinking',
+      title: strings.blinkingTitle,
+      description: strings.blinkingDescription,
+      animation: const BlinkingAnimation(),
+    ),
+    Strategy(
+      id: 'lip_sync',
+      title: strings.lipSyncTitle,
+      description: strings.lipSyncDescription,
+      animation: const LipSyncAnimation(),
+    ),
+  ];
+}
