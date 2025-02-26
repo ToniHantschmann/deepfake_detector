@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../config/config.dart';
+import '../../../config/app_config.dart';
 
 class ScrollIndicator extends StatefulWidget {
   final Alignment alignment;

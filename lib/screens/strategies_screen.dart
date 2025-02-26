@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
@@ -8,7 +9,7 @@ import '../widgets/detection_strategies/strategy_carousel/strategy_carousel.dart
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
 import '../widgets/tutorial/swipe_tutorial_overlay.dart';
-import '../config/config.dart';
+import '../config/app_config.dart';
 import 'base_game_screen.dart';
 import 'pin_overlay.dart';
 
@@ -26,7 +27,9 @@ class StrategiesScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    return _StrategiesScreenContent(state: state);
+    return _StrategiesScreenContent(
+      state: state,
+    );
   }
 }
 
@@ -74,6 +77,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).strategies;
     if (widget.state.generatedPin != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
@@ -118,13 +122,13 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppConfig.strings.strategies.title,
+                                    strings.title,
                                     style: AppConfig.textStyles.h2,
                                   ),
                                   SizedBox(
                                       height: AppConfig.layout.spacingSmall),
                                   Text(
-                                    AppConfig.strings.strategies.subtitle,
+                                    strings.subtitle,
                                     style: AppConfig.textStyles.bodyMedium
                                         .copyWith(
                                       color: AppConfig.colors.textSecondary,
@@ -136,9 +140,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                             // Carousel
                             Expanded(
                               child: StrategyCarousel(
-                                strategies: [
-                                  ...implementedStrategies,
-                                ],
+                                strategies: getImplementedStrategies(context),
                                 onPageChanged: (index) {
                                   context.read<GameBloc>().add(
                                         StrategyIndexChanged(index),
@@ -169,8 +171,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                                       ),
                                     ),
                                     child: Text(
-                                      AppConfig
-                                          .strings.strategies.nextGameButton,
+                                      strings.nextGameButton,
                                       style: AppConfig.textStyles.buttonLarge,
                                     ),
                                   ),
@@ -193,7 +194,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                           onPressed: _handlePinGeneration,
                           icon: const Icon(Icons.pin_outlined),
                           label: Text(
-                            AppConfig.strings.strategies.getPinButton,
+                            strings.getPinButton,
                             style: AppConfig.textStyles.buttonMedium,
                           ),
                           backgroundColor: AppConfig.colors.primary,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/game/game_bloc.dart';
 import '../../blocs/game/game_event.dart';
-import '../../config/config.dart';
+import '../../config/app_config.dart';
 
 class InactivityWrapper extends StatefulWidget {
   final Widget child;

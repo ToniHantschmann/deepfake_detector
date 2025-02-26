@@ -41,6 +41,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<InitializeGame>(_onInitializeGame);
     on<UpdateSelectedVideo>(_onUpdateSelectedVideo);
     on<StrategyIndexChanged>(_onStrategyIndexChanged);
+    on<ChangeLanguage>(_onChangeLanguage);
   }
 
   Future<void> _onQuickStartGame(
@@ -97,6 +98,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       final statistics = existingStats.copyWith(recentAttempts: []);
       await _statisticsRepository.resetRecentAttempts(event.pin);
+      final locale = existingStats.locale;
 
       emit(state.copyWith(
         status: GameStatus.playing,
@@ -106,6 +108,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         videos: videos,
         errorMessage: null,
         playerId: event.pin.toString(),
+        locale: locale,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -424,5 +427,36 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return state.currentPin.toString();
     }
     return 'temp_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}';
+  }
+
+  Future<void> _onChangeLanguage(
+      ChangeLanguage event, Emitter<GameState> emit) async {
+    // Immer den UI-State aktualisieren
+    emit(state.copyWith(locale: event.locale));
+
+    // Wenn Statistiken existieren, die Spracheinstellung darin aktualisieren
+    if (state.userStatistics != null) {
+      try {
+        final updatedStats =
+            state.userStatistics!.copyWith(locale: event.locale);
+
+        // Verwende die neue, saubere Methode zum Aktualisieren der Einstellungen
+        final result = await _statisticsRepository.updateUserSettings(
+          pin: state.currentPin, // Kann null sein für temporäre Nutzer
+          updatedStats: updatedStats,
+        );
+
+        // Aktualisiere den State mit den gespeicherten Statistiken
+        emit(state.copyWith(userStatistics: result));
+      } catch (e) {
+        // Bei Fehler nur eine Meldung ausgeben, UI bleibt bei neuer Sprache
+        print('Failed to save language setting: $e');
+      }
+    } else {
+      // Falls keine Statistiken vorhanden sind, erstellen wir ein leeres Objekt mit der Spracheinstellung
+      final emptyStats =
+          UserStatistics.temporary().copyWith(locale: event.locale);
+      emit(state.copyWith(userStatistics: emptyStats));
+    }
   }
 }

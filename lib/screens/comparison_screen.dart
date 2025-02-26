@@ -1,10 +1,12 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
+import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import '../models/video_model.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
-import '../config/config.dart';
+import '../config/app_config.dart';
 import 'base_game_screen.dart';
 
 class ComparisonScreen extends BaseGameScreen {
@@ -19,6 +21,7 @@ class ComparisonScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
+    final strings = AppConfig.getStrings(context.currentLocale).comparison;
     if (state.status == GameStatus.loading || state.videos.isEmpty) {
       return Scaffold(
         backgroundColor: AppConfig.colors.backgroundDark,
@@ -48,19 +51,19 @@ class ComparisonScreen extends BaseGameScreen {
                       children: [
                         SizedBox(height: AppConfig.layout.spacingLarge),
                         Text(
-                          AppConfig.strings.comparison.title,
+                          strings.title,
                           style: AppConfig.textStyles.h2,
                         ),
                         SizedBox(height: AppConfig.layout.spacingSmall),
                         Text(
-                          AppConfig.strings.comparison.subtitle,
+                          strings.subtitle,
                           style: AppConfig.textStyles.bodyMedium.copyWith(
                             color: AppConfig.colors.textSecondary,
                           ),
                         ),
                         SizedBox(height: AppConfig.layout.spacingXLarge),
                         Expanded(
-                          child: _buildVideoComparison(context, state),
+                          child: _buildVideoComparison(context, state, strings),
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(
@@ -97,7 +100,7 @@ class ComparisonScreen extends BaseGameScreen {
                                 ),
                               ),
                               child: Text(
-                                AppConfig.strings.comparison.confirmButton,
+                                strings.confirmButton,
                                 style: AppConfig.textStyles.buttonLarge,
                               ),
                             ),
@@ -128,16 +131,17 @@ class ComparisonScreen extends BaseGameScreen {
     );
   }
 
-  Widget _buildVideoComparison(BuildContext context, GameState state) {
+  Widget _buildVideoComparison(
+      BuildContext context, GameState state, ComparisonScreenStrings strings) {
     return Row(
       children: [
         Expanded(
           child: _buildVideoCard(
-            context: context,
-            video: state.videos[0],
-            isSelected: state.selectedVideoIndex == 0,
-            onSelect: () => _handleVideoSelection(context, 0),
-          ),
+              context: context,
+              video: state.videos[0],
+              isSelected: state.selectedVideoIndex == 0,
+              onSelect: () => _handleVideoSelection(context, 0),
+              strings: strings),
         ),
         SizedBox(width: AppConfig.layout.spacingLarge),
         Expanded(
@@ -146,6 +150,7 @@ class ComparisonScreen extends BaseGameScreen {
             video: state.videos[1],
             isSelected: state.selectedVideoIndex == 1,
             onSelect: () => _handleVideoSelection(context, 1),
+            strings: strings,
           ),
         ),
       ],
@@ -161,6 +166,7 @@ class ComparisonScreen extends BaseGameScreen {
     required Video video,
     required bool isSelected,
     required VoidCallback onSelect,
+    required ComparisonScreenStrings strings,
   }) {
     return Material(
         color: Colors.transparent,
@@ -255,7 +261,7 @@ class ComparisonScreen extends BaseGameScreen {
                                 ),
                                 SizedBox(width: AppConfig.layout.spacingMedium),
                                 Text(
-                                  AppConfig.strings.comparison.selectionButton,
+                                  strings.selectionButton,
                                   style:
                                       AppConfig.textStyles.buttonLarge.copyWith(
                                     color: AppConfig.colors.textPrimary,

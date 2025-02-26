@@ -1,5 +1,6 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
-import '../../config/config.dart';
+import '../../config/app_config.dart';
 
 class SwipeTutorialOverlay extends StatefulWidget {
   final VoidCallback onComplete;
@@ -66,10 +67,11 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).tutorial;
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: _dismiss, // Simple tap/click handler
+        onTap: _dismiss,
         child: Container(
           color: AppConfig.colors.backgroundDark.withOpacity(0.8),
           child: Center(
@@ -105,14 +107,14 @@ class _SwipeTutorialOverlayState extends State<SwipeTutorialOverlay>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      'Swipe to see more strategies!',
+                      strings.swipeTooltip,
                       style: AppConfig.textStyles.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Touch anywhere to continue',
+                    strings.touchToContinue,
                     style: AppConfig.textStyles.bodySmall.copyWith(
                       color: AppConfig.colors.textSecondary,
                     ),

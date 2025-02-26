@@ -1,9 +1,11 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
+import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import '../models/video_model.dart';
 import '../blocs/game/game_state.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
-import '../config/config.dart';
+import '../config/app_config.dart';
 import 'base_game_screen.dart';
 
 class ResultScreen extends BaseGameScreen {
@@ -18,6 +20,7 @@ class ResultScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
+    final strings = AppConfig.getStrings(context.currentLocale).result;
     if (state.status == GameStatus.loading ||
         state.selectedVideoIndex == null ||
         state.isCorrectGuess == null ||
@@ -51,9 +54,9 @@ class ResultScreen extends BaseGameScreen {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildResultHeader(state.isCorrectGuess!),
+                        _buildResultHeader(state.isCorrectGuess!, strings),
                         SizedBox(height: AppConfig.layout.spacingXLarge),
-                        _buildDeepfakeExplanation(selectedVideo),
+                        _buildDeepfakeExplanation(selectedVideo, strings),
                         // Padding für den fixed bottom panel
                         SizedBox(height: AppConfig.layout.spacingXLarge * 6),
                       ],
@@ -64,7 +67,7 @@ class ResultScreen extends BaseGameScreen {
                   onNext: () => handleNextNavigation(context),
                   currentScreen: GameScreen.result,
                 ),
-                _buildStatisticsPanel(state),
+                _buildStatisticsPanel(state, strings),
               ],
             ),
           ),
@@ -73,7 +76,7 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
-  Widget _buildResultHeader(bool isCorrect) {
+  Widget _buildResultHeader(bool isCorrect, ResultScreenStrings strings) {
     return Container(
       padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
       decoration: BoxDecoration(
@@ -90,9 +93,7 @@ class ResultScreen extends BaseGameScreen {
           ),
           SizedBox(width: AppConfig.layout.spacingMedium),
           Text(
-            isCorrect
-                ? AppConfig.strings.result.correctTitle
-                : AppConfig.strings.result.wrongTitle,
+            isCorrect ? strings.correctTitle : strings.wrongTitle,
             style: AppConfig.textStyles.h2,
           ),
         ],
@@ -100,12 +101,13 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
-  Widget _buildDeepfakeExplanation(Video selectedVideo) {
+  Widget _buildDeepfakeExplanation(
+      Video selectedVideo, ResultScreenStrings strings) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppConfig.strings.result.explanationTitle,
+          strings.explanationTitle,
           style: AppConfig.textStyles.h3,
         ),
         SizedBox(height: AppConfig.layout.spacingLarge),
@@ -127,7 +129,7 @@ class ResultScreen extends BaseGameScreen {
                     bottom: AppConfig.layout.spacingMedium,
                   ),
                   child: Text(
-                    '${AppConfig.strings.result.reasonPrefix} $index: $indicator',
+                    '${strings.reasonPrefix} $index: $indicator',
                     style: AppConfig.textStyles.bodyLarge,
                   ),
                 );
@@ -139,7 +141,7 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
-  Widget _buildStatisticsPanel(GameState state) {
+  Widget _buildStatisticsPanel(GameState state, ResultScreenStrings strings) {
     if (state.userStatistics == null) return const SizedBox.shrink();
 
     final currentCorrect = state.userStatistics!.recentAttempts
@@ -170,17 +172,17 @@ class ResultScreen extends BaseGameScreen {
             children: [
               Expanded(
                 child: _buildStatisticsCard(
-                  title: AppConfig.strings.result.currentRun,
+                  title: strings.currentRun,
                   stats:
-                      '$currentCorrect ${AppConfig.strings.result.correctFormat} $currentAttempts',
+                      '$currentCorrect ${strings.correctFormat} $currentAttempts',
                 ),
               ),
               SizedBox(width: AppConfig.layout.spacingLarge),
               Expanded(
                 child: _buildStatisticsCard(
-                  title: AppConfig.strings.result.overallStats,
+                  title: strings.overallStats,
                   stats:
-                      '$totalCorrect ${AppConfig.strings.result.correctFormat} $totalAttempts',
+                      '$totalCorrect ${strings.correctFormat} $totalAttempts',
                 ),
               ),
             ],

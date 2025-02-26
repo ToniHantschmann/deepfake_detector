@@ -1,7 +1,8 @@
 // lib/widgets/detection_strategies/animations/common/animation_base.dart
 
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
-import '../../../../config/config.dart';
+import '../../../../config/app_config.dart';
 import 'animation_controls.dart';
 import 'indicators.dart';
 
@@ -62,6 +63,7 @@ class StrategyAnimationBaseState<T extends StrategyAnimationBase>
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).strategyCard;
     return Column(
       children: [
         buildAnimationContainer(),
@@ -73,10 +75,8 @@ class StrategyAnimationBaseState<T extends StrategyAnimationBase>
         SizedBox(height: AppConfig.layout.spacingMedium),
         AnimationIndicator(
           isManipulated: showingManipulated,
-          normalText:
-              AppConfig.strings.strategyCard.faceManipulationIndicatorNormal,
-          manipulatedText: AppConfig
-              .strings.strategyCard.faceManipulationIndicatorManipulated,
+          normalText: strings.faceManipulationIndicatorNormal,
+          manipulatedText: strings.faceManipulationIndicatorManipulated,
         ),
       ],
     );

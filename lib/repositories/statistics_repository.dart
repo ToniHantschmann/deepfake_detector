@@ -167,4 +167,25 @@ class StatisticsRepository {
       throw StatisticsException('Failed to copy statistics: $e');
     }
   }
+
+  Future<UserStatistics> updateUserSettings({
+    required int? pin,
+    required UserStatistics updatedStats,
+  }) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      if (pin == null) {
+        // Für temporäre Nutzer: Statistik nur zurückgeben, keine Persistenz
+        return updatedStats;
+      } else {
+        // Für permanente Nutzer: Statistik aktualisieren und speichern
+        _statistics[pin] = updatedStats;
+        await _saveStatistics();
+        return updatedStats;
+      }
+    } catch (e) {
+      throw StatisticsException('Failed to update user settings: $e');
+    }
+  }
 }

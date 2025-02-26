@@ -1,12 +1,14 @@
+import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
+import '../config/localization/string_types.dart';
 import '../models/video_model.dart';
 import '../blocs/game/game_state.dart';
-import '../config/config.dart';
 import 'base_game_screen.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import '../config/app_config.dart';
 
 class VideoScreen extends BaseGameScreen {
   final Video video;

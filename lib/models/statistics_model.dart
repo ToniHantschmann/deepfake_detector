@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/config/localization/app_locale.dart';
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/utils/pin_generator_service.dart';
 
@@ -8,16 +9,19 @@ class UserStatistics {
   final List<GameAttempt> recentAttempts;
   final bool isTemporary;
   final Set<String> seenVideoIds;
+  final AppLocale locale;
 
   UserStatistics({
     this.pin,
     required this.totalAttempts,
     required this.correctGuesses,
     required this.recentAttempts,
-    Set<String>? seenVideoIds, // Make optional with default empty set
+    Set<String>? seenVideoIds,
     bool? isTemporary,
+    AppLocale? locale,
   })  : seenVideoIds = seenVideoIds ?? {},
-        isTemporary = isTemporary ?? (pin == null) {
+        isTemporary = isTemporary ?? (pin == null),
+        locale = locale ?? AppLocale.de {
     _validateStatistics();
   }
 
@@ -70,6 +74,7 @@ class UserStatistics {
         'correctGuesses': correctGuesses,
         'recentAttempts': recentAttempts.map((a) => a.toJson()).toList(),
         'seenVideoIds': seenVideoIds.toList(),
+        'locale': locale.index,
       };
 
   factory UserStatistics.fromJson(Map<String, dynamic> json) {
@@ -85,6 +90,7 @@ class UserStatistics {
       }).toList(),
       seenVideoIds:
           (json['seenVideoIds'] as List?)?.cast<String>().toSet() ?? {},
+      locale: AppLocale.values[json['locale'] as int],
     );
   }
 
@@ -94,6 +100,7 @@ class UserStatistics {
     int? correctGuesses,
     List<GameAttempt>? recentAttempts,
     Set<String>? seenVideoIds,
+    AppLocale? locale,
   }) {
     return UserStatistics(
       pin: pin ?? this.pin,
@@ -101,6 +108,7 @@ class UserStatistics {
       correctGuesses: correctGuesses ?? this.correctGuesses,
       recentAttempts: recentAttempts ?? List.from(this.recentAttempts),
       seenVideoIds: seenVideoIds ?? Set.from(this.seenVideoIds),
+      locale: locale ?? this.locale,
     );
   }
 
