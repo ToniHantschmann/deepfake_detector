@@ -11,6 +11,7 @@ import '../widgets/detection_strategies/animations/glasses/glasses_animation.dar
 import '../widgets/detection_strategies/animations/facial_hair/facial_hair_animation.dart';
 import '../widgets/detection_strategies/animations/moles/moles_animation.dart';
 import '../widgets/detection_strategies/animations/lip/lip_animation.dart';
+import '../widgets/detection_strategies/animations/research/research_animation.dart';
 
 class Strategy {
   final String id;
@@ -103,6 +104,12 @@ List<Strategy> getImplementedStrategies(BuildContext context) {
       title: strings.lipSyncTitle,
       description: strings.lipSyncDescription,
       animation: const LipSyncAnimation(),
+    ),
+    Strategy(
+      id: 'research',
+      title: strings.researchTitle,
+      description: strings.researchDescription,
+      animation: const ResearchAnimation(),
     ),
   ];
 }
