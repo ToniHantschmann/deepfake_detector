@@ -1,5 +1,3 @@
-// lib/widgets/common/swipe_navigation_wrapper.dart
-
 import 'package:flutter/material.dart';
 import '../../blocs/game/game_state.dart';
 import '../../config/app_config.dart';
@@ -54,6 +52,20 @@ class _SwipeNavigationWrapperState extends State<SwipeNavigationWrapper>
     });
   }
 
+  // Helper-Methode zum Zurücksetzen der Drag-Distanz mit Animation
+  void _resetDragDistance() {
+    _resetAnimation = Tween<double>(
+      begin: _dragDistance,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+    _animationController.forward(from: 0.0);
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -63,6 +75,18 @@ class _SwipeNavigationWrapperState extends State<SwipeNavigationWrapper>
   void _handleDragUpdate(DragUpdateDetails details) {
     // Dämpfungsfaktor für natürliche Bewegung
     const double dampingFactor = 0.5;
+
+    // Spezielle Einschränkungen für bestimmte Screens
+    // Intro Screen: Keine vorwärts-Swipe-Navigation erlauben
+    if (widget.currentScreen == GameScreen.introduction &&
+        details.delta.dx < 0) {
+      return;
+    }
+
+    // First Video Screen: Keine rückwärts-Swipe-Navigation zum Intro erlauben
+    if (widget.currentScreen == GameScreen.firstVideo && details.delta.dx > 0) {
+      return;
+    }
 
     // Prüfe, ob die Wischrichtung mit einer erlaubten Navigationsrichtung übereinstimmt
     // Links wischen -> vorwärts, nur wenn vorwärts Navigation möglich ist
@@ -92,6 +116,21 @@ class _SwipeNavigationWrapperState extends State<SwipeNavigationWrapper>
     bool shouldNavigate = false;
     bool isForward = false;
 
+    // Spezielle Einschränkungen für bestimmte Screens
+    // Intro Screen: Keine vorwärts-Swipe-Navigation erlauben
+    if (widget.currentScreen == GameScreen.introduction && _dragDistance < 0) {
+      // Navigiere nicht, sondern setze nur zurück
+      _resetDragDistance();
+      return;
+    }
+
+    // First Video Screen: Keine rückwärts-Swipe-Navigation zum Intro erlauben
+    if (widget.currentScreen == GameScreen.firstVideo && _dragDistance > 0) {
+      // Navigiere nicht, sondern setze nur zurück
+      _resetDragDistance();
+      return;
+    }
+
     // Prüfe ob die Geschwindigkeit oder Distanz ausreicht für eine Navigation
     if (details.velocity.pixelsPerSecond.dx.abs() > velocityThreshold ||
         _dragDistance.abs() > distanceThreshold) {
@@ -114,16 +153,7 @@ class _SwipeNavigationWrapperState extends State<SwipeNavigationWrapper>
     }
 
     // Animiere zurück zur Ausgangsposition
-    _resetAnimation = Tween<double>(
-      begin: _dragDistance,
-      end: 0.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-    );
-    _animationController.forward(from: 0.0);
+    _resetDragDistance();
 
     // Führe Navigation aus nach der Animation
     if (shouldNavigate) {
@@ -151,45 +181,27 @@ class _SwipeNavigationWrapperState extends State<SwipeNavigationWrapper>
       return widget.child;
     }
 
-    return GestureDetector(
-      // Wir benötigen keinen explicit DragStart Handler mehr
-      onHorizontalDragUpdate: _handleDragUpdate,
-      onHorizontalDragEnd: _handleDragEnd,
-      behavior: HitTestBehavior.opaque,
-      child: Transform.translate(
-        offset: Offset(_dragDistance, 0),
-        child: widget.child,
-      ),
-    );
-  }
-}
+    return Stack(
+      children: [
+        // Hintergrund-Layer, der die App-Hintergrundfarbe hat
+        // Dieser bedeckt den gesamten Screen und verhindert weiße Ränder
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: AppConfig.colors.background, // App-Hintergrundfarbe
+        ),
 
-Widget _buildDirectionIndicator({
-  required Alignment alignment,
-  required bool isVisible,
-  required IconData icon,
-}) {
-  return Positioned.fill(
-    child: Align(
-      alignment: alignment,
-      child: AnimatedOpacity(
-        opacity: isVisible ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 200),
-        child: Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: AppConfig.colors.primary.withOpacity(0.3),
-            shape: BoxShape.circle,
-          ),
-          margin: const EdgeInsets.all(16.0),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 30,
+        // Layer mit dem eigentlichen Content, der geswiped wird
+        GestureDetector(
+          onHorizontalDragUpdate: _handleDragUpdate,
+          onHorizontalDragEnd: _handleDragEnd,
+          behavior: HitTestBehavior.opaque,
+          child: Transform.translate(
+            offset: Offset(_dragDistance, 0),
+            child: widget.child,
           ),
         ),
-      ),
-    ),
-  );
+      ],
+    );
+  }
 }
