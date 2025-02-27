@@ -1,8 +1,11 @@
+// Modifizierte base_game_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
+import '../widgets/common/swipe_navigation_wrapper.dart';
 
 /// Base class for all game screens
 /// Provides common functionality and ensures consistent behavior
@@ -22,13 +25,57 @@ abstract class BaseGameScreen extends StatelessWidget {
           return _buildErrorScreen(context, state.errorMessage);
         }
 
-        return buildGameScreen(context, state);
+        // Wrap mit Swipe-Navigation nur wenn diese Seite überhaupt navigierbar ist
+        // gemäß der GameScreenNavigation extension
+        return _wrapWithSwipeNavigation(context, state);
       },
     );
   }
 
+  /// Wraps the screen content with swipe gesture detection
+  Widget _wrapWithSwipeNavigation(BuildContext context, GameState state) {
+    return SwipeNavigationWrapper(
+      currentScreen: state.currentScreen,
+      onNext: state.currentScreen.canNavigateForward
+          ? () {
+              // Only navigate if conditions are met (e.g., selection made)
+              final bool canProceed = _canNavigateToNextScreen(state);
+              if (canProceed) {
+                handleNextNavigation(context);
+              }
+            }
+          : null,
+      onBack: state.currentScreen.canNavigateBack
+          ? () => handleBackNavigation(context)
+          : null,
+      enableNext: _canNavigateToNextScreen(state),
+      child: buildGameScreen(context, state),
+    );
+  }
+
+  /// Determine if navigation to the next screen is allowed based on the current state
+  bool _canNavigateToNextScreen(GameState state) {
+    // Check current screen to determine specific conditions
+    switch (state.currentScreen) {
+      case GameScreen.comparison:
+        // For comparison screen, we need a selected video
+        return state.selectedVideoIndex != null;
+      case GameScreen.result:
+        // For result screen we always allow forward navigation
+        return true;
+      case GameScreen.firstVideo:
+      case GameScreen.secondVideo:
+        // For video screens we can navigate forward unconditionally
+        return true;
+      default:
+        return true;
+    }
+  }
+
   /// Override this to build the main screen content
-  Widget buildGameScreen(BuildContext context, GameState state);
+  Widget buildGameScreen(BuildContext context, GameState state) {
+    throw UnimplementedError('Subclasses must override buildGameScreen');
+  }
 
   /// Override this to customize when the screen should rebuild
   bool shouldRebuild(GameState previous, GameState current) => true;

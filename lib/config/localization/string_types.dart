@@ -152,6 +152,7 @@ abstract class TutorialStrings {
 
   String get swipeTooltip;
   String get touchToContinue;
+  String get screenSwipeInstruction;
 }
 
 abstract class StrategyCardStrings {

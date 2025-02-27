@@ -247,6 +247,9 @@ class GermanTutorialStrings implements TutorialStrings {
   String get swipeTooltip => 'Wische, um weitere Strategien zu sehen!';
   @override
   String get touchToContinue => 'Tippe irgendwo, um fortzufahren';
+  @override
+  String get screenSwipeInstruction =>
+      'Wische nach links oder rechts, um zwischen Bildschirmen zu navigieren!';
 }
 
 class GermanStrategyCardStrings implements StrategyCardStrings {

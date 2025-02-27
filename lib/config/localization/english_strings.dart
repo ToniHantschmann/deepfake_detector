@@ -244,6 +244,9 @@ class EnglishTutorialStrings implements TutorialStrings {
   String get swipeTooltip => 'Swipe to see more strategies!';
   @override
   String get touchToContinue => 'Touch anywhere to continue';
+  @override
+  String get screenSwipeInstruction =>
+      'Swipe left or right to navigate between screens!';
 }
 
 class EnglishStrategyCardStrings implements StrategyCardStrings {
