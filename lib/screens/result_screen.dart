@@ -1,11 +1,13 @@
-import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
-import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import '../models/video_model.dart';
+import '../models/deepfake_indicator_model.dart';
 import '../blocs/game/game_state.dart';
+import '../blocs/game/game_language_extension.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import '../widgets/common/deepfake_indicator_card.dart';
 import '../config/app_config.dart';
+import '../config/localization/string_types.dart';
 import 'base_game_screen.dart';
 
 class ResultScreen extends BaseGameScreen {
@@ -21,6 +23,7 @@ class ResultScreen extends BaseGameScreen {
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
     final strings = AppConfig.getStrings(context.currentLocale).result;
+
     if (state.status == GameStatus.loading ||
         state.selectedVideoIndex == null ||
         state.isCorrectGuess == null ||
@@ -36,6 +39,7 @@ class ResultScreen extends BaseGameScreen {
     }
 
     final selectedVideo = state.videos[state.selectedVideoIndex!];
+    final deepfakeVideo = state.videos.firstWhere((v) => v.isDeepfake);
 
     return Scaffold(
       backgroundColor: AppConfig.colors.background,
@@ -56,7 +60,7 @@ class ResultScreen extends BaseGameScreen {
                       children: [
                         _buildResultHeader(state.isCorrectGuess!, strings),
                         SizedBox(height: AppConfig.layout.spacingXLarge),
-                        _buildDeepfakeExplanation(selectedVideo, strings),
+                        _buildDeepfakeExplanation(deepfakeVideo, strings),
                         // Padding für den fixed bottom panel
                         SizedBox(height: AppConfig.layout.spacingXLarge * 6),
                       ],
@@ -102,7 +106,7 @@ class ResultScreen extends BaseGameScreen {
   }
 
   Widget _buildDeepfakeExplanation(
-      Video selectedVideo, ResultScreenStrings strings) {
+      Video deepfakeVideo, ResultScreenStrings strings) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -111,33 +115,61 @@ class ResultScreen extends BaseGameScreen {
           style: AppConfig.textStyles.h3,
         ),
         SizedBox(height: AppConfig.layout.spacingLarge),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
-          decoration: BoxDecoration(
-            color: AppConfig.colors.backgroundLight,
-            borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+
+        // Check if this is a deepfake video and has indicators
+        if (deepfakeVideo.isDeepfake &&
+            deepfakeVideo.deepfakeIndicators.isNotEmpty)
+          _buildIndicatorGrid(deepfakeVideo.deepfakeIndicators, strings)
+        else
+          // Display a message for real videos
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
+            decoration: BoxDecoration(
+              color: AppConfig.colors.backgroundLight,
+              borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+            ),
+            child: Text(
+              "This is an authentic video without any deepfake manipulation.",
+              style: AppConfig.textStyles.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ...selectedVideo.deepfakeIndicators.asMap().entries.map((entry) {
-                final index = entry.key + 1;
-                final indicator = entry.value;
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: AppConfig.layout.spacingMedium,
-                  ),
-                  child: Text(
-                    '${strings.reasonPrefix} $index: $indicator',
-                    style: AppConfig.textStyles.bodyLarge,
-                  ),
-                );
-              }).toList(),
-            ],
-          ),
-        ),
       ],
+    );
+  }
+
+  Widget _buildIndicatorGrid(
+      List<DeepfakeIndicator> indicators, ResultScreenStrings strings) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Bestimme, ob wir ein-spaltig oder zwei-spaltig anzeigen
+        final isWideLayout = constraints.maxWidth >= 600;
+        final crossAxisCount = isWideLayout ? 2 : 1;
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: AppConfig.layout.spacingLarge,
+            crossAxisSpacing: AppConfig.layout.spacingLarge,
+            childAspectRatio: isWideLayout ? 1.3 : 1.6,
+          ),
+          itemCount: indicators.length,
+          itemBuilder: (context, index) {
+            return _buildIndicatorCard(index + 1, indicators[index], strings);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildIndicatorCard(
+      int index, DeepfakeIndicator indicator, ResultScreenStrings strings) {
+    return DeepfakeIndicatorCard(
+      index: index,
+      indicator: indicator,
     );
   }
 

@@ -46,48 +46,14 @@ class VideoRepository {
 
     try {
       final data = await _storage!.getVideos();
-      final videosList = (data['videos'] as List?)
+      _videos = (data['videos'] as List?)
               ?.map((json) => Video.fromJson(json as Map<String, dynamic>))
               .toList() ??
           [];
-
-      if (videosList.isEmpty) {
-        // Initialize with default videos if none exist
-        _videos = _getDefaultVideos();
-      } else {
-        _videos = videosList;
-      }
     } catch (e) {
       if (e is VideoException) rethrow;
       throw VideoException('Error when loading videos: $e');
     }
-  }
-
-  List<Video> _getDefaultVideos() {
-    return [
-      Video(
-        id: 'v1',
-        title: 'Presidential Speech 2024',
-        description: 'A presidential address about climate change',
-        videoUrl: 'assets/videos/speech1.mp4',
-        thumbnailUrl: 'assets/thumbnails/speech1.jpg',
-        isDeepfake: true,
-        deepfakeIndicators: [
-          'Unnatural lip movements during specific phrases',
-          'Inconsistent facial expressions when speaking',
-          'Audio-visual desynchronization at 1:24'
-        ],
-      ),
-      Video(
-        id: 'v2',
-        title: 'Tech CEO Interview',
-        description: 'Interview about AI development',
-        videoUrl: 'assets/videos/tech1.mp4',
-        thumbnailUrl: 'assets/thumbnails/tech1.jpg',
-        isDeepfake: false,
-        deepfakeIndicators: [],
-      ),
-    ];
   }
 
   /// Ensures the repository is initialized before performing operations
