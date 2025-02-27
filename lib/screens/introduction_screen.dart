@@ -26,18 +26,40 @@ class IntroductionScreen extends BaseGameScreen {
       body: SafeArea(
         child: Stack(
           children: [
-            Center(
-              child: SingleChildScrollView(
-                padding:
-                    EdgeInsets.all(AppConfig.layout.screenPaddingHorizontal),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildHeader(strings),
-                    SizedBox(height: AppConfig.layout.spacingXLarge),
-                    _buildContent(context, strings),
-                  ],
-                ),
+            Padding(
+              padding: EdgeInsets.all(AppConfig.layout.screenPaddingHorizontal),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Header at the top
+                  SizedBox(height: AppConfig.layout.spacingMedium),
+                  _buildHeader(strings),
+                  SizedBox(height: AppConfig.layout.spacingXLarge),
+                  // Main content in row layout
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: _buildLeftColumn(),
+                        ),
+                        SizedBox(width: AppConfig.layout.spacingXLarge),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildRightColumnContent(strings),
+                              SizedBox(
+                                  height: AppConfig.layout.spacingXLarge * 2),
+                              _buildQuickStartButton(context, strings),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             // Sprachauswahl in der oberen rechten Ecke
@@ -66,88 +88,66 @@ class IntroductionScreen extends BaseGameScreen {
     );
   }
 
-  Widget _buildContent(
-      BuildContext context, IntroductionScreenStrings strings) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth > AppConfig.layout.breakpointTablet) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: _buildLeftColumn(strings)),
-              SizedBox(width: AppConfig.layout.spacingXLarge),
-              Expanded(child: _buildRightColumn(context, strings)),
-            ],
-          );
-        } else {
-          return Column(
-            children: [
-              _buildLeftColumn(strings),
-              SizedBox(height: AppConfig.layout.spacingXLarge),
-              _buildRightColumn(context, strings),
-            ],
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildLeftColumn(IntroductionScreenStrings strings) {
-    return Column(
-      children: [
-        AspectRatio(
-          aspectRatio: AppConfig.video.minAspectRatio,
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: PulsingHighlight(
-              color: AppConfig.colors.primary,
-              maxBlurRadius: 30,
-              maxSpreadRadius: 8,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppConfig.colors.backgroundLight,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppConfig.colors.primary.withOpacity(0.5),
-                    width: 2,
+  Widget _buildLeftColumn() {
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 32.0),
+            child: AspectRatio(
+              aspectRatio: AppConfig.video.minAspectRatio,
+              child: PulsingHighlight(
+                color: AppConfig.colors.primary,
+                maxBlurRadius: 30,
+                maxSpreadRadius: 8,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppConfig.colors.backgroundLight,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppConfig.colors.primary.withOpacity(0.5),
+                      width: 2,
+                    ),
                   ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    'images/deepfakePope.jpeg',
-                    fit: BoxFit.cover,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'images/deepfakePope.jpeg',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        SizedBox(height: AppConfig.layout.spacingMedium),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            vertical: AppConfig.layout.spacingMedium,
-            horizontal: AppConfig.layout.spacingLarge,
+          SizedBox(height: AppConfig.layout.spacingMedium),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 32.0),
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              vertical: AppConfig.layout.spacingMedium,
+              horizontal: AppConfig.layout.spacingLarge,
+            ),
+            decoration: BoxDecoration(
+              color: AppConfig.colors.wrongAnswer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              "Can you spot the difference?",
+              style: AppConfig.textStyles.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
           ),
-          decoration: BoxDecoration(
-            color: AppConfig.colors.wrongAnswer,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            strings.challenge,
-            style: AppConfig.textStyles.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildRightColumn(
-      BuildContext context, IntroductionScreenStrings strings) {
+  Widget _buildRightColumnContent(IntroductionScreenStrings strings) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           strings.subtitle,
@@ -158,8 +158,6 @@ class IntroductionScreen extends BaseGameScreen {
           strings.description,
           style: AppConfig.textStyles.bodyMedium,
         ),
-        SizedBox(height: AppConfig.layout.spacingXLarge),
-        _buildQuickStartButton(context, strings),
       ],
     );
   }
