@@ -38,10 +38,21 @@ abstract class BaseGameScreen extends StatelessWidget {
       currentScreen: state.currentScreen,
       onNext: state.currentScreen.canNavigateForward
           ? () {
-              // Only navigate if conditions are met (e.g., selection made)
               final bool canProceed = _canNavigateToNextScreen(state);
               if (canProceed) {
-                handleNextNavigation(context);
+                // Special handling for comparison screen
+                if (state.currentScreen == GameScreen.comparison &&
+                    state.selectedVideoIndex != null) {
+                  // Capture the GameBloc instance before using it with Future.delayed
+                  final gameBloc = context.read<GameBloc>();
+                  // First record the selection
+                  gameBloc.add(SelectDeepfake(state.selectedVideoIndex!));
+                  // Then navigate using the captured bloc instance
+                  gameBloc.add(const NextScreen());
+                } else {
+                  // Normal navigation for other screens
+                  handleNextNavigation(context);
+                }
               }
             }
           : null,
