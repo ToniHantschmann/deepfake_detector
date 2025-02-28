@@ -147,7 +147,8 @@ class GameState {
           isCorrectGuess == other.isCorrectGuess &&
           generatedPin == other.generatedPin &&
           currentStrategyIndex == other.currentStrategyIndex &&
-          playerId == other.playerId; // Neue Variable im Vergleich
+          playerId == other.playerId &&
+          locale == other.locale;
 
   @override
   int get hashCode =>
@@ -158,7 +159,8 @@ class GameState {
       isCorrectGuess.hashCode ^
       generatedPin.hashCode ^
       currentStrategyIndex.hashCode ^
-      playerId.hashCode; // Neue Variable im Hash
+      playerId.hashCode ^
+      locale.hashCode;
 
   @override
   String toString() =>

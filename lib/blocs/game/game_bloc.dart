@@ -431,22 +431,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onChangeLanguage(
       ChangeLanguage event, Emitter<GameState> emit) async {
-    // Immer den UI-State aktualisieren
     emit(state.copyWith(locale: event.locale));
 
-    // Wenn Statistiken existieren, die Spracheinstellung darin aktualisieren
     if (state.userStatistics != null) {
       try {
         final updatedStats =
             state.userStatistics!.copyWith(locale: event.locale);
 
-        // Verwende die neue, saubere Methode zum Aktualisieren der Einstellungen
         final result = await _statisticsRepository.updateUserSettings(
-          pin: state.currentPin, // Kann null sein für temporäre Nutzer
+          pin: state.currentPin,
           updatedStats: updatedStats,
         );
 
-        // Aktualisiere den State mit den gespeicherten Statistiken
         emit(state.copyWith(userStatistics: result));
       } catch (e) {
         // Bei Fehler nur eine Meldung ausgeben, UI bleibt bei neuer Sprache
