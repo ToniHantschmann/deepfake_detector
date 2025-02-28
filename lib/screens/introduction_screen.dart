@@ -1,8 +1,9 @@
-import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
 import '../widgets/common/language_selector.dart';
 import 'base_game_screen.dart';
+import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
 import '../config/app_config.dart';
@@ -15,12 +16,15 @@ class IntroductionScreen extends BaseGameScreen {
   @override
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
-        previous.status != current.status;
+        previous.status != current.status ||
+        previous.locale != current.locale; // Check for locale changes
   }
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    final strings = AppConfig.getStrings(context.currentLocale).introduction;
+    // Get strings directly using the state's locale
+    final strings = AppConfig.getStrings(state.locale).introduction;
+
     return Scaffold(
       backgroundColor: AppConfig.colors.background,
       body: SafeArea(
@@ -41,7 +45,7 @@ class IntroductionScreen extends BaseGameScreen {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: _buildLeftColumn(),
+                          child: _buildLeftColumn(strings),
                         ),
                         SizedBox(width: AppConfig.layout.spacingXLarge),
                         Expanded(
@@ -62,7 +66,7 @@ class IntroductionScreen extends BaseGameScreen {
                 ],
               ),
             ),
-            // Sprachauswahl in der oberen rechten Ecke
+            // Language selector in the top right corner
             Positioned(
               top: AppConfig.layout.spacingMedium,
               right: AppConfig.layout.spacingMedium,
@@ -83,12 +87,15 @@ class IntroductionScreen extends BaseGameScreen {
   Widget _buildHeader(IntroductionScreenStrings strings) {
     return Text(
       strings.title,
-      style: AppConfig.textStyles.h1,
+      style: AppConfig.textStyles.h1.copyWith(
+        fontSize: 64, // Deutlich größerer Titeltext
+        fontWeight: FontWeight.bold,
+      ),
       textAlign: TextAlign.center,
     );
   }
 
-  Widget _buildLeftColumn() {
+  Widget _buildLeftColumn(IntroductionScreenStrings strings) {
     return Container(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -134,7 +141,7 @@ class IntroductionScreen extends BaseGameScreen {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              "Can you spot the difference?",
+              strings.challenge,
               style: AppConfig.textStyles.bodyLarge,
               textAlign: TextAlign.center,
             ),
@@ -151,12 +158,19 @@ class IntroductionScreen extends BaseGameScreen {
       children: [
         Text(
           strings.subtitle,
-          style: AppConfig.textStyles.bodyLarge,
+          style: AppConfig.textStyles.bodyLarge.copyWith(
+            fontSize: 28, // Deutlich größerer Untertitel
+            fontWeight: FontWeight.w500,
+            height: 1.3,
+          ),
         ),
-        SizedBox(height: AppConfig.layout.spacingMedium),
+        SizedBox(height: AppConfig.layout.spacingLarge),
         Text(
           strings.description,
-          style: AppConfig.textStyles.bodyMedium,
+          style: AppConfig.textStyles.bodyMedium.copyWith(
+            fontSize: 22, // Deutlich größere Beschreibung
+            height: 1.4,
+          ),
         ),
       ],
     );
@@ -165,9 +179,15 @@ class IntroductionScreen extends BaseGameScreen {
   Widget _buildQuickStartButton(
       BuildContext context, IntroductionScreenStrings strings) {
     return Center(
-      child: PulsingButton(
-        onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
-        text: strings.startButton,
+      child: SizedBox(
+        height: 100, // Erhöhter Button mit mehr Höhe
+        child: FittedBox(
+          fit: BoxFit.fitHeight,
+          child: PulsingButton(
+            onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
+            text: strings.startButton,
+          ),
+        ),
       ),
     );
   }

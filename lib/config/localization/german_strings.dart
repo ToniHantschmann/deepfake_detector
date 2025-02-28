@@ -37,11 +37,10 @@ class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
   @override
   String get title => 'Deepfake Detektor';
   @override
-  String get subtitle =>
-      'Teste deine Fähigkeit, Deepfake-Videos in dieser interaktiven Herausforderung zu erkennen.';
+  String get subtitle => "Wie gut kannst du Deepfake Videos erkennen?";
   @override
   String get description =>
-      'Dir werden zwei Videos gezeigt - ein echtes und ein Deepfake. Deine Aufgabe ist es, das gefälschte zu identifizieren.';
+      'Dir werden zwei Videos gezeigt - ein echtes und ein Deepfake. Deine Aufgabe ist es, das Gefälschte zu identifizieren.';
   @override
   String get startButton => 'Spiel starten';
   @override
