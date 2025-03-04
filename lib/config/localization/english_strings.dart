@@ -35,7 +35,7 @@ class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {
   const EnglishIntroductionScreenStrings();
 
   @override
-  String get title => 'Deepfakes Detector';
+  String get title => 'Deepfake Detector';
   @override
   String get subtitle => 'Test how good your AI detection skills are.';
   @override
