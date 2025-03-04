@@ -1,89 +1,47 @@
 {
-    "videos": [
-        {
-            "id": "001",
-            "title": "Video1",
-            "description": "description 1",
-            "videoUrl": "videos/video1.mp4",
-            "thumbnailUrl": "thumbnails/video1.jpg",
-            "isDeepfake": false
-            
-        
-        },
-        {
-            "id": "002",
-            "title": "Video2",
-            "description": "description 2",
-            "videoUrl": "videos/video2.mp4",
-            "thumbnailUrl": "thumbnails/video2.jpg",
-            "isDeepfake": true,
-            "deepfakeIndicators": [
-        {
-          "description": "Unnatural lip movements during specific phrases",
-          "screenshotUrls": [
-            "screenshots/002/lips_normal.jpg", 
-            "screenshots/002/lips_deepfake.jpg"
-          ],
-          "screenshotCaptions": [
-            "Natural lip synchronization", 
-            "Unnatural lip movement at 0:32"
-          ]
-        },
-        {
-            "description": "description 2",
-            "screenshotUrls": [
-              "screenshots/002/lips_normal.jpg", 
-              "screenshots/002/lips_deepfake.jpg"
-            ],
-            "screenshotCaptions": [
-              "caption 2", 
-              "caption 3"
-            ]
-          }
-    ]
-        
-        },
-        {
-            "id": "003",
-            "title": "Video3",
-            "description": "description 3",
-            "videoUrl": "videos/video3.mp4",
-            "thumbnailUrl": "thumbnails/video3.jpg",
-            "isDeepfake": false
-            
-        
-        },
-        {
-            "id": "004",
-            "title": "Video4",
-            "description": "description 4",
-            "videoUrl": "videos/video4.mp4",
-            "thumbnailUrl": "thumbnails/video4.jpg",
-            "isDeepfake": true,
-            "deepfakeIndicators": [
-        {
-          "description": "Unnatural lip movements during specific phrases",
-          "screenshotUrls": [
-            "screenshots/002/lips_normal.jpg", 
-            "screenshots/002/lips_deepfake.jpg"
-          ],
-          "screenshotCaptions": [
-            "Natural lip synchronization", 
-            "Unnatural lip movement at 0:32"
-          ]
-        },
-        {
-            "description": "description 2",
-            "screenshotUrls": [
-              "screenshots/002/lips_normal.jpg", 
-              "screenshots/002/lips_deepfake.jpg"
-            ],
-            "screenshotCaptions": [
-              "caption 2", 
-              "caption 3"
-            ]
-          }
-    ]
-        }
+  "videos": [
+    {
+      "id": "001",
+      "title": "Video1",
+      "description": "description 1",
+      "videoUrl": "videos/real/00006.mp4",
+      "thumbnailUrl": "thumbnails/real/00006.jpg",
+      "isDeepfake": false
+    },
+    
+    {
+      "id": "010",
+      "title": "Video10",
+      "description": "description 10",
+      "videoUrl": "videos/deepfake/id2_id35_0008.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id2_id35_0008.jpg",
+      "isDeepfake": true,
+      "deepfakeIndicators": [
+      {
+        "description": "Unnatural lip movements during specific phrases",
+        "screenshotUrls": [
+          "screenshots/010/lips_normal.jpg", 
+          "screenshots/010/lips_deepfake.jpg"
+        ],
+        "screenshotCaptions": [
+          "Natural lip synchronization", 
+          "Unnatural lip movement at 0:32"
+        ]
+      },
+      {
+        "description": "description 2",
+        "screenshotUrls": [
+          "screenshots/010/lips_normal.jpg", 
+          "screenshots/010/lips_deepfake.jpg"
+        ],
+        "screenshotCaptions": [
+          "caption 2", 
+          "caption 3"
+        ]
+      }]
+    }
+
+    
+    
     ]
 }

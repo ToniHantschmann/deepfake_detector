@@ -65,10 +65,12 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-    - assets/videos/
-    - assets/thumbnails/
+    - assets/videos/deepfake/
+    - assets/videos/real/
+    - assets/thumbnails/real/
+    - assets/thumbnails/deepfake/
     - assets/data/videos_db.json
-    - assets/screenshots/002/
+    - assets/screenshots/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
