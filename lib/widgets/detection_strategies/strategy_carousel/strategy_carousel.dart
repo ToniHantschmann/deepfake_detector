@@ -16,13 +16,15 @@ class AppScrollBehavior extends MaterialScrollBehavior {
 class StrategyCarousel extends StatefulWidget {
   final List<Strategy> strategies;
   final double viewportFraction;
-  final Function(int)? onPageChanged;
+  final Function(int, String)? onPageChanged; // Updated callback signature
+  final Set<String> viewedStrategyIds; // Added parameter
 
   const StrategyCarousel({
     Key? key,
     required this.strategies,
     this.viewportFraction = 0.4,
     this.onPageChanged,
+    required this.viewedStrategyIds, // Added parameter
   }) : super(key: key);
 
   @override
@@ -38,25 +40,28 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
   void initState() {
     super.initState();
 
-    // Generiere einen zufälligen Index innerhalb der Strategieanzahl
+    // Generate a random index within the number of strategies
     final random = Random();
     final randomIndex = random.nextInt(widget.strategies.length);
 
-    // Berechne die initiale Seite als Vielfaches der Strategieanzahl plus den zufälligen Index
+    // Calculate the initial page as a multiple of the strategy count plus the random index
     _currentPage = widget.strategies.length * _baseMultiplier + randomIndex;
 
-    // Initialisiere den PageController mit der korrekten initialen Seite
+    // Initialize the PageController with the correct initial page
     _pageController = PageController(
       viewportFraction: widget.viewportFraction,
       initialPage: _currentPage,
     );
 
-    // Korrigiere die Position und triggere die Animation nach dem ersten Frame
+    // Correct the position and trigger the animation after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _pageController.hasClients) {
         setState(() {
           // Force rebuild to apply initial scaling
         });
+
+        // Mark the initial strategy as viewed
+        _notifyPageChanged(_currentPage);
       }
     });
   }
@@ -72,22 +77,15 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
       _currentPage = page;
     });
 
+    _notifyPageChanged(page);
+  }
+
+  // Helper method to notify parent about page change and strategy ID
+  void _notifyPageChanged(int page) {
     if (widget.onPageChanged != null) {
-      widget.onPageChanged!(page % widget.strategies.length);
-    }
-
-    // Überprüfe, ob wir uns zu weit vom Basismultiplikator entfernt haben
-    final basePosition = widget.strategies.length * _baseMultiplier;
-    final offset = (page - basePosition).abs();
-
-    if (offset > widget.strategies.length * 10) {
-      // Springe zurück zur Basismultiplikator-Position
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _pageController.hasClients) {
-          final targetPage = basePosition + (page % widget.strategies.length);
-          _pageController.jumpToPage(targetPage);
-        }
-      });
+      final actualIndex = page % widget.strategies.length;
+      final strategyId = widget.strategies[actualIndex].id;
+      widget.onPageChanged!(actualIndex, strategyId);
     }
   }
 
@@ -105,6 +103,10 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
               physics: const PageScrollPhysics(),
               itemBuilder: (context, index) {
                 final actualIndex = index % widget.strategies.length;
+                final strategy = widget.strategies[actualIndex];
+                final hasBeenViewed =
+                    widget.viewedStrategyIds.contains(strategy.id);
+
                 return AnimatedBuilder(
                   animation: _pageController,
                   builder: (context, child) {
@@ -123,7 +125,9 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
                           horizontal: AppConfig.layout.spacingMedium,
                         ),
                         child: StrategyCard(
-                          strategy: widget.strategies[actualIndex],
+                          strategy: strategy,
+                          hasBeenViewed:
+                              hasBeenViewed, // Pass the viewed status
                         ),
                       ),
                     );

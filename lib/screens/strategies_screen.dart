@@ -141,11 +141,16 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                             Expanded(
                               child: StrategyCarousel(
                                 strategies: getImplementedStrategies(context),
-                                onPageChanged: (index) {
+                                onPageChanged: (index, strategyId) {
                                   context.read<GameBloc>().add(
-                                        StrategyIndexChanged(index),
+                                        StrategyIndexChanged(
+                                          newIndex: index,
+                                          strategyId: strategyId,
+                                        ),
                                       );
                                 },
+                                viewedStrategyIds: widget.state
+                                    .viewedStrategyIds, // Pass the viewed strategies set
                               ),
                             ),
                             // Next Game Button

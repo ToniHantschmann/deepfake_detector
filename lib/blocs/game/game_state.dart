@@ -57,6 +57,7 @@ class GameState {
   final int currentStrategyIndex;
   final String? playerId;
   final AppLocale locale;
+  final Set<String> viewedStrategyIds; // Added field to track viewed strategies
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -79,6 +80,7 @@ class GameState {
     required this.currentStrategyIndex,
     this.playerId,
     required this.locale,
+    required this.viewedStrategyIds,
   });
 
   const GameState.initial()
@@ -93,7 +95,8 @@ class GameState {
         generatedPin = null,
         currentStrategyIndex = 0,
         playerId = null,
-        locale = AppLocale.de;
+        locale = AppLocale.de,
+        viewedStrategyIds = const {};
 
   GameState copyWith({
     GameStatus? status,
@@ -108,6 +111,7 @@ class GameState {
     int? currentStrategyIndex,
     Object? playerId = _sentinel,
     AppLocale? locale,
+    Set<String>? viewedStrategyIds,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -132,6 +136,7 @@ class GameState {
       currentStrategyIndex: currentStrategyIndex ?? this.currentStrategyIndex,
       playerId: playerId == _sentinel ? this.playerId : playerId as String?,
       locale: locale ?? this.locale,
+      viewedStrategyIds: viewedStrategyIds ?? this.viewedStrategyIds,
     );
   }
 
@@ -148,7 +153,8 @@ class GameState {
           generatedPin == other.generatedPin &&
           currentStrategyIndex == other.currentStrategyIndex &&
           playerId == other.playerId &&
-          locale == other.locale;
+          locale == other.locale &&
+          viewedStrategyIds.length == other.viewedStrategyIds.length;
 
   @override
   int get hashCode =>
@@ -160,11 +166,12 @@ class GameState {
       generatedPin.hashCode ^
       currentStrategyIndex.hashCode ^
       playerId.hashCode ^
-      locale.hashCode;
+      locale.hashCode ^
+      viewedStrategyIds.hashCode;
 
   @override
   String toString() =>
-      'GameState(status: $status, screen: $currentScreen, pin: $currentPin, playerId: $playerId, currentStrategyIndex: $currentStrategyIndex)';
+      'GameState(status: $status, screen: $currentScreen, pin: $currentPin, playerId: $playerId, currentStrategyIndex: $currentStrategyIndex, viewedStrategiesCount: ${viewedStrategyIds.length})';
 }
 
 const _sentinel = Object();

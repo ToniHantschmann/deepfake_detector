@@ -404,6 +404,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       errorMessage: null,
       generatedPin: null,
       currentStrategyIndex: 0,
+      viewedStrategyIds: {},
     ));
   }
 
@@ -417,8 +418,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onStrategyIndexChanged(
       StrategyIndexChanged event, Emitter<GameState> emit) async {
+    final newIndex = event.newIndex;
+    final strategyId = event.strategyId;
+
+    final updatedViewedIds = Set<String>.from(state.viewedStrategyIds);
+    updatedViewedIds.add(strategyId);
+
     emit(state.copyWith(
-      currentStrategyIndex: event.newIndex,
+      currentStrategyIndex: newIndex,
+      viewedStrategyIds: updatedViewedIds,
     ));
   }
 
@@ -449,7 +457,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         print('Failed to save language setting: $e');
       }
     } else {
-      // Falls keine Statistiken vorhanden sind, erstellen wir ein leeres Objekt mit der Spracheinstellung
       final emptyStats =
           UserStatistics.temporary().copyWith(locale: event.locale);
       emit(state.copyWith(userStatistics: emptyStats));
