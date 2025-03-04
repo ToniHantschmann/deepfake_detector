@@ -4,12 +4,12 @@ import '../../config/app_config.dart';
 
 class StrategyCard extends StatelessWidget {
   final Strategy strategy;
-  final bool hasBeenViewed; // New property to track if strategy has been viewed
+  final bool hasBeenViewed;
 
   const StrategyCard({
     Key? key,
     required this.strategy,
-    required this.hasBeenViewed, // Added parameter
+    this.hasBeenViewed = false, // Optional mit Standardwert
   }) : super(key: key);
 
   @override
@@ -35,6 +35,9 @@ class StrategyCard extends StatelessWidget {
                 style: AppConfig.textStyles.bodyMedium.copyWith(
                   color: AppConfig.colors.textSecondary,
                   height: 1.5,
+                  fontSize: 18.0, // Größere Schriftgröße hier
+                  fontWeight: FontWeight
+                      .w400, // Etwas stärkere Schrift für bessere Lesbarkeit
                 ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,

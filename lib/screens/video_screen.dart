@@ -23,7 +23,8 @@ class VideoScreen extends BaseGameScreen {
   @override
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
-        previous.status != current.status;
+        previous.status != current.status ||
+        previous.locale != current.locale;
   }
 
   @override

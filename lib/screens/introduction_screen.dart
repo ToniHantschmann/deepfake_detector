@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
-import '../widgets/common/language_selector.dart';
+// Removed language selector import since it's now in the base class
 import 'base_game_screen.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
@@ -17,7 +17,7 @@ class IntroductionScreen extends BaseGameScreen {
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status ||
-        previous.locale != current.locale; // Check for locale changes
+        previous.locale != current.locale; // Keep locale check
   }
 
   @override
@@ -66,12 +66,7 @@ class IntroductionScreen extends BaseGameScreen {
                 ],
               ),
             ),
-            // Language selector in the top right corner
-            Positioned(
-              top: AppConfig.layout.spacingMedium,
-              right: AppConfig.layout.spacingMedium,
-              child: const LanguageSelector(),
-            ),
+            // Removed the Language selector in the top right corner since it's now added in the base class
           ],
         ),
       ),

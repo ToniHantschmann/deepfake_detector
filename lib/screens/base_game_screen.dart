@@ -1,11 +1,13 @@
-// Modifizierte base_game_screen.dart
+// Modified base_game_screen.dart with language selector in bottom left
 
+import 'package:deepfake_detector/widgets/common/language_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
 import '../widgets/common/swipe_navigation_wrapper.dart';
+import '../widgets/common/adaptive_language_selector.dart';
 
 /// Base class for all game screens
 /// Provides common functionality and ensures consistent behavior
@@ -25,9 +27,33 @@ abstract class BaseGameScreen extends StatelessWidget {
           return _buildErrorScreen(context, state.errorMessage);
         }
 
-        // Wrap mit Swipe-Navigation nur wenn diese Seite überhaupt navigierbar ist
-        // gemäß der GameScreenNavigation extension
-        return _wrapWithSwipeNavigation(context, state);
+        // Wrap the screen content with both the swipe navigation and the language selector
+        return _wrapWithLanguageSelector(
+            _wrapWithSwipeNavigation(context, state));
+      },
+    );
+  }
+
+  /// Adds the language selector to the bottom left of the screen
+  Widget _wrapWithLanguageSelector(Widget child) {
+    return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previous, current) =>
+          previous.currentScreen != current.currentScreen,
+      builder: (context, state) {
+        // Check if this is the result screen to adjust positioning
+        final bool isResultScreen = state.currentScreen == GameScreen.result;
+
+        return Stack(
+          children: [
+            child,
+            // Position the language selector in the bottom left
+            const Positioned(
+              left: 16,
+              bottom: 16,
+              child: LanguageSelector(),
+            ),
+          ],
+        );
       },
     );
   }
@@ -89,7 +115,12 @@ abstract class BaseGameScreen extends StatelessWidget {
   }
 
   /// Override this to customize when the screen should rebuild
-  bool shouldRebuild(GameState previous, GameState current) => true;
+  bool shouldRebuild(GameState previous, GameState current) {
+    // Always check for these common state changes including locale
+    return previous.currentScreen != current.currentScreen ||
+        previous.status != current.status ||
+        previous.locale != current.locale;
+  }
 
   Widget _buildLoadingScreen() {
     return const Scaffold(

@@ -16,7 +16,8 @@ class ComparisonScreen extends BaseGameScreen {
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status ||
-        previous.selectedVideoIndex != current.selectedVideoIndex;
+        previous.selectedVideoIndex != current.selectedVideoIndex ||
+        previous.locale != current.locale;
   }
 
   @override

@@ -17,7 +17,8 @@ class ResultScreen extends BaseGameScreen {
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status ||
-        previous.isCorrectGuess != current.isCorrectGuess;
+        previous.isCorrectGuess != current.isCorrectGuess ||
+        previous.locale != current.locale;
   }
 
   @override

@@ -22,7 +22,8 @@ class StrategiesScreen extends BaseGameScreen {
         previous.status != current.status ||
         previous.currentPin != current.currentPin ||
         previous.generatedPin != current.generatedPin ||
-        previous.currentStrategyIndex != current.currentStrategyIndex;
+        previous.currentStrategyIndex != current.currentStrategyIndex ||
+        previous.locale != current.locale;
   }
 
   @override
@@ -129,8 +130,8 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                                       height: AppConfig.layout.spacingSmall),
                                   Text(
                                     strings.subtitle,
-                                    style: AppConfig.textStyles.bodyMedium
-                                        .copyWith(
+                                    style:
+                                        AppConfig.textStyles.bodyLarge.copyWith(
                                       color: AppConfig.colors.textSecondary,
                                     ),
                                   ),
