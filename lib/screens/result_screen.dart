@@ -154,7 +154,7 @@ class ResultScreen extends BaseGameScreen {
             crossAxisCount: crossAxisCount,
             mainAxisSpacing: AppConfig.layout.spacingLarge,
             crossAxisSpacing: AppConfig.layout.spacingLarge,
-            childAspectRatio: isWideLayout ? 1.3 : 1.6,
+            childAspectRatio: isWideLayout ? 2.2 : 2.5,
           ),
           itemCount: indicators.length,
           itemBuilder: (context, index) {
@@ -207,6 +207,8 @@ class ResultScreen extends BaseGameScreen {
                   title: strings.currentRun,
                   stats:
                       '$currentCorrect ${strings.correctFormat} $currentAttempts',
+                  correct: currentCorrect,
+                  total: currentAttempts,
                 ),
               ),
               SizedBox(width: AppConfig.layout.spacingLarge),
@@ -215,6 +217,8 @@ class ResultScreen extends BaseGameScreen {
                   title: strings.overallStats,
                   stats:
                       '$totalCorrect ${strings.correctFormat} $totalAttempts',
+                  correct: totalCorrect,
+                  total: totalAttempts,
                 ),
               ),
             ],
@@ -227,7 +231,12 @@ class ResultScreen extends BaseGameScreen {
   Widget _buildStatisticsCard({
     required String title,
     required String stats,
+    required int correct,
+    required int total,
   }) {
+    // Prozentberechnung mit Schutz vor Division durch Null
+    final percentage = total > 0 ? (correct / total * 100) : 0.0;
+
     return Container(
       padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
       decoration: BoxDecoration(
@@ -246,6 +255,32 @@ class ResultScreen extends BaseGameScreen {
           Text(
             stats,
             style: AppConfig.textStyles.bodyLarge,
+          ),
+          SizedBox(height: AppConfig.layout.spacingMedium),
+          // Prozenttext
+          Text(
+            '${percentage.toStringAsFixed(1)}%',
+            style: AppConfig.textStyles.bodyLarge.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppConfig.colors.primary,
+            ),
+          ),
+          SizedBox(height: AppConfig.layout.spacingSmall),
+          // Fortschrittsbalken für visuelle Darstellung des Prozentsatzes
+          Container(
+            height: 8,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              color: AppConfig.colors.backgroundDark,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: FractionallySizedBox(
+              widthFactor: percentage / 100,
+              alignment: Alignment.centerLeft,
+              child: Container(
+                color: AppConfig.colors.primary,
+              ),
+            ),
           ),
         ],
       ),

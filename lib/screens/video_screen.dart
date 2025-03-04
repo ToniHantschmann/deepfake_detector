@@ -159,12 +159,6 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
                 builder: (context, constraints) {
                   return Stack(
                     children: [
-                      Positioned(
-                        top: AppConfig.layout.spacingMedium,
-                        left: AppConfig.layout.spacingMedium,
-                        right: AppConfig.layout.spacingMedium,
-                        child: _buildTitleCard(),
-                      ),
                       _buildMainContent(constraints),
                       if (_isInitialized)
                         NavigationButtons.forGameScreen(
@@ -183,26 +177,8 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
     );
   }
 
-  Widget _buildTitleCard() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: AppConfig.layout.spacingSmall,
-        horizontal: AppConfig.layout.spacingMedium,
-      ),
-      decoration: BoxDecoration(
-        color: AppConfig.colors.backgroundLight.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
-      ),
-      child: Text(
-        widget.video.title,
-        style: AppConfig.textStyles.bodyMedium,
-      ),
-    );
-  }
-
   Widget _buildMainContent(BoxConstraints constraints) {
-    return Padding(
-      padding: EdgeInsets.only(top: AppConfig.layout.spacingXLarge * 2),
+    return Center(
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
