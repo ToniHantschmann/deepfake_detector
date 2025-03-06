@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
-// Removed language selector import since it's now in the base class
 import 'base_game_screen.dart';
-import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
 import '../config/app_config.dart';
-import '../widgets/common/pulsing_button.dart';
-import '../widgets/common/pulsing_highlight.dart';
+import '../widgets/intro/pulsing_button.dart';
+import '../widgets/intro/pulsing_highlight.dart';
+import '../widgets/intro/morphing_animation.dart';
 
 class IntroductionScreen extends BaseGameScreen {
   const IntroductionScreen({Key? key}) : super(key: key);
@@ -98,7 +96,7 @@ class IntroductionScreen extends BaseGameScreen {
           Container(
             margin: EdgeInsets.symmetric(horizontal: 32.0),
             child: AspectRatio(
-              aspectRatio: AppConfig.video.minAspectRatio,
+              aspectRatio: AppConfig.video.introImageAspectRatio,
               child: PulsingHighlight(
                 color: AppConfig.colors.primary,
                 maxBlurRadius: 30,
@@ -114,9 +112,12 @@ class IntroductionScreen extends BaseGameScreen {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'images/deepfakePope.jpeg',
+                    child: MorphingAnimation(
+                      realImagePath: 'images/real_Pope.jpg',
+                      fakeImagePath: 'images/deepfake_Pope.jpg',
+                      duration: const Duration(seconds: 3),
                       fit: BoxFit.cover,
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),

@@ -16,15 +16,16 @@ class AppScrollBehavior extends MaterialScrollBehavior {
 class StrategyCarousel extends StatefulWidget {
   final List<Strategy> strategies;
   final double viewportFraction;
-  final Function(int, String)? onPageChanged; // Updated callback signature
-  final Set<String> viewedStrategyIds; // Added parameter
+  // Dritter Parameter für die vorherige Strategie-ID
+  final Function(int, String, String?)? onPageChanged;
+  final Set<String> viewedStrategyIds;
 
   const StrategyCarousel({
     Key? key,
     required this.strategies,
     this.viewportFraction = 0.4,
     this.onPageChanged,
-    required this.viewedStrategyIds, // Added parameter
+    required this.viewedStrategyIds,
   }) : super(key: key);
 
   @override
@@ -59,9 +60,6 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
         setState(() {
           // Force rebuild to apply initial scaling
         });
-
-        // Mark the initial strategy as viewed
-        _notifyPageChanged(_currentPage);
       }
     });
   }
@@ -73,19 +71,32 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
   }
 
   void _handlePageChanged(int page) {
+    // ID der aktuellen Strategie bestimmen, bevor wir zur neuen wechseln
+    final int currentIdx = _currentPage % widget.strategies.length;
+    final String? currentStrategyId = widget.strategies[currentIdx].id;
+
+    // Seite aktualisieren
     setState(() {
       _currentPage = page;
     });
 
-    _notifyPageChanged(page);
+    // Die aktuelle Strategie-ID (die jetzt die vorherige ist) an den Callback übergeben
+    _notifyPageChanged(page, currentStrategyId);
   }
 
-  // Helper method to notify parent about page change and strategy ID
-  void _notifyPageChanged(int page) {
+  void _notifyPageChanged(int page, String? previousStrategyId) {
     if (widget.onPageChanged != null) {
       final actualIndex = page % widget.strategies.length;
       final strategyId = widget.strategies[actualIndex].id;
-      widget.onPageChanged!(actualIndex, strategyId);
+
+      // Wenn sich die Strategie geändert hat (wenn die IDs unterschiedlich sind),
+      // übergeben wir die vorherige ID, sonst null
+      final String? prevId =
+          (previousStrategyId != null && previousStrategyId != strategyId)
+              ? previousStrategyId
+              : null;
+
+      widget.onPageChanged!(actualIndex, strategyId, prevId);
     }
   }
 
