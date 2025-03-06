@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
-// Removed language selector import since it's now in the base class
 import 'base_game_screen.dart';
-import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
 import '../config/app_config.dart';
-import '../widgets/common/pulsing_button.dart';
-import '../widgets/common/pulsing_highlight.dart';
+import '../widgets/intro/pulsing_button.dart';
+import '../widgets/intro/pulsing_highlight.dart';
+import '../widgets/intro/morphing_animation.dart';
 
 class IntroductionScreen extends BaseGameScreen {
   const IntroductionScreen({Key? key}) : super(key: key);
@@ -17,12 +15,11 @@ class IntroductionScreen extends BaseGameScreen {
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status ||
-        previous.locale != current.locale; // Keep locale check
+        previous.locale != current.locale;
   }
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    // Get strings directly using the state's locale
     final strings = AppConfig.getStrings(state.locale).introduction;
 
     return Scaffold(
@@ -35,11 +32,9 @@ class IntroductionScreen extends BaseGameScreen {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Header at the top
                   SizedBox(height: AppConfig.layout.spacingMedium),
                   _buildHeader(strings),
                   SizedBox(height: AppConfig.layout.spacingXLarge),
-                  // Main content in row layout
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,7 +61,6 @@ class IntroductionScreen extends BaseGameScreen {
                 ],
               ),
             ),
-            // Removed the Language selector in the top right corner since it's now added in the base class
           ],
         ),
       ),
@@ -83,7 +77,7 @@ class IntroductionScreen extends BaseGameScreen {
     return Text(
       strings.title,
       style: AppConfig.textStyles.h1.copyWith(
-        fontSize: 64, // Deutlich größerer Titeltext
+        fontSize: 64,
         fontWeight: FontWeight.bold,
       ),
       textAlign: TextAlign.center,
@@ -91,58 +85,60 @@ class IntroductionScreen extends BaseGameScreen {
   }
 
   Widget _buildLeftColumn(IntroductionScreenStrings strings) {
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 32.0),
-            child: AspectRatio(
-              aspectRatio: AppConfig.video.minAspectRatio,
-              child: PulsingHighlight(
-                color: AppConfig.colors.primary,
-                maxBlurRadius: 30,
-                maxSpreadRadius: 8,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppConfig.colors.backgroundLight,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppConfig.colors.primary.withOpacity(0.5),
-                      width: 2,
-                    ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 32.0),
+          child: AspectRatio(
+            aspectRatio: AppConfig.video.minAspectRatio,
+            child: PulsingHighlight(
+              color: AppConfig.colors.primary,
+              maxBlurRadius: 30,
+              maxSpreadRadius: 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppConfig.colors.backgroundLight,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppConfig.colors.primary.withOpacity(0.5),
+                    width: 2,
                   ),
-                  child: ClipRRect(
+                ),
+                // Hier haben wir das einfache Image durch die Morphing-Animation ersetzt
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: MorphingAnimation(
+                    realImagePath: 'images/real_face.jpg',
+                    fakeImagePath: 'images/deepfakePope.jpeg',
+                    duration: const Duration(seconds: 3),
+                    fit: BoxFit.cover,
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'images/deepfakePope.jpeg',
-                      fit: BoxFit.cover,
-                    ),
                   ),
                 ),
               ),
             ),
           ),
-          SizedBox(height: AppConfig.layout.spacingMedium),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 32.0),
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              vertical: AppConfig.layout.spacingMedium,
-              horizontal: AppConfig.layout.spacingLarge,
-            ),
-            decoration: BoxDecoration(
-              color: AppConfig.colors.wrongAnswer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              strings.challenge,
-              style: AppConfig.textStyles.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
+        ),
+        SizedBox(height: AppConfig.layout.spacingMedium),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 32.0),
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            vertical: AppConfig.layout.spacingMedium,
+            horizontal: AppConfig.layout.spacingLarge,
           ),
-        ],
-      ),
+          decoration: BoxDecoration(
+            color: AppConfig.colors.wrongAnswer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            strings.challenge,
+            style: AppConfig.textStyles.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
     );
   }
 
@@ -154,7 +150,7 @@ class IntroductionScreen extends BaseGameScreen {
         Text(
           strings.subtitle,
           style: AppConfig.textStyles.bodyLarge.copyWith(
-            fontSize: 28, // Deutlich größerer Untertitel
+            fontSize: 28,
             fontWeight: FontWeight.w500,
             height: 1.3,
           ),
@@ -163,7 +159,7 @@ class IntroductionScreen extends BaseGameScreen {
         Text(
           strings.description,
           style: AppConfig.textStyles.bodyMedium.copyWith(
-            fontSize: 22, // Deutlich größere Beschreibung
+            fontSize: 22,
             height: 1.4,
           ),
         ),
@@ -175,7 +171,7 @@ class IntroductionScreen extends BaseGameScreen {
       BuildContext context, IntroductionScreenStrings strings) {
     return Center(
       child: SizedBox(
-        height: 100, // Erhöhter Button mit mehr Höhe
+        height: 100,
         child: FittedBox(
           fit: BoxFit.fitHeight,
           child: PulsingButton(
