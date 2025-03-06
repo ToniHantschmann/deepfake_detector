@@ -142,11 +142,14 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                             Expanded(
                               child: StrategyCarousel(
                                 strategies: getImplementedStrategies(context),
-                                onPageChanged: (index, strategyId) {
+                                onPageChanged:
+                                    (index, strategyId, previousStrategyId) {
                                   context.read<GameBloc>().add(
                                         StrategyIndexChanged(
                                           newIndex: index,
                                           strategyId: strategyId,
+                                          previousStrategyId:
+                                              previousStrategyId,
                                         ),
                                       );
                                 },

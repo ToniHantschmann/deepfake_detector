@@ -59,10 +59,12 @@ class UpdateSelectedVideo extends GameEvent {
 class StrategyIndexChanged extends GameEvent {
   final int newIndex;
   final String strategyId;
+  final String? previousStrategyId;
 
   const StrategyIndexChanged({
     required this.newIndex,
     required this.strategyId,
+    this.previousStrategyId,
   });
 }
 

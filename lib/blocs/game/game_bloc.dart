@@ -419,10 +419,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Future<void> _onStrategyIndexChanged(
       StrategyIndexChanged event, Emitter<GameState> emit) async {
     final newIndex = event.newIndex;
-    final strategyId = event.strategyId;
+    final String? previousStrategyId = event.previousStrategyId;
 
     final updatedViewedIds = Set<String>.from(state.viewedStrategyIds);
-    updatedViewedIds.add(strategyId);
+
+    // Nur wenn eine vorherige Strategie existiert und sich geändert hat,
+    // markieren wir sie als angesehen
+    if (previousStrategyId != null) {
+      updatedViewedIds.add(previousStrategyId);
+    }
 
     emit(state.copyWith(
       currentStrategyIndex: newIndex,
