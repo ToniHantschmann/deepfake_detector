@@ -213,6 +213,7 @@ class AppVideo {
   final double minAspectRatio = 16 / 9;
   final int minResolution = 720; // height in pixels
   final int targetBitrate = 2500000; // bits per second
+  final double introImageAspectRatio = 4 / 3;
 }
 
 class AppTextStyles {

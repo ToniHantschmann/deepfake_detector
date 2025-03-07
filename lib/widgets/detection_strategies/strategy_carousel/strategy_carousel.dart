@@ -60,6 +60,9 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
         setState(() {
           // Force rebuild to apply initial scaling
         });
+
+        // Wir markieren die initiale Strategie nicht mehr sofort als angesehen
+        // Erst beim Wechsel zu einer anderen Strategie wird sie als angesehen markiert
       }
     });
   }
@@ -71,6 +74,10 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
   }
 
   void _handlePageChanged(int page) {
+    // ID der aktuellen Strategie bestimmen, bevor wir zur neuen wechseln
+    final int currentIdx = _currentPage % widget.strategies.length;
+    final String currentStrategyId = widget.strategies[currentIdx].id;
+
     // ID der aktuellen Strategie bestimmen, bevor wir zur neuen wechseln
     final int currentIdx = _currentPage % widget.strategies.length;
     final String? currentStrategyId = widget.strategies[currentIdx].id;
@@ -137,8 +144,7 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
                         ),
                         child: StrategyCard(
                           strategy: strategy,
-                          hasBeenViewed:
-                              hasBeenViewed, // Pass the viewed status
+                          hasBeenViewed: hasBeenViewed,
                         ),
                       ),
                     );

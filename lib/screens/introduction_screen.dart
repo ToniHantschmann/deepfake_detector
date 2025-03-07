@@ -15,12 +15,11 @@ class IntroductionScreen extends BaseGameScreen {
   bool shouldRebuild(GameState previous, GameState current) {
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status ||
-        previous.locale != current.locale; // Keep locale check
+        previous.locale != current.locale;
   }
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    // Get strings directly using the state's locale
     final strings = AppConfig.getStrings(state.locale).introduction;
 
     return Scaffold(
@@ -33,11 +32,9 @@ class IntroductionScreen extends BaseGameScreen {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Header at the top
                   SizedBox(height: AppConfig.layout.spacingMedium),
                   _buildHeader(strings),
                   SizedBox(height: AppConfig.layout.spacingXLarge),
-                  // Main content in row layout
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,7 +61,6 @@ class IntroductionScreen extends BaseGameScreen {
                 ],
               ),
             ),
-            // Removed the Language selector in the top right corner since it's now added in the base class
           ],
         ),
       ),
@@ -81,7 +77,7 @@ class IntroductionScreen extends BaseGameScreen {
     return Text(
       strings.title,
       style: AppConfig.textStyles.h1.copyWith(
-        fontSize: 64, // Deutlich größerer Titeltext
+        fontSize: 64,
         fontWeight: FontWeight.bold,
       ),
       textAlign: TextAlign.center,
@@ -112,38 +108,31 @@ class IntroductionScreen extends BaseGameScreen {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: MorphingAnimation(
-                      realImagePath: 'images/real_Pope.jpg',
-                      fakeImagePath: 'images/deepfake_Pope.jpg',
-                      duration: const Duration(seconds: 3),
-                      fit: BoxFit.cover,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
                   ),
                 ),
               ),
             ),
           ),
-          SizedBox(height: AppConfig.layout.spacingMedium),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 32.0),
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              vertical: AppConfig.layout.spacingMedium,
-              horizontal: AppConfig.layout.spacingLarge,
-            ),
-            decoration: BoxDecoration(
-              color: AppConfig.colors.wrongAnswer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              strings.challenge,
-              style: AppConfig.textStyles.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
+        ),
+        SizedBox(height: AppConfig.layout.spacingMedium),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 32.0),
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            vertical: AppConfig.layout.spacingMedium,
+            horizontal: AppConfig.layout.spacingLarge,
           ),
-        ],
-      ),
+          decoration: BoxDecoration(
+            color: AppConfig.colors.wrongAnswer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            strings.challenge,
+            style: AppConfig.textStyles.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
     );
   }
 
@@ -155,7 +144,7 @@ class IntroductionScreen extends BaseGameScreen {
         Text(
           strings.subtitle,
           style: AppConfig.textStyles.bodyLarge.copyWith(
-            fontSize: 28, // Deutlich größerer Untertitel
+            fontSize: 28,
             fontWeight: FontWeight.w500,
             height: 1.3,
           ),
@@ -164,7 +153,7 @@ class IntroductionScreen extends BaseGameScreen {
         Text(
           strings.description,
           style: AppConfig.textStyles.bodyMedium.copyWith(
-            fontSize: 22, // Deutlich größere Beschreibung
+            fontSize: 22,
             height: 1.4,
           ),
         ),
@@ -176,7 +165,7 @@ class IntroductionScreen extends BaseGameScreen {
       BuildContext context, IntroductionScreenStrings strings) {
     return Center(
       child: SizedBox(
-        height: 100, // Erhöhter Button mit mehr Höhe
+        height: 100,
         child: FittedBox(
           fit: BoxFit.fitHeight,
           child: PulsingButton(
