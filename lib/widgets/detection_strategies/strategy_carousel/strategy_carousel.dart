@@ -16,15 +16,16 @@ class AppScrollBehavior extends MaterialScrollBehavior {
 class StrategyCarousel extends StatefulWidget {
   final List<Strategy> strategies;
   final double viewportFraction;
-  final Function(int, String)? onPageChanged; // Updated callback signature
-  final Set<String> viewedStrategyIds; // Added parameter
+  final Function(int, String, String?)?
+      onPageChanged; // Aktualisierter Callback mit 3 Parametern
+  final Set<String> viewedStrategyIds;
 
   const StrategyCarousel({
     Key? key,
     required this.strategies,
     this.viewportFraction = 0.4,
     this.onPageChanged,
-    required this.viewedStrategyIds, // Added parameter
+    required this.viewedStrategyIds,
   }) : super(key: key);
 
   @override
@@ -60,8 +61,8 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
           // Force rebuild to apply initial scaling
         });
 
-        // Mark the initial strategy as viewed
-        _notifyPageChanged(_currentPage);
+        // Wir markieren die initiale Strategie nicht mehr sofort als angesehen
+        // Erst beim Wechsel zu einer anderen Strategie wird sie als angesehen markiert
       }
     });
   }
@@ -73,19 +74,23 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
   }
 
   void _handlePageChanged(int page) {
+    // ID der aktuellen Strategie bestimmen, bevor wir zur neuen wechseln
+    final int currentIdx = _currentPage % widget.strategies.length;
+    final String currentStrategyId = widget.strategies[currentIdx].id;
+
     setState(() {
       _currentPage = page;
     });
 
-    _notifyPageChanged(page);
-  }
-
-  // Helper method to notify parent about page change and strategy ID
-  void _notifyPageChanged(int page) {
     if (widget.onPageChanged != null) {
       final actualIndex = page % widget.strategies.length;
       final strategyId = widget.strategies[actualIndex].id;
-      widget.onPageChanged!(actualIndex, strategyId);
+
+      // Nur wenn sich die Strategy wirklich geändert hat
+      final String? prevId =
+          (currentStrategyId != strategyId) ? currentStrategyId : null;
+
+      widget.onPageChanged!(actualIndex, strategyId, prevId);
     }
   }
 
@@ -126,8 +131,7 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
                         ),
                         child: StrategyCard(
                           strategy: strategy,
-                          hasBeenViewed:
-                              hasBeenViewed, // Pass the viewed status
+                          hasBeenViewed: hasBeenViewed,
                         ),
                       ),
                     );

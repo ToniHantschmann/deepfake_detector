@@ -7,7 +7,6 @@ import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
 import '../widgets/common/swipe_navigation_wrapper.dart';
-import '../widgets/common/adaptive_language_selector.dart';
 
 /// Base class for all game screens
 /// Provides common functionality and ensures consistent behavior
@@ -40,9 +39,6 @@ abstract class BaseGameScreen extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.currentScreen != current.currentScreen,
       builder: (context, state) {
-        // Check if this is the result screen to adjust positioning
-        final bool isResultScreen = state.currentScreen == GameScreen.result;
-
         return Stack(
           children: [
             child,
