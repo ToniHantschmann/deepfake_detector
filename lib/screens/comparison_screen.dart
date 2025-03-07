@@ -66,43 +66,45 @@ class ComparisonScreen extends BaseGameScreen {
                         Expanded(
                           child: _buildVideoComparison(context, state, strings),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppConfig.layout.spacingLarge,
-                            horizontal: AppConfig.layout.spacingXLarge,
-                          ),
-                          child: Container(
-                            width: double.infinity,
-                            constraints: BoxConstraints(
-                              minHeight: AppConfig.layout.buttonHeight,
-                              maxHeight: AppConfig.layout.buttonHeight * 1.2,
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppConfig.layout.spacingLarge,
                             ),
-                            child: ElevatedButton(
-                              onPressed: state.selectedVideoIndex != null
-                                  ? () {
-                                      dispatchGameEvent(
-                                        context,
-                                        SelectDeepfake(
-                                            state.selectedVideoIndex!),
-                                      );
-                                      handleNextNavigation(context);
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppConfig.colors.primary,
-                                disabledBackgroundColor:
-                                    AppConfig.colors.primary.withOpacity(0.3),
-                                disabledForegroundColor: AppConfig
-                                    .colors.textPrimary
-                                    .withOpacity(0.7),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      AppConfig.layout.buttonRadius * 1.5),
-                                ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              constraints: BoxConstraints(
+                                minWidth: 200,
+                                minHeight: AppConfig.layout.buttonHeight,
+                                maxHeight: AppConfig.layout.buttonHeight * 1.2,
                               ),
-                              child: Text(
-                                strings.confirmButton,
-                                style: AppConfig.textStyles.buttonLarge,
+                              child: ElevatedButton(
+                                onPressed: state.selectedVideoIndex != null
+                                    ? () {
+                                        dispatchGameEvent(
+                                          context,
+                                          SelectDeepfake(
+                                              state.selectedVideoIndex!),
+                                        );
+                                        handleNextNavigation(context);
+                                      }
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppConfig.colors.primary,
+                                  disabledBackgroundColor:
+                                      AppConfig.colors.primary.withOpacity(0.3),
+                                  disabledForegroundColor: AppConfig
+                                      .colors.textPrimary
+                                      .withOpacity(0.7),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        AppConfig.layout.buttonHeight / 2),
+                                  ),
+                                ),
+                                child: Text(
+                                  strings.confirmButton,
+                                  style: AppConfig.textStyles.buttonLarge,
+                                ),
                               ),
                             ),
                           ),
