@@ -4,8 +4,16 @@
       "id": "001",
       "title": "Video1",
       "description": "description 1",
-      "videoUrl": "videos/real/00006.mp4",
-      "thumbnailUrl": "thumbnails/real/00006.jpg",
+      "videoUrl": "videos/real/id9_0000_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id9_0000.png",
+      "isDeepfake": false
+    },
+    {
+      "id": "002",
+      "title": "Video2",
+      "description": "description 2",
+      "videoUrl": "videos/real/id13_0011_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id13_0011.png",
       "isDeepfake": false
     },
     
@@ -13,26 +21,57 @@
       "id": "010",
       "title": "Video10",
       "description": "description 10",
-      "videoUrl": "videos/deepfake/id2_id35_0008.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id2_id35_0008.jpg",
+      "videoUrl": "videos/deepfake/id9_id26_0000_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id9_id26_0000.png",
       "isDeepfake": true,
       "deepfakeIndicators": [
       {
-        "description": "Unnatural lip movements during specific phrases",
+        "description": "Unnatural look in the area around the eyes",
         "screenshotUrls": [
-          "screenshots/010/lips_normal.jpg", 
-          "screenshots/010/lips_deepfake.jpg"
+          "screenshots/id9id26/eyes_1.png", 
+          "screenshots/id9id26/eyes_2.png"
         ],
         "screenshotCaptions": [
-          "Natural lip synchronization", 
-          "Unnatural lip movement at 0:32"
+          "Unnatural look in the area around the eyes", 
+          "Unnatural look in the area around the eyes"
         ]
       },
       {
-        "description": "description 2",
+        "description": "Unnatural look of facial hair and mouth",
         "screenshotUrls": [
-          "screenshots/010/lips_normal.jpg", 
-          "screenshots/010/lips_deepfake.jpg"
+          "screenshots/id9id26/mouth_1.png", 
+          "screenshots/id9id26/mouth_2.png"
+        ],
+        "screenshotCaptions": [
+          "caption 2", 
+          "caption 3"
+        ]
+      }]
+    },
+    {
+      "id": "011",
+      "title": "Video11",
+      "description": "description 11",
+      "videoUrl": "videos/deepfake/id13_id10_0011_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id9_id26_0000.png",
+      "isDeepfake": true,
+      "deepfakeIndicators": [
+      {
+        "description": "Unnatural look in the area around the eyes",
+        "screenshotUrls": [
+          "screenshots/id13id10/eyes_1.png", 
+          "screenshots/id13id10/eyes_2.png"
+        ],
+        "screenshotCaptions": [
+          "Unnatural look in the area around the eyes", 
+          "Unnatural look in the area around the eyes"
+        ]
+      },
+      {
+        "description": "Unnatural look of facial hair and mouth",
+        "screenshotUrls": [
+          "screenshots/id13id10/mouth_1.png", 
+          "screenshots/id13id10/mouth_2.png"
         ],
         "screenshotCaptions": [
           "caption 2", 
