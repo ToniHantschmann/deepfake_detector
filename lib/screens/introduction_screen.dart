@@ -85,28 +85,34 @@ class IntroductionScreen extends BaseGameScreen {
   }
 
   Widget _buildLeftColumn(IntroductionScreenStrings strings) {
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 32.0),
-            child: AspectRatio(
-              aspectRatio: AppConfig.video.introImageAspectRatio,
-              child: PulsingHighlight(
-                color: AppConfig.colors.primary,
-                maxBlurRadius: 30,
-                maxSpreadRadius: 8,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppConfig.colors.backgroundLight,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppConfig.colors.primary.withOpacity(0.5),
-                      width: 2,
-                    ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 32.0),
+          child: AspectRatio(
+            aspectRatio: AppConfig.video.minAspectRatio,
+            child: PulsingHighlight(
+              color: AppConfig.colors.primary,
+              maxBlurRadius: 30,
+              maxSpreadRadius: 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppConfig.colors.backgroundLight,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppConfig.colors.primary.withOpacity(0.5),
+                    width: 2,
                   ),
-                  child: ClipRRect(
+                ),
+                // Hier haben wir das einfache Image durch die Morphing-Animation ersetzt
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: MorphingAnimation(
+                    realImagePath: 'images/real_Pope.jpg',
+                    fakeImagePath: 'images/deepfake_Pope.jpg',
+                    duration: const Duration(seconds: 3),
+                    fit: BoxFit.cover,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),

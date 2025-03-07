@@ -16,8 +16,8 @@ class AppScrollBehavior extends MaterialScrollBehavior {
 class StrategyCarousel extends StatefulWidget {
   final List<Strategy> strategies;
   final double viewportFraction;
-  // Dritter Parameter für die vorherige Strategie-ID
-  final Function(int, String, String?)? onPageChanged;
+  final Function(int, String, String?)?
+      onPageChanged; // Aktualisierter Callback mit 3 Parametern
   final Set<String> viewedStrategyIds;
 
   const StrategyCarousel({
@@ -78,30 +78,17 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
     final int currentIdx = _currentPage % widget.strategies.length;
     final String currentStrategyId = widget.strategies[currentIdx].id;
 
-    // ID der aktuellen Strategie bestimmen, bevor wir zur neuen wechseln
-    final int currentIdx = _currentPage % widget.strategies.length;
-    final String? currentStrategyId = widget.strategies[currentIdx].id;
-
-    // Seite aktualisieren
     setState(() {
       _currentPage = page;
     });
 
-    // Die aktuelle Strategie-ID (die jetzt die vorherige ist) an den Callback übergeben
-    _notifyPageChanged(page, currentStrategyId);
-  }
-
-  void _notifyPageChanged(int page, String? previousStrategyId) {
     if (widget.onPageChanged != null) {
       final actualIndex = page % widget.strategies.length;
       final strategyId = widget.strategies[actualIndex].id;
 
-      // Wenn sich die Strategie geändert hat (wenn die IDs unterschiedlich sind),
-      // übergeben wir die vorherige ID, sonst null
+      // Nur wenn sich die Strategy wirklich geändert hat
       final String? prevId =
-          (previousStrategyId != null && previousStrategyId != strategyId)
-              ? previousStrategyId
-              : null;
+          (currentStrategyId != strategyId) ? currentStrategyId : null;
 
       widget.onPageChanged!(actualIndex, strategyId, prevId);
     }
