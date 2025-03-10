@@ -8,6 +8,7 @@ class Video {
   final String videoUrl;
   final String thumbnailUrl;
   final bool isDeepfake;
+  final String pairId;
 
   /// Contains indicators only if this is a deepfake video
   /// Will be empty for authentic videos
@@ -20,6 +21,7 @@ class Video {
     required this.videoUrl,
     required this.thumbnailUrl,
     required this.isDeepfake,
+    required this.pairId,
     List<DeepfakeIndicator>? deepfakeIndicators,
   }) : deepfakeIndicators = isDeepfake
             ? (deepfakeIndicators ?? [])
@@ -37,6 +39,7 @@ class Video {
         videoUrl: json['videoUrl'] as String,
         thumbnailUrl: json['thumbnailUrl'] as String,
         isDeepfake: false,
+        pairId: json['pairId'] as String,
       );
     }
 
@@ -57,6 +60,7 @@ class Video {
       videoUrl: json['videoUrl'] as String,
       thumbnailUrl: json['thumbnailUrl'] as String,
       isDeepfake: true,
+      pairId: json['pairId'] as String,
       deepfakeIndicators: indicators,
     );
   }
@@ -69,6 +73,7 @@ class Video {
       'videoUrl': videoUrl,
       'thumbnailUrl': thumbnailUrl,
       'isDeepfake': isDeepfake,
+      'pairId': pairId,
     };
 
     // Only include deepfakeIndicators for deepfake videos

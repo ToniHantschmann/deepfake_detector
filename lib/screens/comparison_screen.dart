@@ -214,67 +214,46 @@ class ComparisonScreen extends BaseGameScreen {
                   ),
                   Padding(
                     padding: EdgeInsets.all(AppConfig.layout.cardPadding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          video.title,
-                          style: AppConfig.textStyles.h3,
-                        ),
-                        SizedBox(height: AppConfig.layout.spacingSmall),
-                        Text(
-                          video.description,
-                          style: AppConfig.textStyles.bodyMedium.copyWith(
-                            color: AppConfig.colors.textSecondary,
+                    child: Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(
+                        minHeight: AppConfig.layout.buttonHeight,
+                        maxHeight: AppConfig.layout.buttonHeight * 1.2,
+                      ),
+                      child: ElevatedButton(
+                        onPressed: onSelect,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isSelected
+                              ? AppConfig.colors.primary
+                              : AppConfig.colors.secondary,
+                          padding: EdgeInsets.symmetric(
+                            vertical: AppConfig.layout.buttonPadding * 1.5,
                           ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: AppConfig.layout.spacingLarge),
-                        Container(
-                          width: double.infinity,
-                          constraints: BoxConstraints(
-                            minHeight: AppConfig.layout.buttonHeight,
-                            maxHeight: AppConfig.layout.buttonHeight * 1.2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppConfig.layout.buttonRadius * 1.5),
                           ),
-                          child: ElevatedButton(
-                            onPressed: onSelect,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isSelected
-                                  ? AppConfig.colors.primary
-                                  : AppConfig.colors
-                                      .secondary, // Andere Farbe für nicht ausgewählte Buttons
-                              padding: EdgeInsets.symmetric(
-                                vertical: AppConfig.layout.buttonPadding * 1.5,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    AppConfig.layout.buttonRadius * 1.5),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              isSelected
+                                  ? Icons.check_circle
+                                  : Icons.radio_button_unchecked,
+                              color: AppConfig.colors.textPrimary,
+                              size: 24,
+                            ),
+                            SizedBox(width: AppConfig.layout.spacingMedium),
+                            Text(
+                              strings.selectionButton,
+                              style: AppConfig.textStyles.buttonLarge.copyWith(
+                                color: AppConfig.colors.textPrimary,
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  isSelected
-                                      ? Icons.check_circle
-                                      : Icons.radio_button_unchecked,
-                                  color: AppConfig.colors.textPrimary,
-                                  size: 24,
-                                ),
-                                SizedBox(width: AppConfig.layout.spacingMedium),
-                                Text(
-                                  strings.selectionButton,
-                                  style:
-                                      AppConfig.textStyles.buttonLarge.copyWith(
-                                    color: AppConfig.colors.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],

@@ -66,40 +66,43 @@ class VideoRepository {
   Future<List<Video>> getRandomVideoPair(Set<String> seenVideoIds) async {
     await _ensureInitialized();
     try {
-      // Split videos into seen and unseen
-      final unseenRealVideos = _videos
-          .where((v) => !v.isDeepfake && !seenVideoIds.contains(v.id))
-          .toList();
-      final unseenFakeVideos = _videos
-          .where((v) => v.isDeepfake && !seenVideoIds.contains(v.id))
-          .toList();
+      // Alle eindeutigen pairIds sammeln
+      final Set<String> pairIds = _videos.map((v) => v.pairId).toSet();
 
-      final realVideos = _videos.where((v) => !v.isDeepfake).toList();
-      final fakeVideos = _videos.where((v) => v.isDeepfake).toList();
+      // Ungesehene Paare zuerst priorisieren
+      final List<String> unseenPairIds = pairIds.where((pairId) {
+        final pairVideos = _videos.where((v) => v.pairId == pairId).toList();
+        return pairVideos.any((v) => !seenVideoIds.contains(v.id));
+      }).toList();
 
-      // Try to get unseen videos first
-      Video realVideo;
-      Video fakeVideo;
+      // Wenn keine ungesehenen Paare verfügbar sind, alle verwenden
+      final targetPairIds =
+          unseenPairIds.isNotEmpty ? unseenPairIds : pairIds.toList();
+      targetPairIds.shuffle();
+      final selectedPairId = targetPairIds.first;
 
-      if (unseenRealVideos.isNotEmpty) {
-        unseenRealVideos.shuffle();
-        realVideo = unseenRealVideos.first;
-      } else {
-        // If all videos have been seen, use the full pool
-        realVideos.shuffle();
-        realVideo = realVideos.first;
-      }
+      // Ein echtes und ein Deepfake-Video mit der gleichen pairId finden
+      final pairVideos =
+          _videos.where((v) => v.pairId == selectedPairId).toList();
 
-      if (unseenFakeVideos.isNotEmpty) {
-        unseenFakeVideos.shuffle();
-        fakeVideo = unseenFakeVideos.first;
-      } else {
-        // If all videos have been seen, use the full pool
-        fakeVideos.shuffle();
-        fakeVideo = fakeVideos.first;
-      }
+      // Bei unserem Datenmodell sollte es genau ein echtes und ein Deepfake-Video pro pairId geben
+      final realVideo = pairVideos.firstWhere(
+        (v) => !v.isDeepfake,
+        orElse: () => throw VideoException(
+            'No real video found for pair: $selectedPairId'),
+      );
 
-      return [realVideo, fakeVideo];
+      final fakeVideo = pairVideos.firstWhere(
+        (v) => v.isDeepfake,
+        orElse: () => throw VideoException(
+            'No deepfake video found for pair: $selectedPairId'),
+      );
+
+      // Die Reihenfolge der Videos randomisieren
+      final result = [realVideo, fakeVideo];
+      result.shuffle();
+
+      return result;
     } catch (e) {
       throw VideoException('Failed to load video pair: $e');
     }
