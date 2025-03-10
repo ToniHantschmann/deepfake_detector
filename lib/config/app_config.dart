@@ -221,64 +221,64 @@ class AppTextStyles {
 
   // Headings
   final TextStyle h1 = const TextStyle(
-    fontSize: 48,
+    fontSize: 64,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
 
   final TextStyle h2 = const TextStyle(
-    fontSize: 32,
+    fontSize: 48,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
 
   final TextStyle h3 = const TextStyle(
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
 
   // Body Text
   final TextStyle bodyLarge = const TextStyle(
-    fontSize: 18,
+    fontSize: 24,
     color: Colors.white,
     height: 1.5,
   );
 
   final TextStyle bodyMedium = const TextStyle(
-    fontSize: 16,
+    fontSize: 22,
     color: Colors.white,
     height: 1.5,
   );
 
   final TextStyle bodySmall = const TextStyle(
-    fontSize: 14,
+    fontSize: 20,
     color: Colors.white,
     height: 1.5,
   );
 
   // Button Text
   final TextStyle buttonLarge = const TextStyle(
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: FontWeight.w500,
     color: Colors.white,
   );
 
   final TextStyle buttonMedium = const TextStyle(
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: FontWeight.w500,
     color: Colors.white,
   );
 
   // Overlay Text
   final TextStyle overlayTitle = const TextStyle(
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
 
   final TextStyle overlaySubtitle = const TextStyle(
-    fontSize: 16,
+    fontSize: 20,
     color: Colors.grey,
     height: 1.5,
   );
@@ -291,7 +291,7 @@ class AppTextStyles {
   );
 
   final TextStyle pinLabel = const TextStyle(
-    fontSize: 14,
+    fontSize: 18,
     color: Colors.grey,
   );
 
@@ -311,7 +311,7 @@ class AppTextStyles {
 
   // Caption Text
   final TextStyle caption = const TextStyle(
-    fontSize: 12,
+    fontSize: 18,
     color: Colors.grey,
     height: 1.4,
   );
