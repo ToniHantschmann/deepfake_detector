@@ -10,7 +10,7 @@ class EnglishStrings implements AppStrings {
   @override
   final video = const EnglishVideoScreenStrings();
   @override
-  final comparison = const EnglishComparisonScreenStrings();
+  final comparison = const EnglishDecisionScreenStrings();
   @override
   final result = const EnglishResultScreenStrings();
   @override
@@ -68,8 +68,8 @@ class EnglishVideoScreenStrings implements VideoScreenStrings {
   String get buffering => 'Buffering...';
 }
 
-class EnglishComparisonScreenStrings implements ComparisonScreenStrings {
-  const EnglishComparisonScreenStrings();
+class EnglishDecisionScreenStrings implements DecisionScreenStrings {
+  const EnglishDecisionScreenStrings();
 
   @override
   String get title => 'Which video is the Deepfake?';
@@ -79,6 +79,15 @@ class EnglishComparisonScreenStrings implements ComparisonScreenStrings {
   String get selectionButton => 'This is the Deepfake';
   @override
   String get confirmButton => 'Confirm Selection';
+
+  @override
+  String get realButtonLabel => 'No, it\'s real';
+  @override
+  String get deepfakeButtonLabel => 'Yes, deepfake';
+  @override
+  String get questionLabel => 'Is this video manipulated?';
+  @override
+  String get instructionLabel => 'Examine the video carefully';
 }
 
 class EnglishResultScreenStrings implements ResultScreenStrings {

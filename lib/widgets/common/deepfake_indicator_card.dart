@@ -29,16 +29,21 @@ class DeepfakeIndicatorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Indicator header with number and text
+          // Indicator header with number and text - more compact
           Padding(
-            padding: EdgeInsets.all(AppConfig.layout.spacingMedium),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppConfig.layout.spacingMedium,
+              vertical:
+                  AppConfig.layout.spacingSmall, // Reduced vertical padding
+            ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment
+                  .center, // Changed to center for better alignment
               children: [
-                // Reason number badge
+                // More compact reason number badge
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 24, // Reduced from 32
+                  height: 24, // Reduced from 32
                   decoration: BoxDecoration(
                     color: AppConfig.colors.primary,
                     shape: BoxShape.circle,
@@ -49,19 +54,22 @@ class DeepfakeIndicatorCard extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 14, // Reduced from 16
                       ),
                     ),
                   ),
                 ),
                 SizedBox(width: AppConfig.layout.spacingSmall),
-                // Indicator description
+                // Indicator description with smaller text
                 Expanded(
                   child: Text(
                     indicator.description,
                     style: AppConfig.textStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.bold,
+                      fontSize: 15, // Reduced font size
                     ),
+                    maxLines: 2, // Limit to 2 lines
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -75,7 +83,7 @@ class DeepfakeIndicatorCard extends StatelessWidget {
                 padding: EdgeInsets.only(
                   left: AppConfig.layout.spacingMedium,
                   right: AppConfig.layout.spacingMedium,
-                  bottom: AppConfig.layout.spacingMedium,
+                  bottom: AppConfig.layout.spacingSmall, // Reduced
                 ),
                 child: _buildScreenshotSection(indicator),
               ),
@@ -142,7 +150,7 @@ class DeepfakeIndicatorCard extends StatelessWidget {
                     child: Icon(
                       Icons.broken_image,
                       color: AppConfig.colors.textSecondary,
-                      size: 40,
+                      size: 28, // Smaller icon
                     ),
                   ),
                 );
@@ -150,13 +158,13 @@ class DeepfakeIndicatorCard extends StatelessWidget {
             ),
           ),
         ),
-        // Caption if provided
+        // Caption if provided - more compact
         if (caption != null) ...[
-          SizedBox(height: AppConfig.layout.spacingSmall),
+          SizedBox(height: 4), // Smaller spacing
           Container(
             padding: EdgeInsets.symmetric(
-              vertical: AppConfig.layout.spacingSmall / 2,
-              horizontal: AppConfig.layout.spacingSmall,
+              vertical: 2, // Reduced vertical padding
+              horizontal: 6, // Reduced horizontal padding
             ),
             decoration: BoxDecoration(
               color: AppConfig.colors.backgroundDark.withOpacity(0.5),
@@ -164,11 +172,12 @@ class DeepfakeIndicatorCard extends StatelessWidget {
             ),
             child: Text(
               caption,
-              style: AppConfig.textStyles.bodySmall.copyWith(
+              style: TextStyle(
+                fontSize: 12, // Smaller font size
                 color: AppConfig.colors.textPrimary,
               ),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 1, // Limit to 1 line
               overflow: TextOverflow.ellipsis,
             ),
           ),

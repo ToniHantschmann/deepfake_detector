@@ -68,7 +68,7 @@ class GermanVideoScreenStrings implements VideoScreenStrings {
   String get buffering => 'Pufferung...';
 }
 
-class GermanComparisonScreenStrings implements ComparisonScreenStrings {
+class GermanComparisonScreenStrings implements DecisionScreenStrings {
   const GermanComparisonScreenStrings();
 
   @override
@@ -80,6 +80,15 @@ class GermanComparisonScreenStrings implements ComparisonScreenStrings {
   String get selectionButton => 'Dies ist der Deepfake';
   @override
   String get confirmButton => 'Auswahl bestätigen';
+
+  @override
+  String get realButtonLabel => 'Nein, echt';
+  @override
+  String get deepfakeButtonLabel => 'Ja, Deepfake';
+  @override
+  String get questionLabel => 'Ist dieses Video manipuliert?';
+  @override
+  String get instructionLabel => 'Schau dir das Video genau an';
 }
 
 class GermanResultScreenStrings implements ResultScreenStrings {

@@ -233,7 +233,7 @@ class AppTextStyles {
   );
 
   final TextStyle h3 = const TextStyle(
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );

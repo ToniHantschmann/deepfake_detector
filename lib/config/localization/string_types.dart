@@ -5,7 +5,7 @@ abstract class AppStrings {
 
   IntroductionScreenStrings get introduction;
   VideoScreenStrings get video;
-  ComparisonScreenStrings get comparison;
+  DecisionScreenStrings get comparison;
   ResultScreenStrings get result;
   StrategyScreenStrings get strategies;
   AuthStrings get auth;
@@ -40,13 +40,18 @@ abstract class VideoScreenStrings {
   String get buffering;
 }
 
-abstract class ComparisonScreenStrings {
-  const ComparisonScreenStrings();
+abstract class DecisionScreenStrings {
+  const DecisionScreenStrings();
 
   String get title;
   String get subtitle;
   String get selectionButton;
   String get confirmButton;
+
+  String get realButtonLabel;
+  String get deepfakeButtonLabel;
+  String get questionLabel;
+  String get instructionLabel;
 }
 
 abstract class ResultScreenStrings {
