@@ -23,6 +23,28 @@ class ResultScreen extends BaseGameScreen {
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
     final strings = AppConfig.getStrings(context.currentLocale).result;
+    final mediaQuery = MediaQuery.of(context);
+    final screenSize = mediaQuery.size;
+
+    // Verschiedene Höhenkomponenten
+    final progressBarHeight = 56.0; // Höhe der ProgressBar
+    final statisticsPanelHeight =
+        screenSize.height * 0.22; // Statistik-Panel-Höhe (leicht erhöht)
+    final headerHeight = 80.0; // Geschätzte Höhe des Headers
+    final titleHeight = 56.0; // Höhe des "Video-Vergleich" Titels
+
+    // Verfügbare Höhe für die Videokarten
+    final availableHeight = screenSize.height -
+        progressBarHeight -
+        statisticsPanelHeight -
+        headerHeight -
+        titleHeight -
+        mediaQuery.padding.top -
+        mediaQuery.padding.bottom -
+        40.0; // Extra Puffer
+
+    // Bestimme basierend auf der Bildschirmbreite, ob wir horizontal oder vertikal layouten
+    final isHorizontalLayout = screenSize.width >= 700;
 
     if (state.status == GameStatus.loading ||
         state.userGuessIsDeepfake == null ||
@@ -50,44 +72,60 @@ class ResultScreen extends BaseGameScreen {
           Expanded(
             child: Stack(
               children: [
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppConfig.layout.screenPaddingHorizontal,
-                      vertical: AppConfig.layout.screenPaddingVertical,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildResultHeader(state.isCorrectGuess!, strings),
-                        SizedBox(height: AppConfig.layout.spacingLarge),
+                // Hauptinhalt ohne Scrollview
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppConfig.layout.screenPaddingHorizontal,
+                    vertical: AppConfig.layout.screenPaddingVertical,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Ergebnis-Header
+                      _buildResultHeader(state.isCorrectGuess!, strings),
+                      SizedBox(height: 16.0),
 
-                        // Video-Vergleich hinzufügen
-                        if (counterpartVideo != null) ...[
-                          Text(
-                            "Video-Vergleich",
-                            style: AppConfig.textStyles.h3,
-                          ),
-                          SizedBox(height: AppConfig.layout.spacingMedium),
-                          _buildVideoComparison(
-                            shownVideo,
-                            counterpartVideo,
-                            state.isCorrectGuess!,
-                            state.userGuessIsDeepfake!,
-                            context, // Kontext für Dialog hinzugefügt
-                          ),
-                        ],
+                      // Video-Vergleich-Titel
+                      if (counterpartVideo != null)
+                        Text(
+                          "Video-Vergleich",
+                          style: AppConfig.textStyles.h3,
+                        ),
 
-                        // Reduced padding for the fixed bottom panel
-                        SizedBox(height: 80),
-                      ],
-                    ),
+                      SizedBox(height: 8.0),
+
+                      // Video-Vergleich in einem Container mit fester Höhe
+                      if (counterpartVideo != null)
+                        Container(
+                          height: availableHeight,
+                          child: isHorizontalLayout
+                              ? _buildHorizontalVideoComparison(
+                                  shownVideo,
+                                  counterpartVideo,
+                                  state.isCorrectGuess!,
+                                  state.userGuessIsDeepfake!,
+                                  context)
+                              : _buildVerticalVideoComparison(
+                                  shownVideo,
+                                  counterpartVideo,
+                                  state.isCorrectGuess!,
+                                  state.userGuessIsDeepfake!,
+                                  context),
+                        ),
+
+                      // Platzhalter für den unteren Bereich, um Überlappung mit Statistiken zu vermeiden
+                      Spacer(),
+                    ],
                   ),
                 ),
+
+                // Navigation Buttons
                 NavigationButtons.forGameScreen(
                   onNext: () => handleNextNavigation(context),
                   currentScreen: state.currentScreen,
                 ),
+
+                // Statistik-Panel am unteren Bildschirmrand
                 _buildStatisticsPanel(state, strings),
               ],
             ),
@@ -97,6 +135,70 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
+  // Horizontales Layout für die Videokarten
+  Widget _buildHorizontalVideoComparison(
+    Video shownVideo,
+    Video counterpartVideo,
+    bool isCorrect,
+    bool userGuessIsDeepfake,
+    BuildContext context,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: _buildVideoCard(
+            video: shownVideo,
+            isDeepfake: shownVideo.isDeepfake,
+            title: "Gezeigtes Video",
+            context: context,
+          ),
+        ),
+        SizedBox(width: 16.0),
+        Expanded(
+          child: _buildVideoCard(
+            video: counterpartVideo,
+            isDeepfake: counterpartVideo.isDeepfake,
+            title: "Vergleichsvideo",
+            context: context,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Vertikales Layout für die Videokarten
+  Widget _buildVerticalVideoComparison(
+    Video shownVideo,
+    Video counterpartVideo,
+    bool isCorrect,
+    bool userGuessIsDeepfake,
+    BuildContext context,
+  ) {
+    return Column(
+      children: [
+        Expanded(
+          child: _buildVideoCard(
+            video: shownVideo,
+            isDeepfake: shownVideo.isDeepfake,
+            title: "Gezeigtes Video",
+            context: context,
+          ),
+        ),
+        SizedBox(height: 12.0),
+        Expanded(
+          child: _buildVideoCard(
+            video: counterpartVideo,
+            isDeepfake: counterpartVideo.isDeepfake,
+            title: "Vergleichsvideo",
+            context: context,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Video-Overlay anzeigen
   void _showVideoOverlay(BuildContext context, Video video) {
     showDialog(
       context: context,
@@ -116,6 +218,7 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
+  // Ergebnis-Header
   Widget _buildResultHeader(bool isCorrect, ResultScreenStrings strings) {
     return Container(
       padding: EdgeInsets.all(AppConfig.layout.spacingMedium),
@@ -144,67 +247,12 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
-  // Video-Vergleich mit Kontext-Parameter
-  Widget _buildVideoComparison(
-    Video shownVideo,
-    Video counterpartVideo,
-    bool isCorrectGuess,
-    bool userGuessIsDeepfake,
-    BuildContext context, // Neuer Parameter
-  ) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final isNarrow = constraints.maxWidth < 500;
-
-      if (isNarrow) {
-        return Column(
-          children: [
-            _buildVideoCard(
-              video: shownVideo,
-              isDeepfake: shownVideo.isDeepfake,
-              title: "Gezeigtes Video",
-              context: context, // Kontext übergeben
-            ),
-            SizedBox(height: AppConfig.layout.spacingMedium),
-            _buildVideoCard(
-              video: counterpartVideo,
-              isDeepfake: counterpartVideo.isDeepfake,
-              title: "Vergleichsvideo",
-              context: context, // Kontext übergeben
-            ),
-          ],
-        );
-      } else {
-        return Row(
-          children: [
-            Expanded(
-              child: _buildVideoCard(
-                video: shownVideo,
-                isDeepfake: shownVideo.isDeepfake,
-                title: "Gezeigtes Video",
-                context: context, // Kontext übergeben
-              ),
-            ),
-            SizedBox(width: AppConfig.layout.spacingMedium),
-            Expanded(
-              child: _buildVideoCard(
-                video: counterpartVideo,
-                isDeepfake: counterpartVideo.isDeepfake,
-                title: "Vergleichsvideo",
-                context: context, // Kontext übergeben
-              ),
-            ),
-          ],
-        );
-      }
-    });
-  }
-
-  // Video-Karte mit Play-Button
+  // Kompakte Videokarte mit flexibler Höhe
   Widget _buildVideoCard({
     required Video video,
     required bool isDeepfake,
     required String title,
-    required BuildContext context, // Neuer Parameter
+    required BuildContext context,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -217,92 +265,90 @@ class ResultScreen extends BaseGameScreen {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Titel
-          Padding(
-            padding: EdgeInsets.all(8.0),
+          Container(
+            height: 40,
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            alignment: Alignment.center,
             child: Text(
               title,
-              style: AppConfig.textStyles.bodySmall,
+              style: AppConfig.textStyles.bodyMedium,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
 
-          // Vorschaubild mit Play-Button
-          Stack(
-            children: [
-              AspectRatio(
-                aspectRatio: AppConfig.video.minAspectRatio,
-                child: ClipRRect(
+          // Thumbnail mit Expanded für flexible Höhe
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Thumbnail
+                ClipRRect(
                   borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(AppConfig.layout.cardRadius - 2),
+                    top: Radius.zero,
+                    bottom: Radius.circular(AppConfig.layout.cardRadius - 2),
                   ),
                   child: Image.asset(
                     video.thumbnailUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
-              ),
 
-              // Play button in bottom right
-              Positioned(
-                right: 12,
-                bottom: 12,
-                child: InkWell(
-                  onTap: () => _showVideoOverlay(context, video),
+                // Status-Indikator oben rechts
+                Positioned(
+                  top: 8,
+                  right: 8,
                   child: Container(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppConfig.colors.primary.withOpacity(0.8),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Deepfake-Status
-          Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 8.0,
-              horizontal: 12.0,
-            ),
-            decoration: BoxDecoration(
-              color: isDeepfake
-                  ? AppConfig.colors.warning.withOpacity(0.2)
-                  : AppConfig.colors.success.withOpacity(0.2),
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(AppConfig.layout.cardRadius - 2),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  isDeepfake ? Icons.warning : Icons.check_circle,
-                  color: isDeepfake
-                      ? AppConfig.colors.warning
-                      : AppConfig.colors.success,
-                  size: 16,
-                ),
-                SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    isDeepfake ? "Deepfake" : "Echtes Video",
-                    style: AppConfig.textStyles.bodySmall.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: isDeepfake
                           ? AppConfig.colors.warning
                           : AppConfig.colors.success,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isDeepfake ? Icons.warning : Icons.check_circle,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          isDeepfake ? "Deepfake" : "Echt",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Play-Button
+                Positioned(
+                  bottom: 12,
+                  right: 12,
+                  child: InkWell(
+                    onTap: () => _showVideoOverlay(context, video),
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppConfig.colors.primary.withOpacity(0.8),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -313,6 +359,7 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
+  // Statistik-Panel am unteren Bildschirmrand
   Widget _buildStatisticsPanel(GameState state, ResultScreenStrings strings) {
     if (state.userStatistics == null) return const SizedBox.shrink();
 
@@ -334,17 +381,12 @@ class ResultScreen extends BaseGameScreen {
           top: false,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final double screenHeight = MediaQuery.of(context).size.height;
-              final double targetHeight = screenHeight * 0.2;
               final isVeryNarrow = constraints.maxWidth < 500;
 
               return Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: AppConfig.layout.spacingLarge,
                   vertical: AppConfig.layout.spacingLarge,
-                ),
-                constraints: BoxConstraints(
-                  minHeight: targetHeight,
                 ),
                 child: isVeryNarrow
                     ? _buildVerticalLayout(strings, currentCorrect,
@@ -359,6 +401,7 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
+  // Vertikales Layout für die Statistiken
   Widget _buildVerticalLayout(ResultScreenStrings strings, int currentCorrect,
       int currentAttempts, int totalCorrect, int totalAttempts) {
     return Column(
@@ -385,6 +428,7 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
+  // Horizontales Layout für die Statistiken
   Widget _buildHorizontalLayout(ResultScreenStrings strings, int currentCorrect,
       int currentAttempts, int totalCorrect, int totalAttempts) {
     return Row(
@@ -419,6 +463,7 @@ class ResultScreen extends BaseGameScreen {
     );
   }
 
+  // Statistik-Karte
   Widget _buildStatisticsCard({
     required IconData icon,
     required String title,
