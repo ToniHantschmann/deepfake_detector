@@ -27,9 +27,7 @@ class ProgressBar extends StatelessWidget {
     switch (screen) {
       case GameScreen.firstVideo:
         return strings.firstVideo;
-      case GameScreen.secondVideo:
-        return strings.secondVideo;
-      case GameScreen.comparison:
+      case GameScreen.decision:
         return strings.comparison;
       case GameScreen.result:
         return strings.feedback;
@@ -42,8 +40,7 @@ class ProgressBar extends StatelessWidget {
 
   List<GameScreen> get _progressScreens => [
         GameScreen.firstVideo,
-        GameScreen.secondVideo,
-        GameScreen.comparison,
+        GameScreen.decision,
         GameScreen.result,
         GameScreen.statistics,
       ];

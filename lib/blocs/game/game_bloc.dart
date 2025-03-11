@@ -34,7 +34,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<CancelLogin>(_onCancelLogin);
     on<NextScreen>(_onNextScreen);
     on<PreviousScreen>(_onPreviousScreen);
-    on<SelectDeepfake>(_onSelectDeepfake);
     on<RestartGame>(_onRestartGame);
     on<GeneratePin>(_onGeneratePin);
     on<CheckPin>(_onCheckPin);
@@ -42,6 +41,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<UpdateSelectedVideo>(_onUpdateSelectedVideo);
     on<StrategyIndexChanged>(_onStrategyIndexChanged);
     on<ChangeLanguage>(_onChangeLanguage);
+    on<MakeDeepfakeDecision>(_onMakeDeepfakeDecision);
   }
 
   Future<void> _onQuickStartGame(
@@ -163,23 +163,23 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  Future<void> _onSelectDeepfake(
-      SelectDeepfake event, Emitter<GameState> emit) async {
+  Future<void> _onMakeDeepfakeDecision(
+      MakeDeepfakeDecision event, Emitter<GameState> emit) async {
     if (state.status != GameStatus.playing ||
-        state.currentScreen != GameScreen.comparison ||
-        event.videoIndex >= state.videos.length) {
+        state.currentScreen != GameScreen.decision ||
+        state.videos.isEmpty) {
       return;
     }
 
-    final selectedVideo = state.videos[event.videoIndex];
-    final isCorrect = selectedVideo.isDeepfake;
+    final currentVideo = state.videos.first;
+    final isCorrect = event.isDeepfake == currentVideo.isDeepfake;
 
     try {
       final attempt = GameAttempt(
         timestamp: DateTime.now(),
         wasCorrect: isCorrect,
         videoIds: state.videos.map((video) => video.id).toList(),
-        selectedVideoId: selectedVideo.id,
+        userGuessIsDeepfake: event.isDeepfake,
       );
 
       // Aktualisiere Statistiken basierend auf PIN-Status
@@ -197,7 +197,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       );
 
       emit(state.copyWith(
-        selectedVideoIndex: event.videoIndex,
+        userGuessIsDeepfake: event.isDeepfake,
         isCorrectGuess: isCorrect,
         userStatistics: updatedStats,
       ));
@@ -239,7 +239,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         currentScreen: GameScreen.firstVideo,
         videos: videos,
         userStatistics: statistics,
-        selectedVideoIndex: null,
+        userGuessIsDeepfake: null,
         isCorrectGuess: null,
         errorMessage: null,
         generatedPin: null,
@@ -294,16 +294,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.firstVideo:
-        emit(state.copyWith(currentScreen: GameScreen.secondVideo));
+        emit(state.copyWith(currentScreen: GameScreen.decision));
         break;
 
-      case GameScreen.secondVideo:
-        if (state.videos.length == 2) {
-          emit(state.copyWith(currentScreen: GameScreen.comparison));
-        }
-
-      case GameScreen.comparison:
-        if (state.selectedVideoIndex != null) {
+      case GameScreen.decision:
+        if (state.userGuessIsDeepfake != null) {
           emit(state.copyWith(currentScreen: GameScreen.result));
         }
         break;
@@ -359,26 +354,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     GameScreen previousScreen;
     switch (state.currentScreen) {
-      case GameScreen.firstVideo:
-        previousScreen = GameScreen.introduction;
-        break;
-
-      case GameScreen.secondVideo:
+      case GameScreen.decision:
         previousScreen = GameScreen.firstVideo;
         break;
-
-      case GameScreen.comparison:
-        previousScreen = GameScreen.secondVideo;
-        break;
-
-      case GameScreen.result:
-        previousScreen = GameScreen.comparison;
-        emit(state.copyWith(
-          currentScreen: previousScreen,
-          selectedVideoIndex: null,
-          isCorrectGuess: null,
-        ));
-        return;
 
       case GameScreen.statistics:
         previousScreen = GameScreen.result;
@@ -399,7 +377,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       videos: [],
       currentPin: null,
       userStatistics: null,
-      selectedVideoIndex: null,
+      userGuessIsDeepfake: null,
       isCorrectGuess: null,
       errorMessage: null,
       generatedPin: null,
@@ -412,7 +390,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       UpdateSelectedVideo event, Emitter<GameState> emit) async {
     // Only update the selection without recording the attempt
     emit(state.copyWith(
-      selectedVideoIndex: event.videoIndex,
+      userGuessIsDeepfake: event.isDeepfake,
     ));
   }
 

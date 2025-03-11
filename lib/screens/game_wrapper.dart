@@ -6,7 +6,7 @@ import '../repositories/video_repository.dart';
 import '../repositories/internal_statistics_repository.dart';
 import '../screens/video_screen.dart';
 import '../screens/introduction_screen.dart';
-import '../screens/comparison_screen.dart';
+import 'decision_screen.dart';
 import '../screens/result_screen.dart';
 import '../screens/strategies_screen.dart';
 import '../screens/login_overlay.dart';
@@ -125,17 +125,8 @@ class _GameWrapperViewState extends State<GameWrapperView> {
           isFirstVideo: true,
         );
 
-      case GameScreen.secondVideo:
-        if (state.videos.length < 2) {
-          throw Exception('Second video not available');
-        }
-        return VideoScreen(
-          video: state.videos.last,
-          isFirstVideo: false,
-        );
-
-      case GameScreen.comparison:
-        return const ComparisonScreen();
+      case GameScreen.decision:
+        return const DecisionScreen();
 
       case GameScreen.result:
         return const ResultScreen();

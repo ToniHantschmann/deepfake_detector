@@ -6,8 +6,7 @@ enum GameScreen {
   introduction,
   login,
   firstVideo,
-  secondVideo,
-  comparison,
+  decision,
   result,
   statistics
 }
@@ -50,14 +49,14 @@ class GameState {
   final List<Video> videos;
   final int? currentPin;
   final UserStatistics? userStatistics;
-  final int? selectedVideoIndex;
+  final bool? userGuessIsDeepfake;
   final bool? isCorrectGuess;
   final String? errorMessage;
   final int? generatedPin;
   final int currentStrategyIndex;
   final String? playerId;
   final AppLocale locale;
-  final Set<String> viewedStrategyIds; // Added field to track viewed strategies
+  final Set<String> viewedStrategyIds;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -73,7 +72,7 @@ class GameState {
     required this.videos,
     this.currentPin,
     this.userStatistics,
-    this.selectedVideoIndex,
+    this.userGuessIsDeepfake,
     this.isCorrectGuess,
     this.errorMessage,
     this.generatedPin,
@@ -89,7 +88,7 @@ class GameState {
         videos = const [],
         currentPin = null,
         userStatistics = null,
-        selectedVideoIndex = null,
+        userGuessIsDeepfake = null,
         isCorrectGuess = null,
         errorMessage = null,
         generatedPin = null,
@@ -104,7 +103,7 @@ class GameState {
     List<Video>? videos,
     Object? currentPin = _sentinel,
     Object? userStatistics = _sentinel,
-    Object? selectedVideoIndex = _sentinel,
+    Object? userGuessIsDeepfake = _sentinel,
     Object? isCorrectGuess = _sentinel,
     Object? errorMessage = _sentinel,
     Object? generatedPin = _sentinel,
@@ -122,9 +121,9 @@ class GameState {
       userStatistics: userStatistics == _sentinel
           ? this.userStatistics
           : userStatistics as UserStatistics?,
-      selectedVideoIndex: selectedVideoIndex == _sentinel
-          ? this.selectedVideoIndex
-          : selectedVideoIndex as int?,
+      userGuessIsDeepfake: userGuessIsDeepfake == _sentinel
+          ? this.userGuessIsDeepfake
+          : userGuessIsDeepfake as bool?,
       isCorrectGuess: isCorrectGuess == _sentinel
           ? this.isCorrectGuess
           : isCorrectGuess as bool?,
@@ -148,7 +147,7 @@ class GameState {
           status == other.status &&
           currentScreen == other.currentScreen &&
           currentPin == other.currentPin &&
-          selectedVideoIndex == other.selectedVideoIndex &&
+          userGuessIsDeepfake == other.userGuessIsDeepfake &&
           isCorrectGuess == other.isCorrectGuess &&
           generatedPin == other.generatedPin &&
           currentStrategyIndex == other.currentStrategyIndex &&
@@ -161,7 +160,7 @@ class GameState {
       status.hashCode ^
       currentScreen.hashCode ^
       currentPin.hashCode ^
-      selectedVideoIndex.hashCode ^
+      userGuessIsDeepfake.hashCode ^
       isCorrectGuess.hashCode ^
       generatedPin.hashCode ^
       currentStrategyIndex.hashCode ^

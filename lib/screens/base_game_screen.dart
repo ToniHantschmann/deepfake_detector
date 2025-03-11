@@ -63,12 +63,13 @@ abstract class BaseGameScreen extends StatelessWidget {
               final bool canProceed = _canNavigateToNextScreen(state);
               if (canProceed) {
                 // Special handling for comparison screen
-                if (state.currentScreen == GameScreen.comparison &&
-                    state.selectedVideoIndex != null) {
+                if (state.currentScreen == GameScreen.decision &&
+                    state.userGuessIsDeepfake != null) {
                   // Capture the GameBloc instance before using it with Future.delayed
                   final gameBloc = context.read<GameBloc>();
                   // First record the selection
-                  gameBloc.add(SelectDeepfake(state.selectedVideoIndex!));
+                  gameBloc
+                      .add(MakeDeepfakeDecision(state.userGuessIsDeepfake!));
                   // Then navigate using the captured bloc instance
                   gameBloc.add(const NextScreen());
                 } else {
@@ -90,14 +91,13 @@ abstract class BaseGameScreen extends StatelessWidget {
   bool _canNavigateToNextScreen(GameState state) {
     // Check current screen to determine specific conditions
     switch (state.currentScreen) {
-      case GameScreen.comparison:
-        // For comparison screen, we need a selected video
-        return state.selectedVideoIndex != null;
+      case GameScreen.decision:
+        // For decision screen, we need a selected video
+        return state.userGuessIsDeepfake != null;
       case GameScreen.result:
         // For result screen we always allow forward navigation
         return true;
       case GameScreen.firstVideo:
-      case GameScreen.secondVideo:
         // For video screens we can navigate forward unconditionally
         return true;
       default:

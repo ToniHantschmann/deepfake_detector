@@ -130,13 +130,13 @@ class GameAttempt {
   final DateTime timestamp;
   final bool wasCorrect;
   final List<String> videoIds;
-  final String selectedVideoId;
+  final bool userGuessIsDeepfake;
 
   GameAttempt({
     required this.timestamp,
     required this.wasCorrect,
     required this.videoIds,
-    required this.selectedVideoId,
+    required this.userGuessIsDeepfake,
   }) {
     _validateAttempt();
   }
@@ -153,9 +153,6 @@ class GameAttempt {
     if (videoIds[0] == videoIds[1]) {
       throw StatisticsException('Video IDs must be different');
     }
-    if (!videoIds.contains(selectedVideoId)) {
-      throw StatisticsException('Selected video must be in video list');
-    }
   }
 
   Map<String, dynamic> toJson() {
@@ -163,7 +160,7 @@ class GameAttempt {
       'timestamp': timestamp.toIso8601String(),
       'wasCorrect': wasCorrect,
       'videoIds': videoIds,
-      'selectedVideoId': selectedVideoId,
+      'userGuessIsDeepfake': userGuessIsDeepfake,
     };
   }
 
@@ -172,14 +169,14 @@ class GameAttempt {
       if (!json.containsKey('timestamp') ||
           !json.containsKey('wasCorrect') ||
           !json.containsKey('videoIds') ||
-          !json.containsKey('selectedVideoId')) {
+          !json.containsKey('userGuessIsDeepfake')) {
         throw StatisticsException('Missing required field in JSON');
       }
 
       if (json['timestamp'] is! String ||
           json['wasCorrect'] is! bool ||
           json['videoIds'] is! List ||
-          json['selectedVideoId'] is! String) {
+          json['userGuessIsDeepfake'] is! bool) {
         throw StatisticsException('Invalid data types in JSON');
       }
 
@@ -187,7 +184,7 @@ class GameAttempt {
         timestamp: DateTime.parse(json['timestamp'] as String),
         wasCorrect: json['wasCorrect'] as bool,
         videoIds: (json['videoIds'] as List).map((id) => id as String).toList(),
-        selectedVideoId: json['selectedVideoId'] as String,
+        userGuessIsDeepfake: json['userGuessIsDeepfake'] as bool,
       );
     } catch (e) {
       if (e is StatisticsException) rethrow;

@@ -26,8 +26,13 @@ class PreviousScreen extends GameEvent {
 }
 
 class SelectDeepfake extends GameEvent {
-  final int videoIndex;
-  const SelectDeepfake(this.videoIndex);
+  final bool isDeepfake;
+  const SelectDeepfake(this.isDeepfake);
+}
+
+class MakeDeepfakeDecision extends GameEvent {
+  final bool isDeepfake;
+  const MakeDeepfakeDecision(this.isDeepfake);
 }
 
 class RestartGame extends GameEvent {
@@ -52,8 +57,8 @@ class InitializeGame extends GameEvent {
 }
 
 class UpdateSelectedVideo extends GameEvent {
-  final int videoIndex;
-  const UpdateSelectedVideo(this.videoIndex);
+  final bool isDeepfake;
+  const UpdateSelectedVideo(this.isDeepfake);
 }
 
 class StrategyIndexChanged extends GameEvent {
