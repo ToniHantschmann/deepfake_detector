@@ -131,7 +131,7 @@ class _GameWrapperViewState extends State<GameWrapperView> {
       case GameScreen.result:
         return const ResultScreen();
 
-      case GameScreen.statistics:
+      case GameScreen.strategy:
         return const StrategiesScreen();
 
       default:

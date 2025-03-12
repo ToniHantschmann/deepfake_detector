@@ -31,7 +31,7 @@ class ProgressBar extends StatelessWidget {
         return strings.comparison;
       case GameScreen.result:
         return strings.feedback;
-      case GameScreen.statistics:
+      case GameScreen.strategy:
         return strings.strategies;
       default:
         return '';
@@ -42,7 +42,7 @@ class ProgressBar extends StatelessWidget {
         GameScreen.firstVideo,
         GameScreen.decision,
         GameScreen.result,
-        GameScreen.statistics,
+        GameScreen.strategy,
       ];
 
   @override

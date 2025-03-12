@@ -182,7 +182,7 @@ void main() {
         },
         seed: () => GameState(
           status: GameStatus.playing,
-          currentScreen: GameScreen.statistics,
+          currentScreen: GameScreen.strategy,
           videos: testVideos,
           userStatistics: UserStatistics.temporary(),
         ),
@@ -279,7 +279,7 @@ void main() {
         },
         seed: () => GameState(
           status: GameStatus.playing,
-          currentScreen: GameScreen.statistics,
+          currentScreen: GameScreen.strategy,
           videos: testVideos,
           currentPin: '1234',
           userStatistics: testStats,
@@ -310,7 +310,7 @@ void main() {
         },
         seed: () => GameState(
           status: GameStatus.playing,
-          currentScreen: GameScreen.statistics,
+          currentScreen: GameScreen.strategy,
           videos: testVideos,
           userStatistics: UserStatistics.temporary(),
           selectedVideoIndex: 1,

@@ -324,12 +324,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
               }
               emit(state.copyWith(
                   userStatistics: updatedStats,
-                  currentScreen: GameScreen.statistics));
+                  currentScreen: GameScreen.strategy));
             } else {
-              emit(state.copyWith(currentScreen: GameScreen.statistics));
+              emit(state.copyWith(currentScreen: GameScreen.strategy));
             }
           } else {
-            emit(state.copyWith(currentScreen: GameScreen.statistics));
+            emit(state.copyWith(currentScreen: GameScreen.strategy));
           }
         } catch (e) {
           emit(state.copyWith(
@@ -339,7 +339,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         }
         break;
 
-      case GameScreen.statistics:
+      case GameScreen.strategy:
         add(const RestartGame());
         break;
 
@@ -358,7 +358,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         previousScreen = GameScreen.firstVideo;
         break;
 
-      case GameScreen.statistics:
+      case GameScreen.strategy:
         previousScreen = GameScreen.result;
         break;
 

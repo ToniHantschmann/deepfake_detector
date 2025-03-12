@@ -2,14 +2,7 @@ import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
 import '../../config/localization/app_locale.dart';
 
-enum GameScreen {
-  introduction,
-  login,
-  firstVideo,
-  decision,
-  result,
-  statistics
-}
+enum GameScreen { introduction, login, firstVideo, decision, result, strategy }
 
 /// Extension für GameScreen-spezifische Navigation
 extension GameScreenNavigation on GameScreen {
@@ -17,7 +10,7 @@ extension GameScreenNavigation on GameScreen {
     switch (this) {
       case GameScreen.introduction:
       case GameScreen.result:
-      case GameScreen.statistics:
+      case GameScreen.strategy:
         return false;
       default:
         return true;
@@ -26,7 +19,7 @@ extension GameScreenNavigation on GameScreen {
 
   bool get canNavigateForward {
     switch (this) {
-      case GameScreen.statistics:
+      case GameScreen.strategy:
         return false;
       default:
         return true;
@@ -63,7 +56,7 @@ class GameState {
   bool get canGeneratePin => isTemporarySession && hasStatistics;
   bool get showStatisticsSavePrompt =>
       canGeneratePin &&
-      currentScreen == GameScreen.statistics &&
+      currentScreen == GameScreen.strategy &&
       userStatistics!.totalAttempts > 0;
 
   const GameState({
