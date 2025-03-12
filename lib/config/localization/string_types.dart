@@ -74,6 +74,7 @@ abstract class StrategyScreenStrings {
   String get subtitle;
   String get nextGameButton;
   String get getPinButton;
+  String get statsButton;
 }
 
 abstract class AuthStrings {
@@ -134,9 +135,10 @@ abstract class ProgressBarStrings {
 
   String get firstVideo;
   String get secondVideo;
-  String get comparison;
-  String get feedback;
+  String get decision;
+  String get result;
   String get strategies;
+  String get statistics;
 }
 
 abstract class PinDisplayStrings {

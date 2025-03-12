@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repositories/statistics_repository.dart';
@@ -133,6 +134,9 @@ class _GameWrapperViewState extends State<GameWrapperView> {
 
       case GameScreen.strategy:
         return const StrategiesScreen();
+
+      case GameScreen.statistics:
+        return const StatisticsScreen();
 
       default:
         return const IntroductionScreen();

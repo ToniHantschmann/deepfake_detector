@@ -2,7 +2,15 @@ import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
 import '../../config/localization/app_locale.dart';
 
-enum GameScreen { introduction, login, firstVideo, decision, result, strategy }
+enum GameScreen {
+  introduction,
+  login,
+  firstVideo,
+  decision,
+  result,
+  strategy,
+  statistics
+}
 
 /// Extension für GameScreen-spezifische Navigation
 extension GameScreenNavigation on GameScreen {
@@ -20,6 +28,7 @@ extension GameScreenNavigation on GameScreen {
   bool get canNavigateForward {
     switch (this) {
       case GameScreen.strategy:
+      case GameScreen.statistics:
         return false;
       default:
         return true;

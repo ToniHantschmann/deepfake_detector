@@ -340,9 +340,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         break;
 
       case GameScreen.strategy:
+        emit(state.copyWith(currentScreen: GameScreen.statistics));
+        break;
+      case GameScreen.statistics:
         add(const RestartGame());
         break;
-
       default:
         break;
     }
@@ -358,8 +360,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         previousScreen = GameScreen.firstVideo;
         break;
 
-      case GameScreen.strategy:
-        previousScreen = GameScreen.result;
+      case GameScreen.statistics:
+        previousScreen = GameScreen.strategy;
         break;
 
       default:

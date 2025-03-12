@@ -124,6 +124,8 @@ class GermanStrategyScreenStrings implements StrategyScreenStrings {
   String get nextGameButton => 'Nächstes Spiel';
   @override
   String get getPinButton => 'PIN erhalten';
+  @override
+  String get statsButton => 'Zu den Statistiken';
 }
 
 class GermanAuthStrings implements AuthStrings {
@@ -215,15 +217,17 @@ class GermanProgressBarStrings implements ProgressBarStrings {
   const GermanProgressBarStrings();
 
   @override
-  String get firstVideo => 'Video 1';
+  String get firstVideo => 'Video';
   @override
   String get secondVideo => 'Video 2';
   @override
-  String get comparison => 'Vergleich';
+  String get decision => 'Auswahl';
   @override
-  String get feedback => 'Feedback';
+  String get result => 'Vergleich';
   @override
   String get strategies => 'Strategien';
+  @override
+  String get statistics => 'Statistiken';
 }
 
 class GermanPinDisplayStrings implements PinDisplayStrings {
