@@ -89,7 +89,7 @@ class StatisticsRepository {
         ...currentStats.recentAttempts,
         attempt,
       ].take(10).toList(),
-      seenPairIds: {...currentStats.seenPairIds, ...attempt.videoIds.toSet()},
+      seenPairIds: {...currentStats.seenPairIds, attempt.pairId},
     );
   }
 
@@ -103,7 +103,7 @@ class StatisticsRepository {
         ...stats.recentAttempts,
         attempt,
       ].take(10).toList(),
-      seenPairIds: {...stats.seenPairIds, ...attempt.videoIds.toSet()},
+      seenPairIds: {...stats.seenPairIds, attempt.pairId},
     );
 
     _statistics[pin] = updatedStats;

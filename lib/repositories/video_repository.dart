@@ -108,4 +108,16 @@ class VideoRepository {
       throw VideoException('Failed to load video pair: $e');
     }
   }
+
+  Future<int> getTotalUniqueVideoPairs() async {
+    await _ensureInitialized();
+
+    try {
+      // Sammle alle einzigartigen pairIds
+      final Set<String> uniquePairIds = _videos.map((v) => v.pairId).toSet();
+      return uniquePairIds.length;
+    } catch (e) {
+      throw VideoException('Failed to get total video pairs count: $e');
+    }
+  }
 }

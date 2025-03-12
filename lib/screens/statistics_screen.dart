@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:math';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
@@ -64,6 +65,16 @@ class StatisticsScreen extends BaseGameScreen {
     final totalCorrect = state.userStatistics!.correctGuesses;
     final totalAttempts = state.userStatistics!.totalAttempts;
 
+    // Viewed video pairs statistics
+    final viewedPairs = state.userStatistics!.seenPairIds.length;
+    final totalPairs = state.totalUniquePairs;
+
+    // Ensure totalPairs is never zero to avoid division by zero
+    final safeTotal = totalPairs > 0 ? totalPairs : max(viewedPairs, 1);
+
+    // Ensure percentage doesn't exceed 100%
+    final viewedPercentage = min((viewedPairs / safeTotal * 100), 100.0);
+
     return Scaffold(
       backgroundColor: AppConfig.colors.background,
       body: SafeArea(
@@ -96,26 +107,75 @@ class StatisticsScreen extends BaseGameScreen {
                         ),
                         SizedBox(height: AppConfig.layout.spacingXLarge),
 
-                        // Statistik-Karten
+                        // Statistik-Karten in einer Row mit Responsive Layout
                         Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                _buildStatisticsCard(
-                                  icon: Icons.straighten,
-                                  title: strings.currentRun,
-                                  correct: currentCorrect,
-                                  total: currentAttempts,
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              // Determine if we should use horizontal or vertical layout
+                              final isWideScreen = constraints.maxWidth > 900;
+
+                              // Create a list of statistics cards to display
+                              final List<Widget> statsCards = [
+                                // Current Run Card
+                                Flexible(
+                                  flex: 1,
+                                  child: _buildStatisticsCard(
+                                    icon: Icons.straighten,
+                                    title: strings.currentRun,
+                                    correct: currentCorrect,
+                                    total: currentAttempts,
+                                  ),
                                 ),
-                                SizedBox(height: AppConfig.layout.spacingLarge),
-                                _buildStatisticsCard(
-                                  icon: Icons.history,
-                                  title: strings.overallStats,
-                                  correct: totalCorrect,
-                                  total: totalAttempts,
+
+                                SizedBox(
+                                  width: isWideScreen
+                                      ? AppConfig.layout.spacingLarge
+                                      : 0,
+                                  height: isWideScreen
+                                      ? 0
+                                      : AppConfig.layout.spacingLarge,
                                 ),
-                              ],
-                            ),
+
+                                // Video Pairs Progress Card
+                                Flexible(
+                                  flex: 1,
+                                  child: _buildVideoPairsCard(
+                                    viewedPairs: viewedPairs,
+                                    totalPairs: safeTotal,
+                                  ),
+                                ),
+                              ];
+
+                              // Add overall stats card only for logged-in users
+                              if (state.currentPin != null) {
+                                statsCards.addAll([
+                                  SizedBox(
+                                    width: isWideScreen
+                                        ? AppConfig.layout.spacingLarge
+                                        : 0,
+                                    height: isWideScreen
+                                        ? 0
+                                        : AppConfig.layout.spacingLarge,
+                                  ),
+                                  Flexible(
+                                    flex: 1,
+                                    child: _buildStatisticsCard(
+                                      icon: Icons.history,
+                                      title: strings.overallStats,
+                                      correct: totalCorrect,
+                                      total: totalAttempts,
+                                    ),
+                                  ),
+                                ]);
+                              }
+
+                              // Return horizontal or vertical layout based on screen width
+                              return SingleChildScrollView(
+                                child: isWideScreen
+                                    ? Row(children: statsCards)
+                                    : Column(children: statsCards),
+                              );
+                            },
                           ),
                         ),
 
@@ -197,7 +257,7 @@ class StatisticsScreen extends BaseGameScreen {
     context.read<GameBloc>().add(const RestartGame());
   }
 
-  // Statistik-Karte Widget
+  // Statistik-Karte Widget für Erfolgsrate
   Widget _buildStatisticsCard({
     required IconData icon,
     required String title,
@@ -231,10 +291,13 @@ class StatisticsScreen extends BaseGameScreen {
                 color: AppConfig.colors.textPrimary,
               ),
               SizedBox(width: 12),
-              Text(
-                title,
-                style: AppConfig.textStyles.bodyLarge.copyWith(
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppConfig.textStyles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -279,6 +342,101 @@ class StatisticsScreen extends BaseGameScreen {
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppConfig.colors.primary,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Neue Karte für gesehene Videopaare
+  Widget _buildVideoPairsCard({
+    required int viewedPairs,
+    required int totalPairs,
+  }) {
+    final percentage = viewedPairs / totalPairs * 100;
+
+    return Container(
+      padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
+      decoration: BoxDecoration(
+        color: AppConfig.colors.backgroundLight,
+        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.video_library,
+                size: 24,
+                color: AppConfig.colors.textPrimary,
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Gesehene Videopaare",
+                  style: AppConfig.textStyles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            children: [
+              Text(
+                '$viewedPairs/$totalPairs',
+                style: AppConfig.textStyles.bodyLarge.copyWith(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: 12),
+              Text(
+                '(${percentage.toStringAsFixed(0)}%)',
+                style: AppConfig.textStyles.bodyLarge.copyWith(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppConfig.colors.secondary,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            height: 24,
+            decoration: BoxDecoration(
+              color: AppConfig.colors.backgroundDark,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(
+                color: AppConfig.colors.border,
+                width: 1.5,
+              ),
+            ),
+            child: Stack(
+              children: [
+                FractionallySizedBox(
+                  widthFactor: percentage / 100,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppConfig.colors.secondary,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

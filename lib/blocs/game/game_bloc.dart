@@ -51,6 +51,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     try {
       final playerId = _generatePlayerId();
       final videos = await _videoRepository.getRandomVideoPair({});
+      final totalUniquePairs =
+          await _videoRepository.getTotalUniqueVideoPairs();
 
       // Record start of new game in internal statistics
       await _internalStatsRepository.recordGameStart(playerId);
@@ -63,6 +65,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         userStatistics: UserStatistics.temporary(),
         errorMessage: null,
         playerId: playerId,
+        totalUniquePairs: totalUniquePairs,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -95,6 +98,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           await _statisticsRepository.getStatistics(event.pin);
       final videos =
           await _videoRepository.getRandomVideoPair(existingStats.seenPairIds);
+      final totalUniquePairs =
+          await _videoRepository.getTotalUniqueVideoPairs();
 
       final statistics = existingStats.copyWith(recentAttempts: []);
       await _statisticsRepository.resetRecentAttempts(event.pin);
@@ -109,6 +114,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         errorMessage: null,
         playerId: event.pin.toString(),
         locale: locale,
+        totalUniquePairs: totalUniquePairs,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -234,6 +240,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       final videos =
           await _videoRepository.getRandomVideoPair(statistics.seenPairIds);
+      final totalUniquePairs =
+          await _videoRepository.getTotalUniqueVideoPairs();
 
       emit(state.copyWith(
         status: GameStatus.playing,
@@ -244,6 +252,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         isCorrectGuess: null,
         errorMessage: null,
         generatedPin: null,
+        totalUniquePairs: totalUniquePairs,
       ));
     } catch (e) {
       emit(state.copyWith(

@@ -59,6 +59,7 @@ class GameState {
   final String? playerId;
   final AppLocale locale;
   final Set<String> viewedStrategyIds;
+  final int totalUniquePairs;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -82,6 +83,7 @@ class GameState {
     this.playerId,
     required this.locale,
     required this.viewedStrategyIds,
+    required this.totalUniquePairs,
   });
 
   const GameState.initial()
@@ -97,7 +99,8 @@ class GameState {
         currentStrategyIndex = 0,
         playerId = null,
         locale = AppLocale.de,
-        viewedStrategyIds = const {};
+        viewedStrategyIds = const {},
+        totalUniquePairs = 0;
 
   GameState copyWith({
     GameStatus? status,
@@ -113,6 +116,7 @@ class GameState {
     Object? playerId = _sentinel,
     AppLocale? locale,
     Set<String>? viewedStrategyIds,
+    int? totalUniquePairs,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -138,6 +142,7 @@ class GameState {
       playerId: playerId == _sentinel ? this.playerId : playerId as String?,
       locale: locale ?? this.locale,
       viewedStrategyIds: viewedStrategyIds ?? this.viewedStrategyIds,
+      totalUniquePairs: totalUniquePairs ?? this.totalUniquePairs,
     );
   }
 
@@ -155,6 +160,7 @@ class GameState {
           currentStrategyIndex == other.currentStrategyIndex &&
           playerId == other.playerId &&
           locale == other.locale &&
+          totalUniquePairs == other.totalUniquePairs &&
           viewedStrategyIds.length == other.viewedStrategyIds.length;
 
   @override
@@ -168,6 +174,7 @@ class GameState {
       currentStrategyIndex.hashCode ^
       playerId.hashCode ^
       locale.hashCode ^
+      totalUniquePairs.hashCode ^
       viewedStrategyIds.hashCode;
 
   @override
