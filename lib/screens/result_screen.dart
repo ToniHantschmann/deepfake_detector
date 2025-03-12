@@ -83,7 +83,7 @@ class ResultScreen extends BaseGameScreen {
                     children: [
                       // Ergebnis-Header
                       _buildResultHeader(state.isCorrectGuess!, strings),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
 
                       // Video-Vergleich-Titel
                       if (counterpartVideo != null)
@@ -92,7 +92,7 @@ class ResultScreen extends BaseGameScreen {
                           style: AppConfig.textStyles.h3,
                         ),
 
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
 
                       // Video-Vergleich in einem Container mit fester Höhe
                       if (counterpartVideo != null)
@@ -112,9 +112,6 @@ class ResultScreen extends BaseGameScreen {
                                   state.userGuessIsDeepfake!,
                                   context),
                         ),
-
-                      // Platzhalter für den unteren Bereich, um Überlappung mit Statistiken zu vermeiden
-                      Spacer(),
                     ],
                   ),
                 ),
@@ -124,9 +121,6 @@ class ResultScreen extends BaseGameScreen {
                   onNext: () => handleNextNavigation(context),
                   currentScreen: state.currentScreen,
                 ),
-
-                // Statistik-Panel am unteren Bildschirmrand
-                _buildStatisticsPanel(state, strings),
               ],
             ),
           ),
@@ -154,7 +148,7 @@ class ResultScreen extends BaseGameScreen {
             context: context,
           ),
         ),
-        SizedBox(width: 16.0),
+        const SizedBox(width: 16.0),
         Expanded(
           child: _buildVideoCard(
             video: counterpartVideo,
@@ -185,7 +179,7 @@ class ResultScreen extends BaseGameScreen {
             context: context,
           ),
         ),
-        SizedBox(height: 12.0),
+        const SizedBox(height: 12.0),
         Expanded(
           child: _buildVideoCard(
             video: counterpartVideo,
@@ -269,7 +263,7 @@ class ResultScreen extends BaseGameScreen {
           // Titel
           Container(
             height: 40,
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             alignment: Alignment.center,
             child: Text(
               title,
@@ -302,7 +296,8 @@ class ResultScreen extends BaseGameScreen {
                   top: 8,
                   right: 8,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: isDeepfake
                           ? AppConfig.colors.warning
@@ -317,10 +312,10 @@ class ResultScreen extends BaseGameScreen {
                           color: Colors.white,
                           size: 16,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           isDeepfake ? "Deepfake" : "Echt",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -338,12 +333,12 @@ class ResultScreen extends BaseGameScreen {
                   child: InkWell(
                     onTap: () => _showVideoOverlay(context, video),
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: AppConfig.colors.primary.withOpacity(0.8),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.play_arrow,
                         color: Colors.white,
                         size: 28,
@@ -356,195 +351,6 @@ class ResultScreen extends BaseGameScreen {
           ),
         ],
       ),
-    );
-  }
-
-  // Statistik-Panel am unteren Bildschirmrand
-  Widget _buildStatisticsPanel(GameState state, ResultScreenStrings strings) {
-    if (state.userStatistics == null) return const SizedBox.shrink();
-
-    final currentCorrect = state.userStatistics!.recentAttempts
-        .where((attempt) => attempt.wasCorrect)
-        .length;
-    final currentAttempts = state.userStatistics!.recentAttempts.length;
-    final totalCorrect = state.userStatistics!.correctGuesses;
-    final totalAttempts = state.userStatistics!.totalAttempts;
-
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Material(
-        color: AppConfig.colors.background,
-        elevation: 12,
-        child: SafeArea(
-          top: false,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isVeryNarrow = constraints.maxWidth < 500;
-
-              return Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppConfig.layout.spacingLarge,
-                  vertical: AppConfig.layout.spacingLarge,
-                ),
-                child: isVeryNarrow
-                    ? _buildVerticalLayout(strings, currentCorrect,
-                        currentAttempts, totalCorrect, totalAttempts)
-                    : _buildHorizontalLayout(strings, currentCorrect,
-                        currentAttempts, totalCorrect, totalAttempts),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Vertikales Layout für die Statistiken
-  Widget _buildVerticalLayout(ResultScreenStrings strings, int currentCorrect,
-      int currentAttempts, int totalCorrect, int totalAttempts) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildStatisticsCard(
-          icon: Icons.straighten,
-          title: strings.currentRun,
-          correct: currentCorrect,
-          total: currentAttempts,
-          isVertical: true,
-        ),
-        SizedBox(height: AppConfig.layout.spacingMedium),
-        Divider(height: 2, thickness: 1, color: AppConfig.colors.border),
-        SizedBox(height: AppConfig.layout.spacingMedium),
-        _buildStatisticsCard(
-          icon: Icons.history,
-          title: strings.overallStats,
-          correct: totalCorrect,
-          total: totalAttempts,
-          isVertical: true,
-        ),
-      ],
-    );
-  }
-
-  // Horizontales Layout für die Statistiken
-  Widget _buildHorizontalLayout(ResultScreenStrings strings, int currentCorrect,
-      int currentAttempts, int totalCorrect, int totalAttempts) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: _buildStatisticsCard(
-            icon: Icons.straighten,
-            title: strings.currentRun,
-            correct: currentCorrect,
-            total: currentAttempts,
-            isVertical: false,
-          ),
-        ),
-        Container(
-          width: 2,
-          height: 80,
-          color: AppConfig.colors.border,
-          margin:
-              EdgeInsets.symmetric(horizontal: AppConfig.layout.spacingLarge),
-        ),
-        Expanded(
-          child: _buildStatisticsCard(
-            icon: Icons.history,
-            title: strings.overallStats,
-            correct: totalCorrect,
-            total: totalAttempts,
-            isVertical: false,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Statistik-Karte
-  Widget _buildStatisticsCard({
-    required IconData icon,
-    required String title,
-    required int correct,
-    required int total,
-    required bool isVertical,
-  }) {
-    final percentage = total > 0 ? (correct / total * 100) : 0.0;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: AppConfig.colors.textPrimary,
-            ),
-            SizedBox(width: 12),
-            Flexible(
-              child: Text(
-                title,
-                style: AppConfig.textStyles.bodyLarge.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: isVertical ? 16 : 12),
-        Row(
-          children: [
-            Text(
-              '$correct/$total',
-              style: AppConfig.textStyles.bodyLarge.copyWith(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(width: 12),
-            Text(
-              '(${percentage.toStringAsFixed(0)}%)',
-              style: AppConfig.textStyles.bodyLarge.copyWith(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppConfig.colors.primary,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          height: 24,
-          decoration: BoxDecoration(
-            color: AppConfig.colors.backgroundDark,
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(
-              color: AppConfig.colors.border,
-              width: 1.5,
-            ),
-          ),
-          child: Stack(
-            children: [
-              FractionallySizedBox(
-                widthFactor: percentage / 100,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppConfig.colors.primary,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

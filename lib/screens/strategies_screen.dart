@@ -64,16 +64,16 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
     });
   }
 
-  void _handleNextNavigation() {
+  void _handleRestartGame() {
+    context.read<GameBloc>().add(const RestartGame());
+  }
+
+  void _handleShowStatistics() {
     context.read<GameBloc>().add(const NextScreen());
   }
 
   void _handleBackNavigation() {
     context.read<GameBloc>().add(const PreviousScreen());
-  }
-
-  void _handlePinGeneration() {
-    context.read<GameBloc>().add(const GeneratePin());
   }
 
   @override
@@ -157,34 +157,31 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                                     .viewedStrategyIds, // Pass the viewed strategies set
                               ),
                             ),
-                            // Next Game Button
+                            // Buttons Container
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal:
                                     AppConfig.layout.screenPaddingHorizontal,
                                 vertical: AppConfig.layout.spacingLarge,
                               ),
-                              child: Center(
-                                child: SizedBox(
-                                  width: 200,
-                                  height: 80,
-                                  child: ElevatedButton(
-                                    onPressed: _handleNextNavigation,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppConfig.colors.primary,
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: AppConfig.layout.spacingLarge,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      strings.nextGameButton,
-                                      style: AppConfig.textStyles.buttonLarge,
-                                    ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildActionButton(
+                                    onPressed: _handleRestartGame,
+                                    text: strings.nextGameButton,
+                                    icon: Icons.play_arrow,
+                                    color: AppConfig.colors.primary,
                                   ),
-                                ),
+                                  SizedBox(
+                                      width: AppConfig.layout.spacingXLarge),
+                                  _buildActionButton(
+                                    onPressed: _handleShowStatistics,
+                                    text: strings.statsButton,
+                                    icon: Icons.bar_chart,
+                                    color: AppConfig.colors.secondary,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -195,20 +192,6 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                       onBack: _handleBackNavigation,
                       currentScreen: widget.state.currentScreen,
                     ),
-                    if (widget.state.currentPin == null)
-                      Positioned(
-                        right: AppConfig.layout.spacingMedium,
-                        bottom: AppConfig.layout.spacingMedium,
-                        child: FloatingActionButton.extended(
-                          onPressed: _handlePinGeneration,
-                          icon: const Icon(Icons.pin_outlined),
-                          label: Text(
-                            strings.getPinButton,
-                            style: AppConfig.textStyles.buttonMedium,
-                          ),
-                          backgroundColor: AppConfig.colors.primary,
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -220,6 +203,35 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
             onComplete: _handleTutorialComplete,
           ),
       ],
+    );
+  }
+
+  Widget _buildActionButton({
+    required VoidCallback onPressed,
+    required String text,
+    required IconData icon,
+    required Color color,
+  }) {
+    return SizedBox(
+      width: 600,
+      height: 90,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          text,
+          style: AppConfig.textStyles.buttonLarge,
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: EdgeInsets.symmetric(
+            vertical: AppConfig.layout.spacingMedium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(40),
+          ),
+        ),
+      ),
     );
   }
 }
