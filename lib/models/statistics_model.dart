@@ -8,7 +8,7 @@ class UserStatistics {
   final int correctGuesses;
   final List<GameAttempt> recentAttempts;
   final bool isTemporary;
-  final Set<String> seenVideoIds;
+  final Set<String> seenPairIds;
   final AppLocale locale;
 
   UserStatistics({
@@ -16,10 +16,10 @@ class UserStatistics {
     required this.totalAttempts,
     required this.correctGuesses,
     required this.recentAttempts,
-    Set<String>? seenVideoIds,
+    Set<String>? seenPairIds,
     bool? isTemporary,
     AppLocale? locale,
-  })  : seenVideoIds = seenVideoIds ?? {},
+  })  : seenPairIds = seenPairIds ?? {},
         isTemporary = isTemporary ?? (pin == null),
         locale = locale ?? AppLocale.de {
     _validateStatistics();
@@ -73,7 +73,7 @@ class UserStatistics {
         'totalAttempts': totalAttempts,
         'correctGuesses': correctGuesses,
         'recentAttempts': recentAttempts.map((a) => a.toJson()).toList(),
-        'seenVideoIds': seenVideoIds.toList(),
+        'seenPairIds': seenPairIds.toList(),
         'locale': locale.index,
       };
 
@@ -88,8 +88,7 @@ class UserStatistics {
             (a as Map<dynamic, dynamic>).cast<String, dynamic>();
         return GameAttempt.fromJson(attemptMap);
       }).toList(),
-      seenVideoIds:
-          (json['seenVideoIds'] as List?)?.cast<String>().toSet() ?? {},
+      seenPairIds: (json['seenPairIds'] as List?)?.cast<String>().toSet() ?? {},
       locale: AppLocale.values[json['locale'] as int],
     );
   }
@@ -99,7 +98,7 @@ class UserStatistics {
     int? totalAttempts,
     int? correctGuesses,
     List<GameAttempt>? recentAttempts,
-    Set<String>? seenVideoIds,
+    Set<String>? seenPairIds,
     AppLocale? locale,
   }) {
     return UserStatistics(
@@ -107,7 +106,7 @@ class UserStatistics {
       totalAttempts: totalAttempts ?? this.totalAttempts,
       correctGuesses: correctGuesses ?? this.correctGuesses,
       recentAttempts: recentAttempts ?? List.from(this.recentAttempts),
-      seenVideoIds: seenVideoIds ?? Set.from(this.seenVideoIds),
+      seenPairIds: seenPairIds ?? Set.from(this.seenPairIds),
       locale: locale ?? this.locale,
     );
   }
@@ -131,12 +130,14 @@ class GameAttempt {
   final bool wasCorrect;
   final List<String> videoIds;
   final bool userGuessIsDeepfake;
+  final String pairId;
 
   GameAttempt({
     required this.timestamp,
     required this.wasCorrect,
     required this.videoIds,
     required this.userGuessIsDeepfake,
+    required this.pairId,
   }) {
     _validateAttempt();
   }
@@ -161,6 +162,7 @@ class GameAttempt {
       'wasCorrect': wasCorrect,
       'videoIds': videoIds,
       'userGuessIsDeepfake': userGuessIsDeepfake,
+      'pairId': pairId,
     };
   }
 
@@ -169,14 +171,16 @@ class GameAttempt {
       if (!json.containsKey('timestamp') ||
           !json.containsKey('wasCorrect') ||
           !json.containsKey('videoIds') ||
-          !json.containsKey('userGuessIsDeepfake')) {
+          !json.containsKey('userGuessIsDeepfake') ||
+          !json.containsKey('pairId')) {
         throw StatisticsException('Missing required field in JSON');
       }
 
       if (json['timestamp'] is! String ||
           json['wasCorrect'] is! bool ||
           json['videoIds'] is! List ||
-          json['userGuessIsDeepfake'] is! bool) {
+          json['userGuessIsDeepfake'] is! bool ||
+          json['pairId'] is! String) {
         throw StatisticsException('Invalid data types in JSON');
       }
 
@@ -185,6 +189,7 @@ class GameAttempt {
         wasCorrect: json['wasCorrect'] as bool,
         videoIds: (json['videoIds'] as List).map((id) => id as String).toList(),
         userGuessIsDeepfake: json['userGuessIsDeepfake'] as bool,
+        pairId: json['pairId'] as String,
       );
     } catch (e) {
       if (e is StatisticsException) rethrow;

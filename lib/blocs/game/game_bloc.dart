@@ -94,7 +94,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final existingStats =
           await _statisticsRepository.getStatistics(event.pin);
       final videos =
-          await _videoRepository.getRandomVideoPair(existingStats.seenVideoIds);
+          await _videoRepository.getRandomVideoPair(existingStats.seenPairIds);
 
       final statistics = existingStats.copyWith(recentAttempts: []);
       await _statisticsRepository.resetRecentAttempts(event.pin);
@@ -180,6 +180,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         wasCorrect: isCorrect,
         videoIds: state.videos.map((video) => video.id).toList(),
         userGuessIsDeepfake: event.isDeepfake,
+        pairId: currentVideo.pairId,
       );
 
       // Aktualisiere Statistiken basierend auf PIN-Status
@@ -232,7 +233,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
 
       final videos =
-          await _videoRepository.getRandomVideoPair(statistics.seenVideoIds);
+          await _videoRepository.getRandomVideoPair(statistics.seenPairIds);
 
       emit(state.copyWith(
         status: GameStatus.playing,

@@ -63,17 +63,18 @@ class VideoRepository {
     }
   }
 
-  Future<List<Video>> getRandomVideoPair(Set<String> seenVideoIds) async {
+  Future<List<Video>> getRandomVideoPair(Set<String> seenPairIds) async {
     await _ensureInitialized();
     try {
       // Alle eindeutigen pairIds sammeln
       final Set<String> pairIds = _videos.map((v) => v.pairId).toSet();
 
       // Ungesehene Paare zuerst priorisieren
-      final List<String> unseenPairIds = pairIds.where((pairId) {
-        final pairVideos = _videos.where((v) => v.pairId == pairId).toList();
-        return pairVideos.any((v) => !seenVideoIds.contains(v.id));
-      }).toList();
+      final List<String> unseenPairIds = pairIds
+          .where((pairId) => !seenPairIds
+                  .contains(pairId) // Geändert: Direkt Paar-IDs filtern
+              )
+          .toList();
 
       // Wenn keine ungesehenen Paare verfügbar sind, alle verwenden
       final targetPairIds =
@@ -105,19 +106,6 @@ class VideoRepository {
       return result;
     } catch (e) {
       throw VideoException('Failed to load video pair: $e');
-    }
-  }
-
-  /// get specific video by [id]
-  /// throws exception when video was not found
-  Future<Video> getVideoById(String id) async {
-    await _ensureInitialized();
-    try {
-      return _videos.firstWhere((video) => video.id == id,
-          orElse: () => throw VideoException('Video id $id not found'));
-    } catch (e) {
-      if (e is VideoException) rethrow;
-      throw VideoException("Video not found $e");
     }
   }
 }
