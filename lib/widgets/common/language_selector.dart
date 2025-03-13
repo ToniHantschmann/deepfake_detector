@@ -30,7 +30,7 @@ class LanguageSelector extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -46,7 +46,7 @@ class LanguageSelector extends StatelessWidget {
         },
         icon: const Icon(
           Icons.language,
-          size: 18,
+          size: 24, // Increased icon size from 18 to 24
           color: Colors.white,
         ),
         label: Text(
@@ -54,15 +54,16 @@ class LanguageSelector extends StatelessWidget {
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
+            fontSize: 16, // Increased text size
           ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppConfig.colors.primary,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          minimumSize: const Size(75, 36),
-          elevation: 0, // Elevation moved to container for better shadow effect
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          minimumSize: const Size(90, 50),
+          elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(20.0),
           ),
         ),
       ),

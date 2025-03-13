@@ -1,6 +1,3 @@
-// Modified base_game_screen.dart with language selector in bottom left
-
-import 'package:deepfake_detector/widgets/common/language_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
@@ -26,30 +23,8 @@ abstract class BaseGameScreen extends StatelessWidget {
           return _buildErrorScreen(context, state.errorMessage);
         }
 
-        // Wrap the screen content with both the swipe navigation and the language selector
-        return _wrapWithLanguageSelector(
-            _wrapWithSwipeNavigation(context, state));
-      },
-    );
-  }
-
-  /// Adds the language selector to the bottom left of the screen
-  Widget _wrapWithLanguageSelector(Widget child) {
-    return BlocBuilder<GameBloc, GameState>(
-      buildWhen: (previous, current) =>
-          previous.currentScreen != current.currentScreen,
-      builder: (context, state) {
-        return Stack(
-          children: [
-            child,
-            // Position the language selector in the bottom left
-            const Positioned(
-              left: 16,
-              bottom: 16,
-              child: LanguageSelector(),
-            ),
-          ],
-        );
+        // Wrap the screen content with swipe navigation
+        return _wrapWithSwipeNavigation(context, state);
       },
     );
   }

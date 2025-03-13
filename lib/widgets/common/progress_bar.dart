@@ -1,5 +1,6 @@
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:deepfake_detector/config/localization/string_types.dart';
+import 'package:deepfake_detector/widgets/common/language_selector.dart';
 import 'package:flutter/material.dart';
 import '../../blocs/game/game_state.dart';
 import '../../config/app_config.dart';
@@ -58,25 +59,35 @@ class ProgressBar extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: 56,
-      color: const Color(0xCC212121),
+      height: 64.0, // Leicht erhöhte Höhe
+      color: const Color(0xCC212121), // Original Farbe beibehalten
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
-          children: _progressScreens.asMap().entries.map((entry) {
-            final index = entry.key;
-            final screen = entry.value;
-            final isLast = index == _progressScreens.length - 1;
+          children: [
+            // Navigationsschritte
+            Expanded(
+              child: Row(
+                children: _progressScreens.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final screen = entry.value;
+                  final isLast = index == _progressScreens.length - 1;
 
-            return _buildProgressItem(
-              screen: screen,
-              number: index + 1,
-              isActive: _isScreenActive(screen),
-              isCompleted: _isScreenCompleted(screen),
-              showConnector: !isLast,
-              strings: strings,
-            );
-          }).toList(),
+                  return _buildProgressItem(
+                    screen: screen,
+                    number: index + 1,
+                    isActive: _isScreenActive(screen),
+                    isCompleted: _isScreenCompleted(screen),
+                    showConnector: !isLast,
+                    strings: strings,
+                  );
+                }).toList(),
+              ),
+            ),
+
+            // Language Selector rechts positioniert
+            const LanguageSelector(),
+          ],
         ),
       ),
     );
@@ -94,27 +105,25 @@ class ProgressBar extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 24,
-            height: 24,
+            width: 32, // Größerer Kreis
+            height: 32, // Größerer Kreis
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isActive || isCompleted
-                  ? Colors.blue
-                  : const Color(0xFF404040),
+                  ? Colors.blue // Original Farbe beibehalten
+                  : const Color(0xFF404040), // Original Farbe beibehalten
             ),
             child: Center(
               child: isCompleted
                   ? const Icon(
                       Icons.check,
-                      size: 16,
+                      size: 18,
                       color: Colors.white,
                     )
                   : Text(
                       number.toString(),
-                      style: const TextStyle(
+                      style: AppConfig.textStyles.bodySmall.copyWith(
                         color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
             ),
@@ -122,9 +131,9 @@ class ProgressBar extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             _getScreenLabel(screen, strings),
-            style: TextStyle(
+            style: AppConfig.textStyles.bodyMedium.copyWith(
               color: isActive || isCompleted ? Colors.white : Colors.grey,
-              fontSize: 14,
+              fontSize: 20,
             ),
           ),
           if (showConnector) ...[
