@@ -147,7 +147,7 @@ class DecisionScreen extends BaseGameScreen {
 
         // Horizontale decision buttons mit direkter Navigation
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 64),
           child: Row(
             children: [
               // Real Video Button (links)
@@ -161,7 +161,7 @@ class DecisionScreen extends BaseGameScreen {
                   isDeepfake: false,
                 ),
               ),
-              SizedBox(width: AppConfig.layout.spacingMedium),
+              SizedBox(width: 128),
               // Deepfake Button (rechts)
               Expanded(
                 child: _buildHorizontalDecisionButton(
@@ -205,7 +205,7 @@ class DecisionScreen extends BaseGameScreen {
             handleNextNavigation(context);
           });
         },
-        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+        borderRadius: BorderRadius.circular(64),
         child: Container(
           padding: EdgeInsets.symmetric(
             vertical: AppConfig.layout.spacingLarge,
@@ -215,7 +215,7 @@ class DecisionScreen extends BaseGameScreen {
             color: isSelected
                 ? color.withOpacity(0.2)
                 : AppConfig.colors.backgroundLight,
-            borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
+            borderRadius: BorderRadius.circular(64),
             border: Border.all(
               color: isSelected ? color : Colors.transparent,
               width: 3,
