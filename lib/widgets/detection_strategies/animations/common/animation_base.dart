@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import '../../../../config/app_config.dart';
 import 'animation_controls.dart';
 import 'indicators.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../blocs/game/game_bloc.dart';
+import '../../../../blocs/game/game_state.dart';
 
 abstract class StrategyAnimationBase extends StatefulWidget {
   const StrategyAnimationBase({Key? key}) : super(key: key);
@@ -63,23 +66,29 @@ class StrategyAnimationBaseState<T extends StrategyAnimationBase>
 
   @override
   Widget build(BuildContext context) {
-    final strings = AppConfig.getStrings(context.currentLocale).strategyCard;
-    return Column(
-      children: [
-        buildAnimationContainer(),
-        SizedBox(height: AppConfig.layout.spacingLarge),
-        AnimationControls(
-          isManipulated: showingManipulated,
-          onModeChanged: updateMode,
-        ),
-        SizedBox(height: AppConfig.layout.spacingMedium),
-        AnimationIndicator(
-          isManipulated: showingManipulated,
-          normalText: strings.faceManipulationIndicatorNormal,
-          manipulatedText: strings.faceManipulationIndicatorManipulated,
-        ),
-      ],
-    );
+    return BlocBuilder<GameBloc, GameState>(
+        buildWhen: (previous, current) => previous.locale != current.locale,
+        builder: (context, _) {
+          final strings =
+              AppConfig.getStrings(context.currentLocale).strategyCard;
+          return Column(
+            children: [
+              buildAnimationContainer(),
+              SizedBox(height: AppConfig.layout.spacingLarge),
+              AnimationControls(
+                isManipulated: showingManipulated,
+                onModeChanged: updateMode,
+              ),
+              SizedBox(height: AppConfig.layout.spacingMedium),
+              AnimationIndicator(
+                isManipulated: showingManipulated,
+                normalText: strings
+                    .indicatorNormal, // Generische Indikatorsprache verwenden
+                manipulatedText: strings.indicatorArtificial,
+              ),
+            ],
+          );
+        });
   }
 
   Widget buildAnimationContainer() {
