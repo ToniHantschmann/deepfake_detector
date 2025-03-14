@@ -1,4 +1,5 @@
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
+import 'package:deepfake_detector/constants/tutorial_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
@@ -55,6 +56,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
     super.initState();
     _showTutorial = widget.state.isTemporarySession &&
         widget.state.userStatistics != null &&
+        !widget.state.hasTutorialBeenShown(TutorialTypes.strategySwipe) &&
         widget.state.userStatistics!.totalAttempts == 1;
   }
 
@@ -62,6 +64,9 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
     setState(() {
       _showTutorial = false;
     });
+    context
+        .read<GameBloc>()
+        .add(const TutorialCompleted(TutorialTypes.strategySwipe));
   }
 
   void _handleRestartGame() {

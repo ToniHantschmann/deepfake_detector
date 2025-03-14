@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/constants/tutorial_types.dart';
 import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
 import '../../config/localization/app_locale.dart';
@@ -60,6 +61,7 @@ class GameState {
   final AppLocale locale;
   final Set<String> viewedStrategyIds;
   final int totalUniquePairs;
+  final Set<TutorialTypes> shownTutorials;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -84,6 +86,7 @@ class GameState {
     required this.locale,
     required this.viewedStrategyIds,
     required this.totalUniquePairs,
+    this.shownTutorials = const {},
   });
 
   const GameState.initial()
@@ -100,6 +103,7 @@ class GameState {
         playerId = null,
         locale = AppLocale.de,
         viewedStrategyIds = const {},
+        shownTutorials = const <TutorialTypes>{},
         totalUniquePairs = 0;
 
   GameState copyWith({
@@ -117,6 +121,7 @@ class GameState {
     AppLocale? locale,
     Set<String>? viewedStrategyIds,
     int? totalUniquePairs,
+    Set<TutorialTypes>? shownTutorials,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -143,6 +148,7 @@ class GameState {
       locale: locale ?? this.locale,
       viewedStrategyIds: viewedStrategyIds ?? this.viewedStrategyIds,
       totalUniquePairs: totalUniquePairs ?? this.totalUniquePairs,
+      shownTutorials: shownTutorials ?? this.shownTutorials,
     );
   }
 
@@ -161,6 +167,7 @@ class GameState {
           playerId == other.playerId &&
           locale == other.locale &&
           totalUniquePairs == other.totalUniquePairs &&
+          shownTutorials == other.shownTutorials &&
           viewedStrategyIds.length == other.viewedStrategyIds.length;
 
   @override
@@ -175,11 +182,16 @@ class GameState {
       playerId.hashCode ^
       locale.hashCode ^
       totalUniquePairs.hashCode ^
+      shownTutorials.hashCode ^
       viewedStrategyIds.hashCode;
 
   @override
   String toString() =>
       'GameState(status: $status, screen: $currentScreen, pin: $currentPin, playerId: $playerId, currentStrategyIndex: $currentStrategyIndex, viewedStrategiesCount: ${viewedStrategyIds.length})';
+
+  bool hasTutorialBeenShown(TutorialTypes type) {
+    return shownTutorials.contains(type);
+  }
 }
 
 const _sentinel = Object();

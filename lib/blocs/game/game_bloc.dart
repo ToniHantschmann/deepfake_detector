@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:deepfake_detector/constants/tutorial_types.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import '../../repositories/video_repository.dart';
@@ -42,6 +43,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<StrategyIndexChanged>(_onStrategyIndexChanged);
     on<ChangeLanguage>(_onChangeLanguage);
     on<MakeDeepfakeDecision>(_onMakeDeepfakeDecision);
+    on<TutorialCompleted>(_onTutorialCompleted);
   }
 
   Future<void> _onQuickStartGame(
@@ -456,5 +458,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           UserStatistics.temporary().copyWith(locale: event.locale);
       emit(state.copyWith(userStatistics: emptyStats));
     }
+  }
+
+  Future<void> _onTutorialCompleted(
+      TutorialCompleted event, Emitter<GameState> emit) async {
+    final updatedTutorials = Set<TutorialTypes>.from(state.shownTutorials)
+      ..add(event.tutorialType);
+
+    emit(state.copyWith(shownTutorials: updatedTutorials));
   }
 }

@@ -1,4 +1,5 @@
 import '../../config/localization/app_locale.dart';
+import '../../constants/tutorial_types.dart';
 
 abstract class GameEvent {
   const GameEvent();
@@ -76,4 +77,9 @@ class StrategyIndexChanged extends GameEvent {
 class ChangeLanguage extends GameEvent {
   final AppLocale locale;
   const ChangeLanguage(this.locale);
+}
+
+class TutorialCompleted extends GameEvent {
+  final TutorialTypes tutorialType;
+  const TutorialCompleted(this.tutorialType);
 }
