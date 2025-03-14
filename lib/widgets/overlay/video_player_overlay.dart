@@ -1,5 +1,7 @@
+import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import '../../config/localization/app_locale.dart';
 import '../../models/video_model.dart';
 import '../../config/app_config.dart';
 
@@ -7,11 +9,13 @@ import '../../config/app_config.dart';
 class VideoPlayerContent extends StatefulWidget {
   final Video video;
   final VoidCallback onClose;
+  final AppLocale locale;
 
   const VideoPlayerContent({
     Key? key,
     required this.video,
     required this.onClose,
+    required this.locale,
   }) : super(key: key);
 
   @override
@@ -68,6 +72,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(widget.locale).videoPlayer;
     final screenSize = MediaQuery.of(context).size;
 
     // Berechnung der Größe für ein kompaktes Overlay
@@ -100,7 +105,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
           // Video header
           SizedBox(
             height: headerHeight,
-            child: _buildVideoHeader(),
+            child: _buildVideoHeader(strings),
           ),
 
           // Video player
@@ -126,13 +131,13 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
     );
   }
 
-  Widget _buildVideoHeader() {
+  Widget _buildVideoHeader(VideoPlayerStrings strings) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: widget.video.isDeepfake
             ? AppConfig.colors.warning.withOpacity(0.2)
-            : AppConfig.colors.success.withOpacity(0.2),
+            : AppConfig.colors.secondary.withOpacity(0.2),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppConfig.layout.cardRadius),
         ),
@@ -148,18 +153,20 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
                   widget.video.isDeepfake ? Icons.warning : Icons.check_circle,
                   color: widget.video.isDeepfake
                       ? AppConfig.colors.warning
-                      : AppConfig.colors.success,
+                      : AppConfig.colors.secondary,
                   size: 18,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    widget.video.isDeepfake ? "Deepfake Video" : "Echtes Video",
+                    widget.video.isDeepfake
+                        ? strings.deepfakeLabel
+                        : strings.realLabel,
                     style: AppConfig.textStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.bold,
                       color: widget.video.isDeepfake
                           ? AppConfig.colors.warning
-                          : AppConfig.colors.success,
+                          : AppConfig.colors.secondary,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,

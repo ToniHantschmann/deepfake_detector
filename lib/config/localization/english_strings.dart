@@ -32,6 +32,8 @@ class EnglishStrings implements AppStrings {
   final tutorial = const EnglishTutorialStrings();
   @override
   final deepfakeReasons = const EnglishDeepfakeReasonStrings();
+  @override
+  final videoPlayer = const EnglishVideoPlayerStrings();
 }
 
 class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -43,7 +45,7 @@ class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {
   String get subtitle => 'Test how good your AI detection skills are.';
   @override
   String get description =>
-      "You'll be shown two videos - one real and one deepfake. Your task is to identify which one is the fake.";
+      "You are shown a video - your task is to decide whether the video is a deepfake.";
   @override
   String get startButton => 'Start Game';
   @override
@@ -75,18 +77,19 @@ class EnglishDecisionScreenStrings implements DecisionScreenStrings {
   const EnglishDecisionScreenStrings();
 
   @override
-  String get title => 'Which video is the Deepfake?';
+  String get title => 'Is this video a deepfake?';
   @override
-  String get subtitle => 'Select the video you think is artificially generated';
+  String get subtitle =>
+      'Decide whether the video shown has been artificially manipulated.';
   @override
   String get selectionButton => 'This is the Deepfake';
   @override
   String get confirmButton => 'Confirm Selection';
 
   @override
-  String get realButtonLabel => 'No, it\'s real';
+  String get realButtonLabel => 'Real';
   @override
-  String get deepfakeButtonLabel => 'Yes, deepfake';
+  String get deepfakeButtonLabel => 'Deepfake';
   @override
   String get questionLabel => 'Is this video manipulated?';
   @override
@@ -276,6 +279,15 @@ class EnglishTutorialStrings implements TutorialStrings {
   @override
   String get screenSwipeInstruction =>
       'Swipe left or right to navigate between screens!';
+}
+
+class EnglishVideoPlayerStrings implements VideoPlayerStrings {
+  const EnglishVideoPlayerStrings();
+
+  @override
+  String get deepfakeLabel => 'Deepfake Video';
+  @override
+  String get realLabel => 'Real Video';
 }
 
 class EnglishStrategyCardStrings implements StrategyCardStrings {

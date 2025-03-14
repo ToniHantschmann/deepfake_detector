@@ -340,6 +340,7 @@ class ResultScreen extends BaseGameScreen {
           child: VideoPlayerContent(
             video: video,
             onClose: () => Navigator.of(dialogContext).pop(),
+            locale: context.currentLocale,
           ),
         );
       },

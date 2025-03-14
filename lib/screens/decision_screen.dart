@@ -58,12 +58,12 @@ class DecisionScreen extends BaseGameScreen {
                       children: [
                         SizedBox(height: AppConfig.layout.spacingLarge),
                         Text(
-                          "Ist dieses Video ein Deepfake?",
+                          strings.title,
                           style: AppConfig.textStyles.h2,
                         ),
                         SizedBox(height: AppConfig.layout.spacingSmall),
                         Text(
-                          "Entscheide, ob das gezeigte Video künstlich manipuliert wurde.",
+                          strings.subtitle,
                           style: AppConfig.textStyles.bodyMedium.copyWith(
                             color: AppConfig.colors.textSecondary,
                           ),

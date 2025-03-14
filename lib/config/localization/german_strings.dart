@@ -11,7 +11,7 @@ class GermanStrings implements AppStrings {
   @override
   final video = const GermanVideoScreenStrings();
   @override
-  final comparison = const GermanComparisonScreenStrings();
+  final comparison = const GermanDecisionScreenStrings();
   @override
   final result = const GermanResultScreenStrings();
   @override
@@ -32,6 +32,8 @@ class GermanStrings implements AppStrings {
   final tutorial = const GermanTutorialStrings();
   @override
   final deepfakeReasons = const GermanDeepfakeReasonStrings();
+  @override
+  final videoPlayer = const GermanVideoPlayerStrings();
 }
 
 class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -43,7 +45,7 @@ class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
   String get subtitle => "Wie gut kannst du Deepfake Videos erkennen?";
   @override
   String get description =>
-      'Dir werden zwei Videos gezeigt - ein echtes und ein Deepfake. Deine Aufgabe ist es, das Gefälschte zu identifizieren.';
+      'Dir wird ein Video angezeigt - Deine Aufgabe ist es zu entscheiden ob das Video ein Deepfake ist.';
   @override
   String get startButton => 'Spiel starten';
   @override
@@ -71,23 +73,23 @@ class GermanVideoScreenStrings implements VideoScreenStrings {
   String get buffering => 'Pufferung...';
 }
 
-class GermanComparisonScreenStrings implements DecisionScreenStrings {
-  const GermanComparisonScreenStrings();
+class GermanDecisionScreenStrings implements DecisionScreenStrings {
+  const GermanDecisionScreenStrings();
 
   @override
-  String get title => 'Welches Video ist der Deepfake?';
+  String get title => 'Ist dieses Video ein Deepfake?';
   @override
   String get subtitle =>
-      'Wähle das Video aus, das deiner Meinung nach künstlich erstellt wurde';
+      'Entscheide, ob das gezeigte Video künstlich manipuliert wurde.';
   @override
   String get selectionButton => 'Dies ist der Deepfake';
   @override
   String get confirmButton => 'Auswahl bestätigen';
 
   @override
-  String get realButtonLabel => 'Nein, echt';
+  String get realButtonLabel => 'Real';
   @override
-  String get deepfakeButtonLabel => 'Ja, Deepfake';
+  String get deepfakeButtonLabel => 'Deepfake';
   @override
   String get questionLabel => 'Ist dieses Video manipuliert?';
   @override
@@ -279,6 +281,15 @@ class GermanTutorialStrings implements TutorialStrings {
   @override
   String get screenSwipeInstruction =>
       'Wische nach links oder rechts, um zwischen Bildschirmen zu navigieren!';
+}
+
+class GermanVideoPlayerStrings implements VideoPlayerStrings {
+  const GermanVideoPlayerStrings();
+
+  @override
+  String get deepfakeLabel => 'Deepfake Video';
+  @override
+  String get realLabel => 'Echtes Video';
 }
 
 class GermanStrategyCardStrings implements StrategyCardStrings {

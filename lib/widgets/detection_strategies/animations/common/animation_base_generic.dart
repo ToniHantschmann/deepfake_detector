@@ -5,6 +5,9 @@ import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import '../../../../config/app_config.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../blocs/game/game_bloc.dart';
+import '../../../../blocs/game/game_state.dart';
 
 abstract class GenericStrategyAnimationBase extends StatefulWidget {
   const GenericStrategyAnimationBase({Key? key}) : super(key: key);
@@ -157,16 +160,21 @@ class GenericStrategyAnimationBaseState<T extends GenericStrategyAnimationBase>
 
   @override
   Widget build(BuildContext context) {
-    final strings = AppConfig.getStrings(context.currentLocale).strategyCard;
-    return Column(
-      children: [
-        buildAnimationContainer(),
-        SizedBox(height: AppConfig.layout.spacingLarge),
-        _buildControlButton(strings),
-        SizedBox(height: AppConfig.layout.spacingMedium),
-        _buildStatusIndicator(strings),
-      ],
-    );
+    return BlocBuilder<GameBloc, GameState>(
+        buildWhen: (previous, current) => previous.locale != current.locale,
+        builder: (context, _) {
+          final strings =
+              AppConfig.getStrings(context.currentLocale).strategyCard;
+          return Column(
+            children: [
+              buildAnimationContainer(),
+              SizedBox(height: AppConfig.layout.spacingLarge),
+              _buildControlButton(strings),
+              SizedBox(height: AppConfig.layout.spacingMedium),
+              _buildStatusIndicator(strings),
+            ],
+          );
+        });
   }
 
   Widget buildAnimationContainer() {

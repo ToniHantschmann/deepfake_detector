@@ -16,6 +16,7 @@ abstract class AppStrings {
   PinDisplayStrings get pinDisplay;
   TutorialStrings get tutorial;
   DeepfakeReasonStrings get deepfakeReasons;
+  VideoPlayerStrings get videoPlayer;
 }
 
 abstract class IntroductionScreenStrings {
@@ -170,6 +171,13 @@ abstract class TutorialStrings {
   String get swipeTooltip;
   String get touchToContinue;
   String get screenSwipeInstruction;
+}
+
+abstract class VideoPlayerStrings {
+  const VideoPlayerStrings();
+
+  String get deepfakeLabel;
+  String get realLabel;
 }
 
 abstract class StrategyCardStrings {
