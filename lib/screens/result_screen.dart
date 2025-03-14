@@ -81,14 +81,6 @@ class ResultScreen extends BaseGameScreen {
                                 // Ergebnis-Header
                                 _buildResultHeader(
                                     state.isCorrectGuess!, strings),
-                                SizedBox(height: 8.0),
-
-                                // Video-Vergleich-Titel
-                                if (counterpartVideo != null)
-                                  Text(
-                                    "Video-Vergleich",
-                                    style: AppConfig.textStyles.h3,
-                                  ),
                               ],
                             ),
                           ),
@@ -111,13 +103,15 @@ class ResultScreen extends BaseGameScreen {
                                         counterpartVideo,
                                         state.isCorrectGuess!,
                                         state.userGuessIsDeepfake!,
-                                        context)
+                                        context,
+                                        strings)
                                     : _buildVerticalVideoComparison(
                                         shownVideo,
                                         counterpartVideo,
                                         state.isCorrectGuess!,
                                         state.userGuessIsDeepfake!,
-                                        context)
+                                        context,
+                                        strings)
                                 : Container(), // Fallback wenn kein counterpartVideo
                           ),
 
@@ -128,7 +122,7 @@ class ResultScreen extends BaseGameScreen {
                                 padding: EdgeInsets.all(
                                     AppConfig.layout.screenPaddingHorizontal),
                                 child: _buildDeepfakeIndicatorsCard(
-                                    deepfakeVideo!, strings, context),
+                                    deepfakeVideo, strings, context),
                               ),
                             ),
                         ],
@@ -162,6 +156,7 @@ class ResultScreen extends BaseGameScreen {
     bool isCorrect,
     bool userGuessIsDeepfake,
     BuildContext context,
+    ResultScreenStrings strings,
   ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -170,17 +165,19 @@ class ResultScreen extends BaseGameScreen {
           child: _buildVideoCard(
             video: shownVideo,
             isDeepfake: shownVideo.isDeepfake,
-            title: "Gezeigtes Video",
+            title: strings.shownVideoTitle,
             context: context,
+            strings: strings,
           ),
         ),
-        SizedBox(width: 16.0),
+        const SizedBox(width: 16.0),
         Expanded(
           child: _buildVideoCard(
             video: counterpartVideo,
             isDeepfake: counterpartVideo.isDeepfake,
-            title: "Vergleichsvideo",
+            title: strings.comparisonVideoTitle,
             context: context,
+            strings: strings,
           ),
         ),
       ],
@@ -194,6 +191,7 @@ class ResultScreen extends BaseGameScreen {
     bool isCorrect,
     bool userGuessIsDeepfake,
     BuildContext context,
+    ResultScreenStrings strings,
   ) {
     return Column(
       children: [
@@ -201,17 +199,19 @@ class ResultScreen extends BaseGameScreen {
           child: _buildVideoCard(
             video: shownVideo,
             isDeepfake: shownVideo.isDeepfake,
-            title: "Gezeigtes Video",
+            title: strings.shownVideoTitle,
             context: context,
+            strings: strings,
           ),
         ),
-        SizedBox(height: 12.0),
+        const SizedBox(height: 12.0),
         Expanded(
           child: _buildVideoCard(
             video: counterpartVideo,
             isDeepfake: counterpartVideo.isDeepfake,
-            title: "Vergleichsvideo",
+            title: strings.comparisonVideoTitle,
             context: context,
+            strings: strings,
           ),
         ),
       ],
@@ -240,7 +240,7 @@ class ResultScreen extends BaseGameScreen {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -263,7 +263,7 @@ class ResultScreen extends BaseGameScreen {
                   color: AppConfig.colors.warning,
                   size: 28,
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Text(
                   strings.explanationTitle,
                   style: AppConfig.textStyles.bodyLarge.copyWith(
@@ -285,7 +285,7 @@ class ResultScreen extends BaseGameScreen {
                   final index = entry.key;
                   final reasonText = entry.value;
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 12.0),
+                    padding: const EdgeInsets.only(bottom: 12.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -299,7 +299,7 @@ class ResultScreen extends BaseGameScreen {
                           child: Center(
                             child: Text(
                               '${index + 1}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -307,7 +307,7 @@ class ResultScreen extends BaseGameScreen {
                             ),
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             reasonText,
@@ -381,6 +381,7 @@ class ResultScreen extends BaseGameScreen {
     required bool isDeepfake,
     required String title,
     required BuildContext context,
+    required ResultScreenStrings strings,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -395,7 +396,7 @@ class ResultScreen extends BaseGameScreen {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -404,7 +405,7 @@ class ResultScreen extends BaseGameScreen {
           // Titel
           Container(
             height: 40,
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             alignment: Alignment.center,
             child: Text(
               title,
@@ -425,14 +426,22 @@ class ResultScreen extends BaseGameScreen {
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(AppConfig.layout.cardRadius - 2),
                   ),
-                  child: Container(
-                    color: Colors.black,
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: AppConfig.video.minAspectRatio,
-                        child: Image.asset(
-                          video.thumbnailUrl,
-                          fit: BoxFit.contain,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _showVideoOverlay(context, video),
+                      highlightColor: Colors.white.withOpacity(0.1),
+                      splashColor: AppConfig.colors.primary.withOpacity(0.3),
+                      child: Container(
+                        color: Colors.black,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: AppConfig.video.minAspectRatio,
+                            child: Image.asset(
+                              video.thumbnailUrl,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -444,7 +453,8 @@ class ResultScreen extends BaseGameScreen {
                   top: 8,
                   right: 8,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: isDeepfake
                           ? AppConfig.colors.warning
@@ -459,10 +469,12 @@ class ResultScreen extends BaseGameScreen {
                           color: Colors.white,
                           size: 16,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
-                          isDeepfake ? "Deepfake" : "Echt",
-                          style: TextStyle(
+                          isDeepfake
+                              ? strings.deepfakeIndicator
+                              : strings.realVideoIndicator,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -480,12 +492,12 @@ class ResultScreen extends BaseGameScreen {
                   child: InkWell(
                     onTap: () => _showVideoOverlay(context, video),
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: AppConfig.colors.primary.withOpacity(0.8),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.play_arrow,
                         color: Colors.white,
                         size: 28,
