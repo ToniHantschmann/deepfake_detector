@@ -66,6 +66,15 @@ abstract class ResultScreenStrings {
   String get overallStats;
   String get correctFormat;
   String get nextButton;
+
+  // Neue Strings für Video-Vergleich
+  String get videoComparisonTitle;
+  String get shownVideoTitle;
+  String get comparisonVideoTitle;
+  String get deepfakeIndicator;
+  String get realVideoIndicator;
+  String get watchVideoButton;
+  String get yourDecision;
 }
 
 abstract class StrategyScreenStrings {

@@ -112,6 +112,20 @@ class EnglishResultScreenStrings implements ResultScreenStrings {
   String get correctFormat => 'of';
   @override
   String get nextButton => 'Next';
+  @override
+  String get videoComparisonTitle => 'Video Comparison';
+  @override
+  String get shownVideoTitle => 'Shown Video';
+  @override
+  String get comparisonVideoTitle => 'Comparison Video';
+  @override
+  String get deepfakeIndicator => 'Deepfake';
+  @override
+  String get realVideoIndicator => 'Real Video';
+  @override
+  String get watchVideoButton => 'Watch Video';
+  @override
+  String get yourDecision => 'Your Decision';
 }
 
 class EnglishStrategyScreenStrings implements StrategyScreenStrings {

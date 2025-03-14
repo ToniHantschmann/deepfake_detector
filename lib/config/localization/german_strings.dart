@@ -113,6 +113,20 @@ class GermanResultScreenStrings implements ResultScreenStrings {
   String get correctFormat => 'von';
   @override
   String get nextButton => 'Weiter';
+  @override
+  String get videoComparisonTitle => 'Video-Vergleich';
+  @override
+  String get shownVideoTitle => 'Gezeigtes Video';
+  @override
+  String get comparisonVideoTitle => 'Vergleichsvideo';
+  @override
+  String get deepfakeIndicator => 'Deepfake';
+  @override
+  String get realVideoIndicator => 'Echtes Video';
+  @override
+  String get watchVideoButton => 'Video ansehen';
+  @override
+  String get yourDecision => 'Deine Entscheidung';
 }
 
 class GermanStrategyScreenStrings implements StrategyScreenStrings {
