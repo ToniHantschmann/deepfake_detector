@@ -15,6 +15,7 @@ abstract class AppStrings {
   ProgressBarStrings get progressBar;
   PinDisplayStrings get pinDisplay;
   TutorialStrings get tutorial;
+  DeepfakeReasonStrings get deepfakeReasons;
 }
 
 abstract class IntroductionScreenStrings {
@@ -246,4 +247,14 @@ abstract class StrategyCardStrings {
   String get toggleManipulated;
   String get indicatorNormal;
   String get indicatorArtificial;
+}
+
+abstract class DeepfakeReasonStrings {
+  const DeepfakeReasonStrings();
+
+  // Gründe für verschiedene Video-IDs
+  List<String> getReasonsForVideo(String videoId);
+
+  // Generische Gründe als Fallback
+  List<String> get genericReasons;
 }

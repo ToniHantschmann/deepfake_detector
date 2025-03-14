@@ -1,6 +1,7 @@
 // lib/config/localization/english_strings.dart
 
 import 'string_types.dart';
+import 'english_reasons_strings.dart';
 
 class EnglishStrings implements AppStrings {
   const EnglishStrings();
@@ -29,6 +30,8 @@ class EnglishStrings implements AppStrings {
   final pinDisplay = const EnglishPinDisplayStrings();
   @override
   final tutorial = const EnglishTutorialStrings();
+  @override
+  final deepfakeReasons = const EnglishDeepfakeReasonStrings();
 }
 
 class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {

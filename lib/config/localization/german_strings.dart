@@ -1,6 +1,7 @@
 // lib/config/localization/german_strings.dart
 
 import 'string_types.dart';
+import 'german_reasons_strings.dart';
 
 class GermanStrings implements AppStrings {
   const GermanStrings();
@@ -29,6 +30,8 @@ class GermanStrings implements AppStrings {
   final pinDisplay = const GermanPinDisplayStrings();
   @override
   final tutorial = const GermanTutorialStrings();
+  @override
+  final deepfakeReasons = const GermanDeepfakeReasonStrings();
 }
 
 class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
