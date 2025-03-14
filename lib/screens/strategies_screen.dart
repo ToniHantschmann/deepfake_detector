@@ -11,7 +11,7 @@ import '../widgets/common/progress_bar.dart';
 import '../widgets/tutorial/swipe_tutorial_overlay.dart';
 import '../config/app_config.dart';
 import 'base_game_screen.dart';
-import 'pin_overlay.dart';
+import '../widgets/overlay/pin_overlay.dart';
 
 class StrategiesScreen extends BaseGameScreen {
   const StrategiesScreen({Key? key}) : super(key: key);

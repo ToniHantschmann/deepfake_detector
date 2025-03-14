@@ -1,3 +1,4 @@
+// lib/screens/statistics_screen.dart - Überarbeitete Version mit Donut-Charts
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
@@ -7,10 +8,11 @@ import '../blocs/game/game_state.dart';
 import '../blocs/game/game_language_extension.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
+import '../widgets/common/donut_chart.dart'; // Importiere das neue Widget
 import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import 'base_game_screen.dart';
-import 'pin_overlay.dart';
+import '../widgets/overlay/pin_overlay.dart';
 
 class StatisticsScreen extends BaseGameScreen {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -72,9 +74,6 @@ class StatisticsScreen extends BaseGameScreen {
     // Ensure totalPairs is never zero to avoid division by zero
     final safeTotal = totalPairs > 0 ? totalPairs : max(viewedPairs, 1);
 
-    // Ensure percentage doesn't exceed 100%
-    final viewedPercentage = min((viewedPairs / safeTotal * 100), 100.0);
-
     return Scaffold(
       backgroundColor: AppConfig.colors.background,
       body: SafeArea(
@@ -114,41 +113,26 @@ class StatisticsScreen extends BaseGameScreen {
                               // Determine if we should use horizontal or vertical layout
                               final isWideScreen = constraints.maxWidth > 900;
 
-                              // Create a list of statistics cards to display
-                              final List<Widget> statsCards = [
-                                // Current Run Card
-                                Flexible(
-                                  flex: 1,
+                              // Liste der StatistiK-Widgets
+                              final List<Widget> statsCards = [];
+
+                              // 1. Aktueller Durchgang (immer anzeigen)
+                              statsCards.add(
+                                Expanded(
                                   child: _buildStatisticsCard(
                                     icon: Icons.straighten,
                                     title: strings.currentRun,
                                     correct: currentCorrect,
                                     total: currentAttempts,
+                                    useThresholdColors: true,
+                                    context: context,
                                   ),
                                 ),
+                              );
 
-                                SizedBox(
-                                  width: isWideScreen
-                                      ? AppConfig.layout.spacingLarge
-                                      : 0,
-                                  height: isWideScreen
-                                      ? 0
-                                      : AppConfig.layout.spacingLarge,
-                                ),
-
-                                // Video Pairs Progress Card
-                                Flexible(
-                                  flex: 1,
-                                  child: _buildVideoPairsCard(
-                                    viewedPairs: viewedPairs,
-                                    totalPairs: safeTotal,
-                                  ),
-                                ),
-                              ];
-
-                              // Add overall stats card only for logged-in users
+                              // 2. Gesamtstatistik (falls PIN vorhanden)
                               if (state.currentPin != null) {
-                                statsCards.addAll([
+                                statsCards.add(
                                   SizedBox(
                                     width: isWideScreen
                                         ? AppConfig.layout.spacingLarge
@@ -157,77 +141,97 @@ class StatisticsScreen extends BaseGameScreen {
                                         ? 0
                                         : AppConfig.layout.spacingLarge,
                                   ),
-                                  Flexible(
-                                    flex: 1,
+                                );
+                                statsCards.add(
+                                  Expanded(
                                     child: _buildStatisticsCard(
                                       icon: Icons.history,
                                       title: strings.overallStats,
                                       correct: totalCorrect,
                                       total: totalAttempts,
+                                      useThresholdColors: true,
+                                      context: context,
                                     ),
                                   ),
-                                ]);
+                                );
                               }
 
-                              // Return horizontal or vertical layout based on screen width
-                              return SingleChildScrollView(
-                                child: isWideScreen
-                                    ? Row(children: statsCards)
-                                    : Column(children: statsCards),
+                              // 3. Video Pairs Progress (immer anzeigen)
+                              statsCards.add(
+                                SizedBox(
+                                  width: isWideScreen
+                                      ? AppConfig.layout.spacingLarge
+                                      : 0,
+                                  height: isWideScreen
+                                      ? 0
+                                      : AppConfig.layout.spacingLarge,
+                                ),
                               );
+                              statsCards.add(
+                                Expanded(
+                                  child: _buildVideoPairsCard(
+                                    viewedPairs: viewedPairs,
+                                    totalPairs: safeTotal,
+                                    context: context,
+                                  ),
+                                ),
+                              );
+
+                              // Return horizontal or vertical layout based on screen width
+                              if (isWideScreen) {
+                                return Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: statsCards,
+                                );
+                              } else {
+                                return Column(
+                                  children: statsCards.map((widget) {
+                                    // Für Column-Layout geben wir den Expanded-Widgets eine feste Höhe
+                                    if (widget is Expanded) {
+                                      return SizedBox(
+                                        height:
+                                            400, // Feste Höhe für mobile Ansicht
+                                        child: widget.child,
+                                      );
+                                    }
+                                    return widget;
+                                  }).toList(),
+                                );
+                              }
                             },
                           ),
                         ),
 
-                        // Buttons
+                        // Buttons wie im StrategiesScreen
                         Padding(
                           padding: EdgeInsets.symmetric(
                             vertical: AppConfig.layout.spacingLarge,
                           ),
-                          child: Column(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // PIN Button (nur wenn kein PIN vorhanden)
-                              if (state.currentPin == null)
-                                Container(
-                                  width: double.infinity,
-                                  margin: EdgeInsets.only(
-                                    bottom: AppConfig.layout.spacingMedium,
-                                  ),
-                                  child: ElevatedButton.icon(
-                                    onPressed: () =>
-                                        _handlePinGeneration(context),
-                                    icon: const Icon(Icons.pin_outlined),
-                                    label: Text(
-                                      "Ergebnisse speichern (PIN generieren)",
-                                      style: AppConfig.textStyles.buttonMedium,
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppConfig.colors.primary,
-                                      padding: EdgeInsets.symmetric(
-                                        vertical:
-                                            AppConfig.layout.spacingMedium,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                              // Nächstes Spiel Button
-                              Container(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () => _handleNextGame(context),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppConfig.colors.success,
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: AppConfig.layout.spacingMedium,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    "Nächstes Spiel",
-                                    style: AppConfig.textStyles.buttonLarge,
-                                  ),
-                                ),
+                              // Nächstes Spiel Button (links)
+                              _buildActionButton(
+                                onPressed: () => _handleNextGame(context),
+                                text: "Nächstes Spiel",
+                                icon: Icons.play_arrow,
+                                color: AppConfig.colors.primary,
                               ),
+
+                              // Platzhalter zwischen Buttons, nur wenn PIN-Button angezeigt wird
+                              if (state.currentPin == null)
+                                SizedBox(width: AppConfig.layout.spacingXLarge),
+
+                              // PIN Button (rechts), nur wenn kein PIN vorhanden
+                              if (state.currentPin == null)
+                                _buildActionButton(
+                                  onPressed: () =>
+                                      _handlePinGeneration(context),
+                                  text: "PIN generieren",
+                                  icon: Icons.pin_outlined,
+                                  color: AppConfig.colors.secondary,
+                                ),
                             ],
                           ),
                         ),
@@ -257,16 +261,49 @@ class StatisticsScreen extends BaseGameScreen {
     context.read<GameBloc>().add(const RestartGame());
   }
 
-  // Statistik-Karte Widget für Erfolgsrate
+  // Action Button im Stil des StrategiesScreens
+  Widget _buildActionButton({
+    required VoidCallback onPressed,
+    required String text,
+    required IconData icon,
+    required Color color,
+  }) {
+    return SizedBox(
+      width: 600,
+      height: 90,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          text,
+          style: AppConfig.textStyles.buttonLarge,
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: EdgeInsets.symmetric(
+            vertical: AppConfig.layout.spacingMedium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(40),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Überarbeitete Statistik-Karte mit Donut-Chart
   Widget _buildStatisticsCard({
     required IconData icon,
     required String title,
     required int correct,
     required int total,
+    bool useThresholdColors = false,
+    required BuildContext context,
   }) {
     final percentage = total > 0 ? (correct / total * 100) : 0.0;
 
     return Container(
+      height: MediaQuery.of(context).size.height > 600 ? double.infinity : null,
       padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
       decoration: BoxDecoration(
         color: AppConfig.colors.backgroundLight,
@@ -281,8 +318,10 @@ class StatisticsScreen extends BaseGameScreen {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header mit Icon und Titel
           Row(
             children: [
               Icon(
@@ -302,51 +341,48 @@ class StatisticsScreen extends BaseGameScreen {
               ),
             ],
           ),
+
           SizedBox(height: 20),
-          Row(
-            children: [
-              Text(
-                '$correct/$total',
-                style: AppConfig.textStyles.bodyLarge.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(width: 12),
-              Text(
-                '(${percentage.toStringAsFixed(0)}%)',
-                style: AppConfig.textStyles.bodyLarge.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppConfig.colors.primary,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            height: 24,
-            decoration: BoxDecoration(
-              color: AppConfig.colors.backgroundDark,
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(
-                color: AppConfig.colors.border,
-                width: 1.5,
-              ),
-            ),
-            child: Stack(
-              children: [
-                FractionallySizedBox(
-                  widthFactor: percentage / 100,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppConfig.colors.primary,
-                      borderRadius: BorderRadius.circular(4),
+
+          // Erweiterter Bereich für die Chart-Darstellung
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Zahlen mittig angeordnet
+                    Text(
+                      'Korrekte Antworten:',
+                      style: AppConfig.textStyles.bodyMedium.copyWith(
+                        color: AppConfig.colors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
+                    SizedBox(height: 4),
+                    Text(
+                      '$correct von $total',
+                      style: AppConfig.textStyles.bodyLarge.copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    SizedBox(height: 24),
+
+                    // Großer, zentrierter Donut-Chart
+                    DonutChart(
+                      percentage: percentage,
+                      size: 180, // Deutlich größer
+                      strokeWidth: 16, // Etwas dicker für bessere Sichtbarkeit
+                      backgroundColor: AppConfig.colors.backgroundDark,
+                      useThresholdColors: useThresholdColors,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -354,14 +390,16 @@ class StatisticsScreen extends BaseGameScreen {
     );
   }
 
-  // Neue Karte für gesehene Videopaare
+  // Überarbeitete Videopaare-Karte mit Donut-Chart
   Widget _buildVideoPairsCard({
     required int viewedPairs,
     required int totalPairs,
+    required BuildContext context,
   }) {
-    final percentage = viewedPairs / totalPairs * 100;
+    final percentage = totalPairs > 0 ? (viewedPairs / totalPairs * 100) : 0.0;
 
     return Container(
+      height: MediaQuery.of(context).size.height > 600 ? double.infinity : null,
       padding: EdgeInsets.all(AppConfig.layout.spacingLarge),
       decoration: BoxDecoration(
         color: AppConfig.colors.backgroundLight,
@@ -376,8 +414,10 @@ class StatisticsScreen extends BaseGameScreen {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header mit Icon und Titel
           Row(
             children: [
               Icon(
@@ -397,51 +437,48 @@ class StatisticsScreen extends BaseGameScreen {
               ),
             ],
           ),
+
           SizedBox(height: 20),
-          Row(
-            children: [
-              Text(
-                '$viewedPairs/$totalPairs',
-                style: AppConfig.textStyles.bodyLarge.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(width: 12),
-              Text(
-                '(${percentage.toStringAsFixed(0)}%)',
-                style: AppConfig.textStyles.bodyLarge.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppConfig.colors.secondary,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            height: 24,
-            decoration: BoxDecoration(
-              color: AppConfig.colors.backgroundDark,
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(
-                color: AppConfig.colors.border,
-                width: 1.5,
-              ),
-            ),
-            child: Stack(
-              children: [
-                FractionallySizedBox(
-                  widthFactor: percentage / 100,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppConfig.colors.secondary,
-                      borderRadius: BorderRadius.circular(4),
+
+          // Erweiterter Bereich für die Chart-Darstellung
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Zahlen mittig angeordnet
+                    Text(
+                      'Fortschritt:',
+                      style: AppConfig.textStyles.bodyMedium.copyWith(
+                        color: AppConfig.colors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
+                    SizedBox(height: 4),
+                    Text(
+                      '$viewedPairs von $totalPairs',
+                      style: AppConfig.textStyles.bodyLarge.copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    SizedBox(height: 24),
+
+                    // Großer, zentrierter Donut-Chart
+                    DonutChart(
+                      percentage: percentage,
+                      size: 180, // Deutlich größer
+                      strokeWidth: 16, // Etwas dicker für bessere Sichtbarkeit
+                      backgroundColor: AppConfig.colors.backgroundDark,
+                      // Hier verwenden wir die Standard-Farbe (blau)
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
