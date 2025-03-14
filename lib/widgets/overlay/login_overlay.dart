@@ -1,13 +1,13 @@
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/game/game_bloc.dart';
-import '../blocs/game/game_event.dart';
-import '../blocs/game/game_state.dart';
-import '../widgets/auth/auth_overlay_base.dart';
-import '../widgets/auth/pin_display.dart';
-import '../widgets/auth/number_pad.dart';
-import '../config/app_config.dart';
+import '../../blocs/game/game_bloc.dart';
+import '../../blocs/game/game_event.dart';
+import '../../blocs/game/game_state.dart';
+import '../auth/auth_overlay_base.dart';
+import '../auth/pin_display.dart';
+import '../auth/number_pad.dart';
+import '../../config/app_config.dart';
 
 class LoginOverlay extends StatefulWidget {
   const LoginOverlay({Key? key}) : super(key: key);

@@ -3,10 +3,10 @@ import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/game/game_bloc.dart';
-import '../blocs/game/game_event.dart';
-import '../widgets/auth/auth_overlay_base.dart';
-import '../config/app_config.dart';
+import '../../blocs/game/game_bloc.dart';
+import '../../blocs/game/game_event.dart';
+import '../auth/auth_overlay_base.dart';
+import '../../config/app_config.dart';
 
 class PinOverlay extends StatelessWidget {
   final String pin;
