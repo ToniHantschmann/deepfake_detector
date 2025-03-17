@@ -30,6 +30,7 @@ extension GameScreenNavigation on GameScreen {
     switch (this) {
       case GameScreen.strategy:
       case GameScreen.statistics:
+      case GameScreen.decision:
         return false;
       default:
         return true;

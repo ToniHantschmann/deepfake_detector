@@ -169,8 +169,10 @@ abstract class TutorialStrings {
   const TutorialStrings();
 
   String get swipeTooltip;
+  String get videoTapTooltip;
   String get touchToContinue;
   String get screenSwipeInstruction;
+  String get pinGenerateTutorial;
 }
 
 abstract class VideoPlayerStrings {

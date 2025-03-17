@@ -8,6 +8,9 @@ import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlay/video_player_overlay.dart';
+import '../constants/tutorial_types.dart';
+import '../widgets/tutorial/video_tap_tutorial.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ResultScreen extends BaseGameScreen {
   const ResultScreen({Key? key}) : super(key: key);
@@ -24,13 +27,63 @@ class ResultScreen extends BaseGameScreen {
   Widget buildGameScreen(BuildContext context, GameState state) {
     final strings = AppConfig.getStrings(context.currentLocale).result;
 
+    // Prüfen, ob das Tutorial angezeigt werden soll
+    bool showTutorial = state.isTemporarySession &&
+        state.userStatistics != null &&
+        !state.hasTutorialBeenShown(TutorialTypes.videoTap) &&
+        state.userStatistics!.totalAttempts <= 2;
+
+    return _ResultScreenContent(
+      state: state,
+      strings: strings,
+      showTutorial: showTutorial,
+      onTutorialComplete: () =>
+          completeTutorial(context, TutorialTypes.videoTap),
+      onNextNavigation: () => handleNextNavigation(context),
+    );
+  }
+}
+
+class _ResultScreenContent extends StatefulWidget {
+  final GameState state;
+  final ResultScreenStrings strings;
+  final bool showTutorial;
+  final VoidCallback onTutorialComplete;
+  final VoidCallback onNextNavigation;
+
+  const _ResultScreenContent({
+    Key? key,
+    required this.state,
+    required this.strings,
+    required this.showTutorial,
+    required this.onTutorialComplete,
+    required this.onNextNavigation,
+  }) : super(key: key);
+
+  @override
+  State<_ResultScreenContent> createState() => _ResultScreenContentState();
+}
+
+class _ResultScreenContentState extends State<_ResultScreenContent> {
+  // Lokaler Override, der das Tutorial sofort ausblenden kann
+  bool _showTutorialOverride = true;
+
+  void _handleTutorialComplete() {
+    setState(() {
+      _showTutorialOverride = false;
+    });
+    widget.onTutorialComplete();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Bestimme basierend auf der Bildschirmbreite, ob wir horizontal oder vertikal layouten
     final isHorizontalLayout = MediaQuery.of(context).size.width >= 700;
 
-    if (state.status == GameStatus.loading ||
-        state.userGuessIsDeepfake == null ||
-        state.isCorrectGuess == null ||
-        state.videos.isEmpty) {
+    if (widget.state.status == GameStatus.loading ||
+        widget.state.userGuessIsDeepfake == null ||
+        widget.state.isCorrectGuess == null ||
+        widget.state.videos.isEmpty) {
       return Scaffold(
         backgroundColor: AppConfig.colors.background,
         body: Center(
@@ -42,110 +95,122 @@ class ResultScreen extends BaseGameScreen {
     }
 
     // Das erste Video ist das angezeigte Video, das zweite ist das Gegenstück
-    final shownVideo = state.videos.first;
-    final counterpartVideo = state.videos.length > 1 ? state.videos[1] : null;
+    final shownVideo = widget.state.videos.first;
+    final counterpartVideo =
+        widget.state.videos.length > 1 ? widget.state.videos[1] : null;
 
     // Bestimme, welches Video das Deepfake ist (für die Indikatoren)
     final deepfakeVideo = shownVideo.isDeepfake ? shownVideo : counterpartVideo;
     final hasDeepfakeIndicators =
         deepfakeVideo != null && deepfakeVideo.isDeepfake;
 
-    return Scaffold(
-      backgroundColor: AppConfig.colors.background,
-      body: Column(
-        children: [
-          // Progress Bar oben
-          ProgressBar(currentScreen: state.currentScreen),
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppConfig.colors.background,
+          body: Column(
+            children: [
+              // Progress Bar oben
+              ProgressBar(currentScreen: widget.state.currentScreen),
 
-          // Hauptinhalt
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                // Wir verwenden LayoutBuilder um genaue Größen zu bekommen
-                return Stack(
-                  children: [
-                    // Statischer Inhalt in einer begrenzten Box
-                    Container(
-                      width: constraints.maxWidth,
-                      height: constraints.maxHeight,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Header Section
-                          Padding(
-                            padding: EdgeInsets.all(
-                                AppConfig.layout.screenPaddingHorizontal),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Ergebnis-Header
-                                _buildResultHeader(
-                                    state.isCorrectGuess!, strings),
-                              ],
-                            ),
-                          ),
-
-                          // Videos Section mit fester Höhe von 50% im horizontalen Layout
-                          Container(
-                            height: isHorizontalLayout
-                                ? constraints.maxHeight * 0.5
-                                : // 50% im horizontalen Layout
-                                constraints.maxHeight *
-                                    0.45, // 45% im vertikalen Layout
-                            padding: EdgeInsets.symmetric(
-                              horizontal:
-                                  AppConfig.layout.screenPaddingHorizontal,
-                            ),
-                            child: counterpartVideo != null
-                                ? isHorizontalLayout
-                                    ? _buildHorizontalVideoComparison(
-                                        shownVideo,
-                                        counterpartVideo,
-                                        state.isCorrectGuess!,
-                                        state.userGuessIsDeepfake!,
-                                        context,
-                                        strings)
-                                    : _buildVerticalVideoComparison(
-                                        shownVideo,
-                                        counterpartVideo,
-                                        state.isCorrectGuess!,
-                                        state.userGuessIsDeepfake!,
-                                        context,
-                                        strings)
-                                : Container(), // Fallback wenn kein counterpartVideo
-                          ),
-
-                          // Indikatoren Section
-                          if (hasDeepfakeIndicators)
-                            Expanded(
-                              child: Padding(
+              // Hauptinhalt
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Wir verwenden LayoutBuilder um genaue Größen zu bekommen
+                    return Stack(
+                      children: [
+                        // Statischer Inhalt in einer begrenzten Box
+                        Container(
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Header Section
+                              Padding(
                                 padding: EdgeInsets.all(
                                     AppConfig.layout.screenPaddingHorizontal),
-                                child: _buildDeepfakeIndicatorsCard(
-                                    deepfakeVideo, strings, context),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Ergebnis-Header
+                                    _buildResultHeader(
+                                        widget.state.isCorrectGuess!,
+                                        widget.strings),
+                                  ],
+                                ),
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
 
-                    // Navigation Buttons
-                    Positioned.fill(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: NavigationButtons.forGameScreen(
-                          onNext: () => handleNextNavigation(context),
-                          currentScreen: state.currentScreen,
+                              // Videos Section mit fester Höhe von 50% im horizontalen Layout
+                              Container(
+                                height: isHorizontalLayout
+                                    ? constraints.maxHeight * 0.5
+                                    : // 50% im horizontalen Layout
+                                    constraints.maxHeight *
+                                        0.45, // 45% im vertikalen Layout
+                                padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      AppConfig.layout.screenPaddingHorizontal,
+                                ),
+                                child: counterpartVideo != null
+                                    ? isHorizontalLayout
+                                        ? _buildHorizontalVideoComparison(
+                                            shownVideo,
+                                            counterpartVideo,
+                                            widget.state.isCorrectGuess!,
+                                            widget.state.userGuessIsDeepfake!,
+                                            context,
+                                            widget.strings)
+                                        : _buildVerticalVideoComparison(
+                                            shownVideo,
+                                            counterpartVideo,
+                                            widget.state.isCorrectGuess!,
+                                            widget.state.userGuessIsDeepfake!,
+                                            context,
+                                            widget.strings)
+                                    : Container(), // Fallback wenn kein counterpartVideo
+                              ),
+
+                              // Indikatoren Section
+                              if (hasDeepfakeIndicators)
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(AppConfig
+                                        .layout.screenPaddingHorizontal),
+                                    child: _buildDeepfakeIndicatorsCard(
+                                        deepfakeVideo, widget.strings, context),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+
+                        // Navigation Buttons
+                        Positioned.fill(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: NavigationButtons.forGameScreen(
+                              onNext: widget.onNextNavigation,
+                              currentScreen: widget.state.currentScreen,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+
+        // Tutorial Overlay, falls aktiviert
+        if (widget.showTutorial && _showTutorialOverride)
+          VideoTapTutorialOverlay(
+            onComplete: _handleTutorialComplete,
+          ),
+      ],
     );
   }
 

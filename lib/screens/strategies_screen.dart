@@ -9,7 +9,7 @@ import '../models/strategy_model.dart';
 import '../widgets/detection_strategies/strategy_carousel/strategy_carousel.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
-import '../widgets/tutorial/swipe_tutorial_overlay.dart';
+import '../widgets/tutorial/swipe_tutorial.dart';
 import '../config/app_config.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlay/pin_overlay.dart';

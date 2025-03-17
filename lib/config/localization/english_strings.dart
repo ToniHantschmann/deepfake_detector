@@ -279,6 +279,10 @@ class EnglishTutorialStrings implements TutorialStrings {
   @override
   String get screenSwipeInstruction =>
       'Swipe left or right to navigate between screens!';
+  @override
+  String get videoTapTooltip => 'Tap on the videos to view them in detail!';
+  @override
+  String get pinGenerateTutorial => 'Generate a PIN to save your progress!';
 }
 
 class EnglishVideoPlayerStrings implements VideoPlayerStrings {

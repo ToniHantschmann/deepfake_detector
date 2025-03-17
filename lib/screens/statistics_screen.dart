@@ -1,4 +1,3 @@
-// lib/screens/statistics_screen.dart - Überarbeitete Version mit Donut-Charts
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
@@ -6,11 +5,13 @@ import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_language_extension.dart';
+import '../widgets/common/donut_chart.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
-import '../widgets/common/donut_chart.dart'; // Importiere das neue Widget
 import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
+import '../constants/tutorial_types.dart';
+import '../widgets/tutorial/pin_tutorial.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlay/pin_overlay.dart';
 
@@ -30,7 +31,66 @@ class StatisticsScreen extends BaseGameScreen {
   Widget buildGameScreen(BuildContext context, GameState state) {
     final strings = AppConfig.getStrings(context.currentLocale).result;
 
-    if (state.status == GameStatus.loading || state.userStatistics == null) {
+    // Prüfen, ob das Pin-Tutorial angezeigt werden soll
+    bool showPinTutorial = state.isTemporarySession &&
+        state.userStatistics != null &&
+        state.userStatistics!.totalAttempts > 0 &&
+        !state.hasTutorialBeenShown(TutorialTypes.pinGenerate);
+
+    return _StatisticsScreenContent(
+      state: state,
+      showTutorial: showPinTutorial,
+      onTutorialComplete: () =>
+          completeTutorial(context, TutorialTypes.pinGenerate),
+    );
+  }
+}
+
+class _StatisticsScreenContent extends StatefulWidget {
+  final GameState state;
+  final bool showTutorial;
+  final VoidCallback onTutorialComplete;
+
+  const _StatisticsScreenContent({
+    Key? key,
+    required this.state,
+    required this.showTutorial,
+    required this.onTutorialComplete,
+  }) : super(key: key);
+
+  @override
+  State<_StatisticsScreenContent> createState() =>
+      _StatisticsScreenContentState();
+}
+
+class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
+  // Lokaler Override, der das Tutorial sofort ausblenden kann
+  bool _showTutorialOverride = true;
+
+  void _handleTutorialComplete() {
+    setState(() {
+      _showTutorialOverride = false;
+    });
+    widget.onTutorialComplete();
+  }
+
+  void _handleBackNavigation() {
+    context.read<GameBloc>().add(const PreviousScreen());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(context.currentLocale).result;
+
+    // Prüfen, ob das Pin-Tutorial angezeigt werden soll
+    // Zeige es nur an, wenn der Benutzer temporär ist, bereits Spiele gespielt hat aber noch kein Tutorial gesehen hat
+    bool showPinTutorial = widget.state.isTemporarySession &&
+        widget.state.userStatistics != null &&
+        widget.state.userStatistics!.totalAttempts > 0 &&
+        !widget.state.hasTutorialBeenShown(TutorialTypes.pinGenerate);
+
+    if (widget.state.status == GameStatus.loading ||
+        widget.state.userStatistics == null) {
       return Scaffold(
         backgroundColor: AppConfig.colors.background,
         body: Center(
@@ -42,7 +102,7 @@ class StatisticsScreen extends BaseGameScreen {
     }
 
     // PIN-Overlay anzeigen, wenn ein PIN generiert wurde
-    if (state.generatedPin != null) {
+    if (widget.state.generatedPin != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
           context: context,
@@ -51,7 +111,7 @@ class StatisticsScreen extends BaseGameScreen {
           builder: (dialogContext) => BlocProvider.value(
             value: context.read<GameBloc>(),
             child: PinOverlay(
-              pin: state.generatedPin.toString(),
+              pin: widget.state.generatedPin.toString(),
               onClose: () => Navigator.of(dialogContext).pop(),
             ),
           ),
@@ -59,79 +119,105 @@ class StatisticsScreen extends BaseGameScreen {
       });
     }
 
-    // Statistiken abrufen
-    final currentCorrect = state.userStatistics!.recentAttempts
+// Statistiken abrufen
+    final currentCorrect = widget.state.userStatistics!.recentAttempts
         .where((attempt) => attempt.wasCorrect)
         .length;
-    final currentAttempts = state.userStatistics!.recentAttempts.length;
-    final totalCorrect = state.userStatistics!.correctGuesses;
-    final totalAttempts = state.userStatistics!.totalAttempts;
+    final currentAttempts = widget.state.userStatistics!.recentAttempts.length;
+    final totalCorrect = widget.state.userStatistics!.correctGuesses;
+    final totalAttempts = widget.state.userStatistics!.totalAttempts;
 
     // Viewed video pairs statistics
-    final viewedPairs = state.userStatistics!.seenPairIds.length;
-    final totalPairs = state.totalUniquePairs;
+    final viewedPairs = widget.state.userStatistics!.seenPairIds.length;
+    final totalPairs = widget.state.totalUniquePairs;
 
     // Ensure totalPairs is never zero to avoid division by zero
     final safeTotal = totalPairs > 0 ? totalPairs : max(viewedPairs, 1);
 
-    return Scaffold(
-      backgroundColor: AppConfig.colors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            ProgressBar(currentScreen: state.currentScreen),
-            Expanded(
-              child: Stack(
-                children: [
-                  // Hauptinhalt
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppConfig.layout.screenPaddingHorizontal,
-                      vertical: AppConfig.layout.screenPaddingVertical,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header
-                        Text(
-                          "Deine Statistiken",
-                          style: AppConfig.textStyles.h2,
-                        ),
-                        SizedBox(height: AppConfig.layout.spacingMedium),
-                        Text(
-                          "Übersicht über deine Leistung",
-                          style: AppConfig.textStyles.bodyLarge.copyWith(
-                            color: AppConfig.colors.textSecondary,
+    return Stack(
+      children: [
+        Scaffold(
+            backgroundColor: AppConfig.colors.background,
+            body: SafeArea(
+                child: Column(children: [
+              ProgressBar(currentScreen: widget.state.currentScreen),
+              Expanded(
+                child: Stack(
+                  children: [
+                    // Hauptinhalt
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppConfig.layout.screenPaddingHorizontal,
+                        vertical: AppConfig.layout.screenPaddingVertical,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header
+                          Text(
+                            "Deine Statistiken",
+                            style: AppConfig.textStyles.h2,
                           ),
-                        ),
-                        SizedBox(height: AppConfig.layout.spacingXLarge),
+                          SizedBox(height: AppConfig.layout.spacingMedium),
+                          Text(
+                            "Übersicht über deine Leistung",
+                            style: AppConfig.textStyles.bodyLarge.copyWith(
+                              color: AppConfig.colors.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: AppConfig.layout.spacingXLarge),
 
-                        // Statistik-Karten in einer Row mit Responsive Layout
-                        Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              // Determine if we should use horizontal or vertical layout
-                              final isWideScreen = constraints.maxWidth > 900;
+                          // Statistik-Karten in einer Row mit Responsive Layout
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                // Determine if we should use horizontal or vertical layout
+                                final isWideScreen = constraints.maxWidth > 900;
 
-                              // Liste der StatistiK-Widgets
-                              final List<Widget> statsCards = [];
+                                // Liste der StatistiK-Widgets
+                                final List<Widget> statsCards = [];
 
-                              // 1. Aktueller Durchgang (immer anzeigen)
-                              statsCards.add(
-                                Expanded(
-                                  child: _buildStatisticsCard(
-                                    icon: Icons.straighten,
-                                    title: strings.currentRun,
-                                    correct: currentCorrect,
-                                    total: currentAttempts,
-                                    useThresholdColors: true,
-                                    context: context,
+                                // 1. Aktueller Durchgang (immer anzeigen)
+                                statsCards.add(
+                                  Expanded(
+                                    child: _buildStatisticsCard(
+                                      icon: Icons.straighten,
+                                      title: strings.currentRun,
+                                      correct: currentCorrect,
+                                      total: currentAttempts,
+                                      useThresholdColors: true,
+                                      context: context,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
 
-                              // 2. Gesamtstatistik (falls PIN vorhanden)
-                              if (state.currentPin != null) {
+                                // 2. Gesamtstatistik (falls PIN vorhanden)
+                                if (widget.state.currentPin != null) {
+                                  statsCards.add(
+                                    SizedBox(
+                                      width: isWideScreen
+                                          ? AppConfig.layout.spacingLarge
+                                          : 0,
+                                      height: isWideScreen
+                                          ? 0
+                                          : AppConfig.layout.spacingLarge,
+                                    ),
+                                  );
+                                  statsCards.add(
+                                    Expanded(
+                                      child: _buildStatisticsCard(
+                                        icon: Icons.history,
+                                        title: strings.overallStats,
+                                        correct: totalCorrect,
+                                        total: totalAttempts,
+                                        useThresholdColors: true,
+                                        context: context,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                // 3. Video Pairs Progress (immer anzeigen)
                                 statsCards.add(
                                   SizedBox(
                                     width: isWideScreen
@@ -144,112 +230,92 @@ class StatisticsScreen extends BaseGameScreen {
                                 );
                                 statsCards.add(
                                   Expanded(
-                                    child: _buildStatisticsCard(
-                                      icon: Icons.history,
-                                      title: strings.overallStats,
-                                      correct: totalCorrect,
-                                      total: totalAttempts,
-                                      useThresholdColors: true,
+                                    child: _buildVideoPairsCard(
+                                      viewedPairs: viewedPairs,
+                                      totalPairs: safeTotal,
                                       context: context,
                                     ),
                                   ),
                                 );
-                              }
 
-                              // 3. Video Pairs Progress (immer anzeigen)
-                              statsCards.add(
-                                SizedBox(
-                                  width: isWideScreen
-                                      ? AppConfig.layout.spacingLarge
-                                      : 0,
-                                  height: isWideScreen
-                                      ? 0
-                                      : AppConfig.layout.spacingLarge,
-                                ),
-                              );
-                              statsCards.add(
-                                Expanded(
-                                  child: _buildVideoPairsCard(
-                                    viewedPairs: viewedPairs,
-                                    totalPairs: safeTotal,
-                                    context: context,
-                                  ),
-                                ),
-                              );
-
-                              // Return horizontal or vertical layout based on screen width
-                              if (isWideScreen) {
-                                return Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: statsCards,
-                                );
-                              } else {
-                                return Column(
-                                  children: statsCards.map((widget) {
-                                    // Für Column-Layout geben wir den Expanded-Widgets eine feste Höhe
-                                    if (widget is Expanded) {
-                                      return SizedBox(
-                                        height:
-                                            400, // Feste Höhe für mobile Ansicht
-                                        child: widget.child,
-                                      );
-                                    }
-                                    return widget;
-                                  }).toList(),
-                                );
-                              }
-                            },
+                                // Return horizontal or vertical layout based on screen width
+                                if (isWideScreen) {
+                                  return Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: statsCards,
+                                  );
+                                } else {
+                                  return Column(
+                                    children: statsCards.map((widget) {
+                                      // Für Column-Layout geben wir den Expanded-Widgets eine feste Höhe
+                                      if (widget is Expanded) {
+                                        return SizedBox(
+                                          height:
+                                              400, // Feste Höhe für mobile Ansicht
+                                          child: widget.child,
+                                        );
+                                      }
+                                      return widget;
+                                    }).toList(),
+                                  );
+                                }
+                              },
+                            ),
                           ),
-                        ),
 
-                        // Buttons wie im StrategiesScreen
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppConfig.layout.spacingLarge,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Nächstes Spiel Button (links)
-                              _buildActionButton(
-                                onPressed: () => _handleNextGame(context),
-                                text: "Nächstes Spiel",
-                                icon: Icons.play_arrow,
-                                color: AppConfig.colors.primary,
-                              ),
-
-                              // Platzhalter zwischen Buttons, nur wenn PIN-Button angezeigt wird
-                              if (state.currentPin == null)
-                                SizedBox(width: AppConfig.layout.spacingXLarge),
-
-                              // PIN Button (rechts), nur wenn kein PIN vorhanden
-                              if (state.currentPin == null)
+                          // Buttons wie im StrategiesScreen
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppConfig.layout.spacingLarge,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Nächstes Spiel Button (links)
                                 _buildActionButton(
-                                  onPressed: () =>
-                                      _handlePinGeneration(context),
-                                  text: "PIN generieren",
-                                  icon: Icons.pin_outlined,
-                                  color: AppConfig.colors.secondary,
+                                  onPressed: () => _handleNextGame(context),
+                                  text: "Nächstes Spiel",
+                                  icon: Icons.play_arrow,
+                                  color: AppConfig.colors.primary,
                                 ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
-                  // Navigation Button (nur Next, kein Back)
-                  NavigationButtons.forGameScreen(
-                    onBack: () => handleBackNavigation(context),
-                    currentScreen: state.currentScreen,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+                                // Platzhalter zwischen Buttons, nur wenn PIN-Button angezeigt wird
+                                if (widget.state.currentPin == null)
+                                  SizedBox(
+                                      width: AppConfig.layout.spacingXLarge),
+
+                                // PIN Button (rechts), nur wenn kein PIN vorhanden
+                                if (widget.state.currentPin == null)
+                                  _buildActionButton(
+                                    onPressed: () =>
+                                        _handlePinGeneration(context),
+                                    text: "PIN generieren",
+                                    icon: Icons.pin_outlined,
+                                    color: AppConfig.colors.secondary,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Navigation Button (nur Next, kein Back)
+                    NavigationButtons.forGameScreen(
+                      onBack: () => _handleBackNavigation(),
+                      currentScreen: widget.state.currentScreen,
+                    ),
+                  ],
+                ),
+              )
+            ]))),
+        // Pin-Tutorial Overlay anzeigen, falls aktiviert
+        if (showPinTutorial && _showTutorialOverride)
+          PinTutorialOverlay(
+            onComplete: () => _handleTutorialComplete(),
+          ),
+      ],
     );
   }
 

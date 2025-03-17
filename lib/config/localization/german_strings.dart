@@ -281,6 +281,12 @@ class GermanTutorialStrings implements TutorialStrings {
   @override
   String get screenSwipeInstruction =>
       'Wische nach links oder rechts, um zwischen Bildschirmen zu navigieren!';
+  @override
+  String get videoTapTooltip =>
+      'Tippe auf die Videos, um sie im Detail anzusehen!';
+  @override
+  String get pinGenerateTutorial =>
+      'Generiere einen PIN, um deinen Fortschritt zu speichern!';
 }
 
 class GermanVideoPlayerStrings implements VideoPlayerStrings {
