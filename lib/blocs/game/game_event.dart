@@ -1,5 +1,5 @@
 import '../../config/localization/app_locale.dart';
-import '../../constants/tutorial_types.dart';
+import '../../constants/overlay_types.dart';
 
 abstract class GameEvent {
   const GameEvent();
@@ -81,7 +81,16 @@ class ChangeLanguage extends GameEvent {
   const ChangeLanguage(this.locale);
 }
 
-class TutorialCompleted extends GameEvent {
-  final TutorialTypes tutorialType;
-  const TutorialCompleted(this.tutorialType);
+class OverlayCompleted extends GameEvent {
+  final OverlayType overlayType;
+  const OverlayCompleted(this.overlayType);
+}
+
+class SetInitialConfidenceRating extends GameEvent {
+  final int rating;
+  const SetInitialConfidenceRating(this.rating);
+}
+
+class SurveyCompleted extends GameEvent {
+  const SurveyCompleted();
 }

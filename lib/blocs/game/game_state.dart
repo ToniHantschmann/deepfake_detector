@@ -1,4 +1,4 @@
-import 'package:deepfake_detector/constants/tutorial_types.dart';
+import 'package:deepfake_detector/constants/overlay_types.dart';
 import 'package:deepfake_detector/models/video_model.dart';
 import 'package:deepfake_detector/models/statistics_model.dart';
 import '../../config/localization/app_locale.dart';
@@ -10,7 +10,7 @@ enum GameScreen {
   decision,
   result,
   strategy,
-  statistics
+  statistics,
 }
 
 /// Extension für GameScreen-spezifische Navigation
@@ -45,6 +45,7 @@ enum GameStatus {
   showLogin,
   loginError,
   playing,
+  waitingForSurvey,
 }
 
 class GameState {
@@ -62,7 +63,8 @@ class GameState {
   final AppLocale locale;
   final Set<String> viewedStrategyIds;
   final int totalUniquePairs;
-  final Set<TutorialTypes> shownTutorials;
+  final Set<OverlayType> shownOverlays;
+  final int? initialConfidenceRating;
 
   bool get isTemporarySession => currentPin == null;
   bool get hasStatistics => userStatistics != null;
@@ -87,7 +89,8 @@ class GameState {
     required this.locale,
     required this.viewedStrategyIds,
     required this.totalUniquePairs,
-    this.shownTutorials = const {},
+    this.shownOverlays = const {},
+    this.initialConfidenceRating,
   });
 
   const GameState.initial()
@@ -104,7 +107,8 @@ class GameState {
         playerId = null,
         locale = AppLocale.de,
         viewedStrategyIds = const {},
-        shownTutorials = const <TutorialTypes>{},
+        shownOverlays = const <OverlayType>{},
+        initialConfidenceRating = null,
         totalUniquePairs = 0;
 
   GameState copyWith({
@@ -122,7 +126,8 @@ class GameState {
     AppLocale? locale,
     Set<String>? viewedStrategyIds,
     int? totalUniquePairs,
-    Set<TutorialTypes>? shownTutorials,
+    Set<OverlayType>? shownOverlays,
+    Object? initialConfidenceRating = _sentinel,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -149,7 +154,10 @@ class GameState {
       locale: locale ?? this.locale,
       viewedStrategyIds: viewedStrategyIds ?? this.viewedStrategyIds,
       totalUniquePairs: totalUniquePairs ?? this.totalUniquePairs,
-      shownTutorials: shownTutorials ?? this.shownTutorials,
+      shownOverlays: shownOverlays ?? this.shownOverlays,
+      initialConfidenceRating: initialConfidenceRating == _sentinel
+          ? this.initialConfidenceRating
+          : initialConfidenceRating as int?,
     );
   }
 
@@ -168,7 +176,8 @@ class GameState {
           playerId == other.playerId &&
           locale == other.locale &&
           totalUniquePairs == other.totalUniquePairs &&
-          shownTutorials == other.shownTutorials &&
+          shownOverlays == other.shownOverlays &&
+          initialConfidenceRating == other.initialConfidenceRating &&
           viewedStrategyIds.length == other.viewedStrategyIds.length;
 
   @override
@@ -183,15 +192,16 @@ class GameState {
       playerId.hashCode ^
       locale.hashCode ^
       totalUniquePairs.hashCode ^
-      shownTutorials.hashCode ^
+      shownOverlays.hashCode ^
+      initialConfidenceRating.hashCode ^
       viewedStrategyIds.hashCode;
 
   @override
   String toString() =>
       'GameState(status: $status, screen: $currentScreen, pin: $currentPin, playerId: $playerId, currentStrategyIndex: $currentStrategyIndex, viewedStrategiesCount: ${viewedStrategyIds.length})';
 
-  bool hasTutorialBeenShown(TutorialTypes type) {
-    return shownTutorials.contains(type);
+  bool hasOverlayBeenShown(OverlayType type) {
+    return shownOverlays.contains(type);
   }
 }
 

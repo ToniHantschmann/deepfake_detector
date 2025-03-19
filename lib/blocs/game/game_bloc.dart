@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:deepfake_detector/constants/tutorial_types.dart';
+import 'package:deepfake_detector/constants/overlay_types.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import '../../repositories/video_repository.dart';
@@ -43,7 +43,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<StrategyIndexChanged>(_onStrategyIndexChanged);
     on<ChangeLanguage>(_onChangeLanguage);
     on<MakeDeepfakeDecision>(_onMakeDeepfakeDecision);
-    on<TutorialCompleted>(_onTutorialCompleted);
+    on<OverlayCompleted>(_onOverlayCompleted);
+    on<SetInitialConfidenceRating>(_onSetInitialConfidenceRating);
+    on<SurveyCompleted>(_onSurveyCompleted);
   }
 
   Future<void> _onQuickStartGame(
@@ -59,16 +61,35 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       // Record start of new game in internal statistics
       await _internalStatsRepository.recordGameStart(playerId);
 
-      emit(state.copyWith(
-        status: GameStatus.playing,
-        currentScreen: GameScreen.firstVideo,
-        currentPin: null,
-        videos: videos,
-        userStatistics: UserStatistics.temporary(),
-        errorMessage: null,
-        playerId: playerId,
-        totalUniquePairs: totalUniquePairs,
-      ));
+      // Prüfen, ob die Umfrage angezeigt werden soll
+      final shouldShowSurvey =
+          !state.hasOverlayBeenShown(OverlayType.confidenceSurvey);
+
+      // Wenn die Umfrage angezeigt werden soll, gehe in einen speziellen Status
+      if (shouldShowSurvey) {
+        emit(state.copyWith(
+          status: GameStatus.waitingForSurvey,
+          currentScreen: GameScreen.introduction,
+          currentPin: null,
+          videos: videos,
+          userStatistics: UserStatistics.temporary(),
+          errorMessage: null,
+          playerId: playerId,
+          totalUniquePairs: totalUniquePairs,
+        ));
+      } else {
+        // Normaler Ablauf, wenn keine Umfrage gezeigt werden soll
+        emit(state.copyWith(
+          status: GameStatus.playing,
+          currentScreen: GameScreen.firstVideo,
+          currentPin: null,
+          videos: videos,
+          userStatistics: UserStatistics.temporary(),
+          errorMessage: null,
+          playerId: playerId,
+          totalUniquePairs: totalUniquePairs,
+        ));
+      }
     } catch (e) {
       emit(state.copyWith(
         status: GameStatus.error,
@@ -462,11 +483,42 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  Future<void> _onTutorialCompleted(
-      TutorialCompleted event, Emitter<GameState> emit) async {
-    final updatedTutorials = Set<TutorialTypes>.from(state.shownTutorials)
-      ..add(event.tutorialType);
+  Future<void> _onOverlayCompleted(
+      OverlayCompleted event, Emitter<GameState> emit) async {
+    final updatedOverlays = Set<OverlayType>.from(state.shownOverlays)
+      ..add(event.overlayType);
 
-    emit(state.copyWith(shownTutorials: updatedTutorials));
+    emit(state.copyWith(shownOverlays: updatedOverlays));
+  }
+
+  Future<void> _onSetInitialConfidenceRating(
+      SetInitialConfidenceRating event, Emitter<GameState> emit) async {
+    try {
+      // Speichere den Wert in internal_statistics_repository wenn nötig
+      if (state.playerId != null) {
+        await _internalStatsRepository.recordConfidenceRating(
+          playerId: state.playerId!,
+          rating: event.rating,
+        );
+      }
+
+      // Aktualisiere den State
+      emit(state.copyWith(
+        initialConfidenceRating: event.rating,
+      ));
+    } catch (e) {
+      print('Failed to save confidence rating: $e');
+      // Wir wollen den Spielfluss nicht unterbrechen, wenn es Fehler gibt,
+      // also senden wir keine Fehlermeldung an den Benutzer
+    }
+  }
+
+  Future<void> _onSurveyCompleted(
+      SurveyCompleted event, Emitter<GameState> emit) async {
+    // Starte das Spiel nach der Umfrage
+    emit(state.copyWith(
+      status: GameStatus.playing,
+      currentScreen: GameScreen.firstVideo,
+    ));
   }
 }
