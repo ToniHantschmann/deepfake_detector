@@ -18,6 +18,7 @@ abstract class AppStrings {
   TutorialStrings get tutorial;
   DeepfakeReasonStrings get deepfakeReasons;
   VideoPlayerStrings get videoPlayer;
+  SurveyStrings get survey;
 }
 
 abstract class IntroductionScreenStrings {
@@ -194,6 +195,16 @@ abstract class VideoPlayerStrings {
 
   String get deepfakeLabel;
   String get realLabel;
+}
+
+abstract class SurveyStrings {
+  const SurveyStrings();
+
+  String get confidenceTitle;
+  String get confidenceQuestion;
+  String get confidenceLow;
+  String get confidenceHigh;
+  String get continueButton;
 }
 
 abstract class StrategyCardStrings {

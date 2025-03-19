@@ -36,6 +36,8 @@ class EnglishStrings implements AppStrings {
   final videoPlayer = const EnglishVideoPlayerStrings();
   @override
   final statistics = const EnglishStatisticsScreenStrings();
+  @override
+  final survey = const EnglishSurveyStrings();
 }
 
 class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -317,6 +319,26 @@ class EnglishTutorialStrings implements TutorialStrings {
   String get videoTapTooltip => 'Tap on the videos to view them in detail!';
   @override
   String get pinGenerateTutorial => 'Generate a PIN to save your progress!';
+}
+
+class EnglishSurveyStrings implements SurveyStrings {
+  const EnglishSurveyStrings();
+
+  @override
+  String get confidenceTitle => 'Self-Assessment';
+
+  @override
+  String get confidenceQuestion =>
+      'How confident are you in your ability to detect deepfake videos?';
+
+  @override
+  String get confidenceLow => 'Very uncertain';
+
+  @override
+  String get confidenceHigh => 'Very confident';
+
+  @override
+  String get continueButton => 'Continue';
 }
 
 class EnglishVideoPlayerStrings implements VideoPlayerStrings {

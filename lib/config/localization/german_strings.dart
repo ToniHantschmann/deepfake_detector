@@ -36,6 +36,8 @@ class GermanStrings implements AppStrings {
   final deepfakeReasons = const GermanDeepfakeReasonStrings();
   @override
   final videoPlayer = const GermanVideoPlayerStrings();
+  @override
+  final survey = const GermanSurveyStrings();
 }
 
 class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -322,6 +324,26 @@ class GermanTutorialStrings implements TutorialStrings {
   @override
   String get pinGenerateTutorial =>
       'Generiere einen PIN, um deinen Fortschritt zu speichern!';
+}
+
+class GermanSurveyStrings implements SurveyStrings {
+  const GermanSurveyStrings();
+
+  @override
+  String get confidenceTitle => 'Selbsteinschätzung';
+
+  @override
+  String get confidenceQuestion =>
+      'Wie zuversichtlich sind Sie, Deepfake-Videos erkennen zu können?';
+
+  @override
+  String get confidenceLow => 'Sehr unsicher';
+
+  @override
+  String get confidenceHigh => 'Sehr zuversichtlich';
+
+  @override
+  String get continueButton => 'Weiter';
 }
 
 class GermanVideoPlayerStrings implements VideoPlayerStrings {
