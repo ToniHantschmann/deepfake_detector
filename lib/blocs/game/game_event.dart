@@ -45,7 +45,9 @@ class QuickStartGame extends GameEvent {
 }
 
 class GeneratePin extends GameEvent {
-  const GeneratePin();
+  // callback method when pin is generated
+  final void Function(String pin)? onPinGenerated;
+  const GeneratePin({this.onPinGenerated});
 }
 
 class CheckPin extends GameEvent {

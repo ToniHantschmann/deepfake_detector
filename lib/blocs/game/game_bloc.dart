@@ -148,7 +148,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
         emit(state.copyWith(
           currentPin: pin,
-          generatedPin: pin,
           userStatistics: permanentStats,
           status: GameStatus.playing,
           playerId: pin.toString(),
@@ -157,11 +156,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         final newStats = UserStatistics.withPin(pin);
         emit(state.copyWith(
           currentPin: pin,
-          generatedPin: pin,
           userStatistics: newStats,
           status: GameStatus.playing,
           playerId: pin.toString(),
         ));
+      }
+
+      if (event.onPinGenerated != null) {
+        event.onPinGenerated!(pin.toString());
       }
     } catch (e) {
       emit(state.copyWith(

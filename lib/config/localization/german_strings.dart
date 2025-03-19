@@ -25,6 +25,8 @@ class GermanStrings implements AppStrings {
   @override
   final strategyCard = const GermanStrategyCardStrings();
   @override
+  final statistics = const GermanStatisticsScreenStrings();
+  @override
   final progressBar = const GermanProgressBarStrings();
   @override
   final pinDisplay = const GermanPinDisplayStrings();
@@ -107,10 +109,7 @@ class GermanResultScreenStrings implements ResultScreenStrings {
   String get explanationTitle => 'Warum dies ein Deepfake war:';
   @override
   String get reasonPrefix => 'Grund';
-  @override
-  String get currentRun => 'Aktueller Durchgang';
-  @override
-  String get overallStats => 'Gesamtstatistik';
+
   @override
   String get correctFormat => 'von';
   @override
@@ -145,6 +144,40 @@ class GermanStrategyScreenStrings implements StrategyScreenStrings {
   String get getPinButton => 'PIN erhalten';
   @override
   String get statsButton => 'Zu den Statistiken';
+}
+
+class GermanStatisticsScreenStrings implements StatisticsScreenStrings {
+  const GermanStatisticsScreenStrings();
+
+  @override
+  String get title => 'Deine Statistiken';
+
+  @override
+  String get subtitle => 'Übersicht über deine Leistung';
+
+  @override
+  String get correctAnswers => 'Korrekte Antworten:';
+
+  @override
+  String get viewedPairsTitle => 'Gesehene Videos';
+
+  @override
+  String get progressLabel => 'Fortschritt:';
+
+  @override
+  String get nextGameButton => 'Nächstes Spiel';
+
+  @override
+  String get saveGameButton => 'Spiel speichern';
+
+  @override
+  String get statisticsOf => 'von';
+
+  @override
+  String get currentRun => 'Aktueller Durchgang';
+
+  @override
+  String get overallStats => 'Gesamtstatistik';
 }
 
 class GermanAuthStrings implements AuthStrings {
@@ -190,6 +223,8 @@ class GermanAuthStrings implements AuthStrings {
   String get startNextGame => 'Nächstes Spiel starten';
   @override
   String get closeOverlay => 'Schließen';
+  @override
+  String get autoCloseText => 'Schließt in {seconds} Sekunden';
 
   // Number Pad
   @override

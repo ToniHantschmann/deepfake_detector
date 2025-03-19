@@ -34,6 +34,8 @@ class EnglishStrings implements AppStrings {
   final deepfakeReasons = const EnglishDeepfakeReasonStrings();
   @override
   final videoPlayer = const EnglishVideoPlayerStrings();
+  @override
+  final statistics = const EnglishStatisticsScreenStrings();
 }
 
 class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -108,10 +110,6 @@ class EnglishResultScreenStrings implements ResultScreenStrings {
   @override
   String get reasonPrefix => 'Reason';
   @override
-  String get currentRun => 'Current Run';
-  @override
-  String get overallStats => 'Overall Statistics';
-  @override
   String get correctFormat => 'of';
   @override
   String get nextButton => 'Next';
@@ -144,6 +142,40 @@ class EnglishStrategyScreenStrings implements StrategyScreenStrings {
   String get getPinButton => 'Get PIN';
   @override
   String get statsButton => 'Go to statistics';
+}
+
+class EnglishStatisticsScreenStrings implements StatisticsScreenStrings {
+  const EnglishStatisticsScreenStrings();
+
+  @override
+  String get title => 'Your Statistics';
+
+  @override
+  String get subtitle => 'Overview of your performance';
+
+  @override
+  String get correctAnswers => 'Correct answers:';
+
+  @override
+  String get viewedPairsTitle => 'Viewed Video Pairs';
+
+  @override
+  String get progressLabel => 'Progress:';
+
+  @override
+  String get nextGameButton => 'Next Game';
+
+  @override
+  String get saveGameButton => 'Save Game';
+
+  @override
+  String get statisticsOf => 'of';
+
+  @override
+  String get currentRun => 'Current Run';
+
+  @override
+  String get overallStats => 'Overall Statistics';
 }
 
 class EnglishAuthStrings implements AuthStrings {
@@ -188,6 +220,8 @@ class EnglishAuthStrings implements AuthStrings {
   String get startNextGame => 'Start Next Game';
   @override
   String get closeOverlay => 'Close';
+  @override
+  String get autoCloseText => 'Closes in {seconds} seconds';
 
   // Number Pad
   @override

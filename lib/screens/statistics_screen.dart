@@ -11,6 +11,7 @@ import '../widgets/common/progress_bar.dart';
 import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import '../constants/tutorial_types.dart';
+import '../widgets/overlay/timed_pin_registration_overlay.dart';
 import '../widgets/tutorial/pin_tutorial.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlay/pin_overlay.dart';
@@ -23,23 +24,16 @@ class StatisticsScreen extends BaseGameScreen {
     return previous.currentScreen != current.currentScreen ||
         previous.status != current.status ||
         previous.currentPin != current.currentPin ||
-        previous.generatedPin != current.generatedPin ||
         previous.locale != current.locale;
   }
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    final strings = AppConfig.getStrings(context.currentLocale).result;
-
-    // Prüfen, ob das Pin-Tutorial angezeigt werden soll
-    bool showPinTutorial = state.isTemporarySession &&
-        state.userStatistics != null &&
-        state.userStatistics!.totalAttempts > 0 &&
-        !state.hasTutorialBeenShown(TutorialTypes.pinGenerate);
-
     return _StatisticsScreenContent(
       state: state,
-      showTutorial: showPinTutorial,
+      showTutorial: state.isTemporarySession &&
+          state.userStatistics != null &&
+          !state.hasTutorialBeenShown(TutorialTypes.pinGenerate),
       onTutorialComplete: () =>
           completeTutorial(context, TutorialTypes.pinGenerate),
     );
@@ -80,7 +74,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    final strings = AppConfig.getStrings(context.currentLocale).result;
+    final strings = AppConfig.getStrings(context.currentLocale).statistics;
 
     // Prüfen, ob das Pin-Tutorial angezeigt werden soll
     // Zeige es nur an, wenn der Benutzer temporär ist, bereits Spiele gespielt hat aber noch kein Tutorial gesehen hat
@@ -99,24 +93,6 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
           ),
         ),
       );
-    }
-
-    // PIN-Overlay anzeigen, wenn ein PIN generiert wurde
-    if (widget.state.generatedPin != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          barrierDismissible: true,
-          barrierColor: AppConfig.colors.backgroundDark.withOpacity(0.8),
-          builder: (dialogContext) => BlocProvider.value(
-            value: context.read<GameBloc>(),
-            child: PinOverlay(
-              pin: widget.state.generatedPin.toString(),
-              onClose: () => Navigator.of(dialogContext).pop(),
-            ),
-          ),
-        );
-      });
     }
 
 // Statistiken abrufen
@@ -155,12 +131,12 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                         children: [
                           // Header
                           Text(
-                            "Deine Statistiken",
+                            strings.title,
                             style: AppConfig.textStyles.h2,
                           ),
                           SizedBox(height: AppConfig.layout.spacingMedium),
                           Text(
-                            "Übersicht über deine Leistung",
+                            strings.subtitle,
                             style: AppConfig.textStyles.bodyLarge.copyWith(
                               color: AppConfig.colors.textSecondary,
                             ),
@@ -187,6 +163,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                                       total: currentAttempts,
                                       useThresholdColors: true,
                                       context: context,
+                                      strings: strings,
                                     ),
                                   ),
                                 );
@@ -206,13 +183,13 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                                   statsCards.add(
                                     Expanded(
                                       child: _buildStatisticsCard(
-                                        icon: Icons.history,
-                                        title: strings.overallStats,
-                                        correct: totalCorrect,
-                                        total: totalAttempts,
-                                        useThresholdColors: true,
-                                        context: context,
-                                      ),
+                                          icon: Icons.history,
+                                          title: strings.overallStats,
+                                          correct: totalCorrect,
+                                          total: totalAttempts,
+                                          useThresholdColors: true,
+                                          context: context,
+                                          strings: strings),
                                     ),
                                   );
                                 }
@@ -231,10 +208,10 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                                 statsCards.add(
                                   Expanded(
                                     child: _buildVideoPairsCard(
-                                      viewedPairs: viewedPairs,
-                                      totalPairs: safeTotal,
-                                      context: context,
-                                    ),
+                                        viewedPairs: viewedPairs,
+                                        totalPairs: safeTotal,
+                                        context: context,
+                                        strings: strings),
                                   ),
                                 );
 
@@ -275,7 +252,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                                 // Nächstes Spiel Button (links)
                                 _buildActionButton(
                                   onPressed: () => _handleNextGame(context),
-                                  text: "Nächstes Spiel",
+                                  text: strings.nextGameButton,
                                   icon: Icons.play_arrow,
                                   color: AppConfig.colors.primary,
                                 ),
@@ -290,7 +267,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                                   _buildActionButton(
                                     onPressed: () =>
                                         _handlePinGeneration(context),
-                                    text: "PIN generieren",
+                                    text: strings.saveGameButton,
                                     icon: Icons.pin_outlined,
                                     color: AppConfig.colors.secondary,
                                   ),
@@ -320,7 +297,31 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
   }
 
   void _handlePinGeneration(BuildContext context) {
-    context.read<GameBloc>().add(const GeneratePin());
+    // Löse den GeneratePin-Event mit einem Callback aus
+    context.read<GameBloc>().add(
+      GeneratePin(
+        onPinGenerated: (pin) {
+          // Sobald der PIN generiert wurde, zeige den Dialog
+          _showPinDialog(context, pin);
+        },
+      ),
+    );
+  }
+
+  void _showPinDialog(BuildContext context, String pin) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: AppConfig.colors.backgroundDark.withOpacity(0.8),
+      builder: (dialogContext) => BlocProvider.value(
+        value: context.read<GameBloc>(),
+        child: TimedPinRegistrationOverlay(
+          pin: pin,
+          onClose: () => Navigator.of(dialogContext).pop(),
+          showTimer: true,
+        ),
+      ),
+    );
   }
 
   void _handleNextGame(BuildContext context) {
@@ -365,6 +366,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
     required int total,
     bool useThresholdColors = false,
     required BuildContext context,
+    required StatisticsScreenStrings strings,
   }) {
     final percentage = total > 0 ? (correct / total * 100) : 0.0;
 
@@ -420,7 +422,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                   children: [
                     // Zahlen mittig angeordnet
                     Text(
-                      'Korrekte Antworten:',
+                      strings.correctAnswers,
                       style: AppConfig.textStyles.bodyMedium.copyWith(
                         color: AppConfig.colors.textSecondary,
                       ),
@@ -428,7 +430,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '$correct von $total',
+                      '$correct ${strings.statisticsOf} $total',
                       style: AppConfig.textStyles.bodyLarge.copyWith(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -461,6 +463,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
     required int viewedPairs,
     required int totalPairs,
     required BuildContext context,
+    required StatisticsScreenStrings strings,
   }) {
     final percentage = totalPairs > 0 ? (viewedPairs / totalPairs * 100) : 0.0;
 
@@ -494,7 +497,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
               SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  "Gesehene Videopaare",
+                  strings.viewedPairsTitle,
                   style: AppConfig.textStyles.bodyLarge.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -516,7 +519,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                   children: [
                     // Zahlen mittig angeordnet
                     Text(
-                      'Fortschritt:',
+                      strings.progressLabel,
                       style: AppConfig.textStyles.bodyMedium.copyWith(
                         color: AppConfig.colors.textSecondary,
                       ),
@@ -524,7 +527,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '$viewedPairs von $totalPairs',
+                      '$viewedPairs ${strings.statisticsOf} $totalPairs',
                       style: AppConfig.textStyles.bodyLarge.copyWith(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,

@@ -8,6 +8,7 @@ abstract class AppStrings {
   DecisionScreenStrings get comparison;
   ResultScreenStrings get result;
   StrategyScreenStrings get strategies;
+  StatisticsScreenStrings get statistics;
   AuthStrings get auth;
   CommonStrings get common;
   ErrorStrings get errors;
@@ -63,12 +64,9 @@ abstract class ResultScreenStrings {
   String get wrongTitle;
   String get explanationTitle;
   String get reasonPrefix;
-  String get currentRun;
-  String get overallStats;
   String get correctFormat;
   String get nextButton;
 
-  // Neue Strings für Video-Vergleich
   String get videoComparisonTitle;
   String get shownVideoTitle;
   String get comparisonVideoTitle;
@@ -86,6 +84,21 @@ abstract class StrategyScreenStrings {
   String get nextGameButton;
   String get getPinButton;
   String get statsButton;
+}
+
+abstract class StatisticsScreenStrings {
+  const StatisticsScreenStrings();
+
+  String get title;
+  String get subtitle;
+  String get correctAnswers;
+  String get viewedPairsTitle;
+  String get progressLabel;
+  String get nextGameButton;
+  String get saveGameButton;
+  String get statisticsOf;
+  String get currentRun;
+  String get overallStats;
 }
 
 abstract class AuthStrings {
@@ -113,6 +126,7 @@ abstract class AuthStrings {
   String get pinCopied;
   String get startNextGame;
   String get closeOverlay;
+  String get autoCloseText;
 
   // Number Pad
   String get backspace;
