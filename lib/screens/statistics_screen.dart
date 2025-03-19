@@ -10,7 +10,7 @@ import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
 import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
-import '../constants/tutorial_types.dart';
+import '../constants/overlay_types.dart';
 import '../widgets/overlay/timed_pin_registration_overlay.dart';
 import '../widgets/tutorial/pin_tutorial.dart';
 import 'base_game_screen.dart';
@@ -33,9 +33,9 @@ class StatisticsScreen extends BaseGameScreen {
       state: state,
       showTutorial: state.isTemporarySession &&
           state.userStatistics != null &&
-          !state.hasTutorialBeenShown(TutorialTypes.pinGenerate),
+          !state.hasOverlayBeenShown(OverlayType.pinGenerate),
       onTutorialComplete: () =>
-          completeTutorial(context, TutorialTypes.pinGenerate),
+          completeTutorial(context, OverlayType.pinGenerate),
     );
   }
 }
@@ -81,7 +81,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
     bool showPinTutorial = widget.state.isTemporarySession &&
         widget.state.userStatistics != null &&
         widget.state.userStatistics!.totalAttempts > 0 &&
-        !widget.state.hasTutorialBeenShown(TutorialTypes.pinGenerate);
+        !widget.state.hasOverlayBeenShown(OverlayType.pinGenerate);
 
     if (widget.state.status == GameStatus.loading ||
         widget.state.userStatistics == null) {

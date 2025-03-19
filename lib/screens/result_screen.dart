@@ -8,7 +8,7 @@ import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlay/video_player_overlay.dart';
-import '../constants/tutorial_types.dart';
+import '../constants/overlay_types.dart';
 import '../widgets/tutorial/video_tap_tutorial.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,15 +30,14 @@ class ResultScreen extends BaseGameScreen {
     // Prüfen, ob das Tutorial angezeigt werden soll
     bool showTutorial = state.isTemporarySession &&
         state.userStatistics != null &&
-        !state.hasTutorialBeenShown(TutorialTypes.videoTap) &&
+        !state.hasOverlayBeenShown(OverlayType.videoTap) &&
         state.userStatistics!.totalAttempts <= 2;
 
     return _ResultScreenContent(
       state: state,
       strings: strings,
       showTutorial: showTutorial,
-      onTutorialComplete: () =>
-          completeTutorial(context, TutorialTypes.videoTap),
+      onTutorialComplete: () => completeTutorial(context, OverlayType.videoTap),
       onNextNavigation: () => handleNextNavigation(context),
     );
   }

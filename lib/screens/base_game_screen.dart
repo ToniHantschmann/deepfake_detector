@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
-import '../constants/tutorial_types.dart';
+import '../constants/overlay_types.dart';
 import '../widgets/common/swipe_navigation_wrapper.dart';
 
 /// Base class for all game screens
@@ -143,7 +143,7 @@ abstract class BaseGameScreen extends StatelessWidget {
     dispatchGameEvent(context, const ShowLogin());
   }
 
-  void completeTutorial(BuildContext context, TutorialTypes tutorialType) {
-    dispatchGameEvent(context, TutorialCompleted(tutorialType));
+  void completeTutorial(BuildContext context, OverlayType tutorialType) {
+    dispatchGameEvent(context, OverlayCompleted(tutorialType));
   }
 }
