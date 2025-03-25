@@ -159,7 +159,7 @@ class EnglishStatisticsScreenStrings implements StatisticsScreenStrings {
   String get correctAnswers => 'Correct answers:';
 
   @override
-  String get viewedPairsTitle => 'Viewed Video Pairs';
+  String get viewedPairsTitle => 'Viewed Videos';
 
   @override
   String get progressLabel => 'Progress:';
