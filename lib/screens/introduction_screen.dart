@@ -1,5 +1,9 @@
+import 'package:deepfake_detector/blocs/game/game_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
+import '../constants/overlay_types.dart';
+import '../widgets/overlay/confidence_survey_overlay.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
@@ -67,8 +71,17 @@ class IntroductionScreen extends BaseGameScreen {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => dispatchGameEvent(context, const ShowLogin()),
         icon: const Icon(Icons.login),
-        label: Text(strings.loginButton),
+        label: Text(
+          strings.loginButton,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18, // Größere Schrift
+          ),
+        ),
         backgroundColor: AppConfig.colors.primary,
+        // Größerer Button
+        extendedPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       ),
     );
   }
@@ -175,11 +188,43 @@ class IntroductionScreen extends BaseGameScreen {
         child: FittedBox(
           fit: BoxFit.fitHeight,
           child: PulsingButton(
-            onPressed: () => dispatchGameEvent(context, const QuickStartGame()),
+            onPressed: () => _handleStartGame(context),
             text: strings.startButton,
           ),
         ),
       ),
     );
+  }
+
+  void _handleStartGame(BuildContext context) {
+    // Zuerst prüfen, ob die Umfrage bereits gezeigt wurde
+    final gameBloc = context.read<GameBloc>();
+    final bool showSurvey =
+        !gameBloc.state.hasOverlayBeenShown(OverlayType.confidenceSurvey);
+
+    if (showSurvey) {
+      // Sofort Dialog anzeigen, ohne vorher den State zu ändern
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => BlocProvider.value(
+          value: gameBloc,
+          child: ConfidenceSurveyDialog(
+            onComplete: () {
+              // Dialog schließen
+              Navigator.of(dialogContext).pop();
+
+              // Jetzt das Spiel starten, nachdem die Umfrage abgeschlossen wurde
+              // Die Events SetInitialConfidenceRating und OverlayCompleted werden bereits
+              // in _handleSubmit() der ConfidenceSurveyDialog-Klasse gesendet
+              gameBloc.add(const QuickStartGame());
+            },
+          ),
+        ),
+      );
+    } else {
+      // Wenn keine Umfrage nötig ist, einfach das Spiel starten
+      dispatchGameEvent(context, const QuickStartGame());
+    }
   }
 }

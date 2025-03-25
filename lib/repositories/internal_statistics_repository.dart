@@ -254,6 +254,41 @@ class InternalStatisticsRepository {
     }
   }
 
+  Future<void> recordConfidenceRating({
+    required String playerId,
+    required int rating,
+  }) async {
+    try {
+      final currentStats = await getPlayerStatistics(playerId);
+
+      final InternalPlayerStatistics updatedStats;
+      if (currentStats != null) {
+        // Aktualisiere das Confidence-Rating
+        updatedStats = currentStats.copyWith(
+          initialConfidenceRating: rating,
+        );
+      } else {
+        // Neuer Spieler
+        updatedStats = InternalPlayerStatistics(
+          id: playerId,
+          gamesPlayed: 0,
+          correctGuesses: 0,
+          loginCount: 0,
+          hasCompletedGame: false,
+          hasPinRegistered: false,
+          hasReturnedWithPin: false,
+          firstGameTimestamp: DateTime.now(),
+          lastGameTimestamp: DateTime.now(),
+          initialConfidenceRating: rating,
+        );
+      }
+
+      await _updatePlayer(updatedStats);
+    } catch (e) {
+      throw RepositoryException('Failed to record confidence rating: $e');
+    }
+  }
+
   void registerConsoleCommands() {
     // Bestehende Download-Funktion
     js.context['getDeepfakeStats'] = () async {

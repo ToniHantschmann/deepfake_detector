@@ -9,6 +9,7 @@ class InternalPlayerStatistics {
   final bool hasReturnedWithPin; // Ist mit Pin zurückgekehrt
   final DateTime firstGameTimestamp; // Zeitstempel des ersten Spiels
   final DateTime? lastGameTimestamp; // Zeitstempel des letzten Spiels
+  final int? initialConfidenceRating;
 
   InternalPlayerStatistics({
     required this.id,
@@ -20,6 +21,7 @@ class InternalPlayerStatistics {
     this.hasReturnedWithPin = false,
     required this.firstGameTimestamp,
     this.lastGameTimestamp,
+    this.initialConfidenceRating,
   });
 
   // Berechne Erfolgsrate
@@ -44,6 +46,7 @@ class InternalPlayerStatistics {
     bool? hasPinRegistered,
     bool? hasReturnedWithPin,
     DateTime? lastGameTimestamp,
+    int? initialConfidenceRating,
   }) {
     return InternalPlayerStatistics(
       id: id ?? this.id,
@@ -55,6 +58,8 @@ class InternalPlayerStatistics {
       hasReturnedWithPin: hasReturnedWithPin ?? this.hasReturnedWithPin,
       firstGameTimestamp: firstGameTimestamp,
       lastGameTimestamp: lastGameTimestamp ?? this.lastGameTimestamp,
+      initialConfidenceRating:
+          initialConfidenceRating ?? this.initialConfidenceRating,
     );
   }
 
@@ -69,6 +74,7 @@ class InternalPlayerStatistics {
         'hasReturnedWithPin': hasReturnedWithPin,
         'firstGameTimestamp': firstGameTimestamp.toIso8601String(),
         'lastGameTimestamp': lastGameTimestamp?.toIso8601String(),
+        'initialConfidenceRating': initialConfidenceRating,
       };
 
   // Erstellung aus JSON
@@ -85,6 +91,7 @@ class InternalPlayerStatistics {
       lastGameTimestamp: json['lastGameTimestamp'] != null
           ? DateTime.parse(json['lastGameTimestamp'] as String)
           : null,
+      initialConfidenceRating: json['initialConfidenceRating'] as int?,
     );
   }
 }
