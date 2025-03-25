@@ -30,8 +30,8 @@
     },
     {
       "id": "003_real",
-      "videoUrl": "videos/deepfake/id16_0012_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id16_0012.png",
+      "videoUrl": "videos/real/id16_0012_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id16_0012.png",
       "isDeepfake": false,
       "pairId": "id03"
     },
@@ -44,8 +44,8 @@
     },
     {
       "id": "004_real",
-      "videoUrl": "videos/deepfake/id26_0006_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id26_0006.png",
+      "videoUrl": "videos/real/id26_0006_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id26_0006.png",
       "isDeepfake": false,
       "pairId": "id04"
     },
@@ -58,8 +58,8 @@
     },
     {
       "id": "005_real",
-      "videoUrl": "videos/deepfake/id29_0000_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id29_0000.png",
+      "videoUrl": "videos/real/id29_0000_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id29_0000.png",
       "isDeepfake": false,
       "pairId": "id05"
     },
@@ -72,8 +72,8 @@
     },
     {
       "id": "006_real",
-      "videoUrl": "videos/deepfake/id32_0003_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id32_0003.png",
+      "videoUrl": "videos/real/id32_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id32_0003.png",
       "isDeepfake": false,
       "pairId": "id06"
     },
@@ -86,8 +86,8 @@
     },
     {
       "id": "007_real",
-      "videoUrl": "videos/deepfake/id33_0003_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id33_0003.png",
+      "videoUrl": "videos/real/id33_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id33_0003.png",
       "isDeepfake": false,
       "pairId": "id07"
     },
@@ -100,8 +100,8 @@
     },
     {
       "id": "008_real",
-      "videoUrl": "videos/deepfake/id40_0003_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id40_0003.png",
+      "videoUrl": "videos/real/id40_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id40_0003.png",
       "isDeepfake": false,
       "pairId": "id08"
     },
@@ -114,8 +114,8 @@
     },
     {
       "id": "009_real",
-      "videoUrl": "videos/deepfake/id51_0002_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id51_0002.png",
+      "videoUrl": "videos/real/id51_0002_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id51_0002.png",
       "isDeepfake": false,
       "pairId": "id09"
     },
@@ -128,8 +128,8 @@
     },
     {
       "id": "010_real",
-      "videoUrl": "videos/deepfake/id58_0002_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id58_0002.png",
+      "videoUrl": "videos/real/id58_0002_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id58_0002.png",
       "isDeepfake": false,
       "pairId": "id10"
     },
@@ -142,8 +142,8 @@
     },
     {
       "id": "011_real",
-      "videoUrl": "videos/deepfake/id60_0003_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id60_0003.png",
+      "videoUrl": "videos/real/id60_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id60_0003.png",
       "isDeepfake": false,
       "pairId": "id11"
     },
