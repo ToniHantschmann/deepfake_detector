@@ -1,90 +1,158 @@
 {
   "videos": [
     {
-      "id": "001",
-      "title": "Video1",
-      "description": "description 1",
+      "id": "001_real",
       "videoUrl": "videos/real/id9_0000_c.mp4",
       "thumbnailUrl": "thumbnails/real/id9_0000.png",
+      "isDeepfake": false,
+      "pairId": "id01"
+    },
+    {
+      "id": "001_fake",
+      "videoUrl": "videos/deepfake/id9_id26_0000_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id9_id26_0000.png",
+      "isDeepfake": true,
+      "pairId": "id01"      
+    },
+    {
+      "id": "002_real",
+      "videoUrl": "videos/real/id13_0011_c.mp4",
+      "thumbnailUrl": "thumbnails/real/id13_0011.png",
+      "isDeepfake": false,
+      "pairId": "id02"
+    },
+    {
+      "id": "002_fake",
+      "videoUrl": "videos/deepfake/id13_id10_0011_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id13_id10_0011.png",
+      "isDeepfake": true,
+      "pairId": "id02"
+    },
+    {
+      "id": "003_real",
+      "videoUrl": "videos/deepfake/id16_0012_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id16_0012.png",
+      "isDeepfake": false,
+      "pairId": "id03"
+    },
+    {
+      "id": "003_fake",
+      "videoUrl": "videos/deepfake/id16_id6_0012_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id16_id6_0012.png",
+      "isDeepfake": true,
+      "pairId": "id03"
+    },
+    {
+      "id": "004_real",
+      "videoUrl": "videos/deepfake/id26_0006_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id26_0006.png",
+      "isDeepfake": false,
+      "pairId": "id04"
+    },
+    {
+      "id": "004_fake",
+      "videoUrl": "videos/deepfake/id26_id25_0006_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id26_id25_0006.png",
+      "isDeepfake": true,
+      "pairId": "id04"
+    },
+    {
+      "id": "005_real",
+      "videoUrl": "videos/deepfake/id29_0000_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id29_0000.png",
+      "isDeepfake": false,
+      "pairId": "id05"
+    },
+    {
+      "id": "005_fake",
+      "videoUrl": "videos/deepfake/id29_id23_0000_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id29_id23_0000.png",
+      "isDeepfake": true,
+      "pairId": "id05"
+    },
+    {
+      "id": "006_real",
+      "videoUrl": "videos/deepfake/id32_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id32_0003.png",
+      "isDeepfake": false,
+      "pairId": "id06"
+    },
+    {
+      "id": "006_fake",
+      "videoUrl": "videos/deepfake/id32_id34_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id32_id34_0003.png",
+      "isDeepfake": true,
+      "pairId": "id06"
+    },
+    {
+      "id": "007_real",
+      "videoUrl": "videos/deepfake/id33_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id33_0003.png",
+      "isDeepfake": false,
+      "pairId": "id07"
+    },
+    {
+      "id": "007_fake",
+      "videoUrl": "videos/deepfake/id33_id26_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id33_id26_0003.png",
+      "isDeepfake": true,
+      "pairId": "id07"
+    },
+    {
+      "id": "008_real",
+      "videoUrl": "videos/deepfake/id40_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id40_0003.png",
+      "isDeepfake": false,
+      "pairId": "id08"
+    },
+    {
+      "id": "008_fake",
+      "videoUrl": "videos/deepfake/id40_id44_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id40_id44_0003.png",
+      "isDeepfake": true,
+      "pairId": "id08"
+    },
+    {
+      "id": "009_real",
+      "videoUrl": "videos/deepfake/id51_0002_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id51_0002.png",
       "isDeepfake": false,
       "pairId": "id09"
     },
     {
-      "id": "002",
-      "title": "Video2",
-      "description": "description 2",
-      "videoUrl": "videos/real/id13_0011_c.mp4",
-      "thumbnailUrl": "thumbnails/real/id13_0011.png",
+      "id": "009_fake",
+      "videoUrl": "videos/deepfake/id51_id50_0002_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id51_id50_0002.png",
+      "isDeepfake": true,
+      "pairId": "id09"
+    },
+    {
+      "id": "010_real",
+      "videoUrl": "videos/deepfake/id58_0002_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id58_0002.png",
       "isDeepfake": false,
-      "pairId": "id13"
-    },
-    
-    {
-      "id": "010",
-      "title": "Video10",
-      "description": "description 10",
-      "videoUrl": "videos/deepfake/id9_id26_0000_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id9_id26_0000.png",
-      "isDeepfake": true,
-      "pairId": "id09",
-      "deepfakeIndicators": [
-      {
-        "description": "Unnatural look in the area around the eyes",
-        "screenshotUrls": [
-          "screenshots/id9id26/eyes_1.png", 
-          "screenshots/id9id26/eyes_2.png"
-        ],
-        "screenshotCaptions": [
-          "Unnatural look in the area around the eyes", 
-          "Unnatural look in the area around the eyes"
-        ]
-      },
-      {
-        "description": "Unnatural look of facial hair and mouth",
-        "screenshotUrls": [
-          "screenshots/id9id26/mouth_1.png", 
-          "screenshots/id9id26/mouth_2.png"
-        ],
-        "screenshotCaptions": [
-          "caption 2", 
-          "caption 3"
-        ]
-      }]
+      "pairId": "id10"
     },
     {
-      "id": "011",
-      "title": "Video11",
-      "description": "description 11",
-      "videoUrl": "videos/deepfake/id13_id10_0011_c.mp4",
-      "thumbnailUrl": "thumbnails/deepfake/id13_id10_0011.png",
+      "id": "010_fake",
+      "videoUrl": "videos/deepfake/id58_id55_0002_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id58_id55_0002.png",
       "isDeepfake": true,
-      "pairId": "id13",
-      "deepfakeIndicators": [
-      {
-        "description": "Unnatural look in the area around the eyes",
-        "screenshotUrls": [
-          "screenshots/id13id10/eyes_1.png", 
-          "screenshots/id13id10/eyes_2.png"
-        ],
-        "screenshotCaptions": [
-          "Unnatural look in the area around the eyes", 
-          "Unnatural look in the area around the eyes"
-        ]
-      },
-      {
-        "description": "Unnatural look of facial hair and mouth",
-        "screenshotUrls": [
-          "screenshots/id13id10/mouth_1.png", 
-          "screenshots/id13id10/mouth_2.png"
-        ],
-        "screenshotCaptions": [
-          "caption 2", 
-          "caption 3"
-        ]
-      }]
-    }
-
-    
-    
+      "pairId": "id10"
+    },
+    {
+      "id": "011_real",
+      "videoUrl": "videos/deepfake/id60_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id60_0003.png",
+      "isDeepfake": false,
+      "pairId": "id11"
+    },
+    {
+      "id": "011_fake",
+      "videoUrl": "videos/deepfake/id60_id61_0003_c.mp4",
+      "thumbnailUrl": "thumbnails/deepfake/id60_id61_0003.png",
+      "isDeepfake": true,
+      "pairId": "id11"
+    }    
     ]
 }
