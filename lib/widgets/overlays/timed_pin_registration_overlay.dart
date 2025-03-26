@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../blocs/game/game_bloc.dart';
+import '../../blocs/game/game_event.dart';
 import '../../blocs/game/game_language_extension.dart';
 import '../../config/app_config.dart';
 import '../../config/localization/string_types.dart';
@@ -60,6 +63,7 @@ class _TimedPinRegistrationOverlayState
             _remainingSeconds--;
           } else {
             _timer?.cancel();
+            context.read<GameBloc>().add(const InitializeGame());
             widget.onClose();
           }
         });
@@ -107,8 +111,6 @@ class _TimedPinRegistrationOverlayState
               SizedBox(height: AppConfig.layout.spacingLarge),
               _buildPinDisplay(),
               SizedBox(height: AppConfig.layout.spacingLarge),
-              _buildCopyButton(context, strings),
-              SizedBox(height: AppConfig.layout.spacingXLarge),
               _buildStartGameButton(context, strings),
 
               // Timer-Anzeige, wenn aktiviert
@@ -173,30 +175,6 @@ class _TimedPinRegistrationOverlayState
                 ),
               ))
           .toList(),
-    );
-  }
-
-  Widget _buildCopyButton(BuildContext context, AuthStrings strings) {
-    return ElevatedButton.icon(
-      onPressed: () => _copyPinToClipboard(context, strings),
-      icon: Icon(
-        Icons.copy,
-        color: AppConfig.colors.textPrimary,
-      ),
-      label: Text(
-        strings.copyPin,
-        style: AppConfig.textStyles.buttonMedium,
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppConfig.colors.primary,
-        padding: EdgeInsets.symmetric(
-          horizontal: AppConfig.layout.spacingLarge,
-          vertical: AppConfig.layout.spacingMedium,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConfig.layout.buttonRadius),
-        ),
-      ),
     );
   }
 
