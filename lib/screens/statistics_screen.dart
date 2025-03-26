@@ -11,10 +11,10 @@ import '../widgets/common/progress_bar.dart';
 import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import '../constants/overlay_types.dart';
-import '../widgets/overlay/timed_pin_registration_overlay.dart';
+import '../widgets/overlays/timed_pin_registration_overlay.dart';
 import '../widgets/tutorial/pin_tutorial.dart';
 import 'base_game_screen.dart';
-import '../widgets/overlay/pin_overlay.dart';
+import '../widgets/overlays/pin_overlay.dart';
 
 class StatisticsScreen extends BaseGameScreen {
   const StatisticsScreen({Key? key}) : super(key: key);

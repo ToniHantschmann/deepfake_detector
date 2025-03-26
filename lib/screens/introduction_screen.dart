@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
 import '../constants/overlay_types.dart';
-import '../widgets/overlay/confidence_survey_overlay.dart';
+import '../widgets/overlays/confidence_survey_overlay.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';

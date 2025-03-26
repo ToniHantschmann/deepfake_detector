@@ -10,7 +10,7 @@ import '../screens/introduction_screen.dart';
 import 'decision_screen.dart';
 import '../screens/result_screen.dart';
 import '../screens/strategies_screen.dart';
-import '../widgets/overlay/login_overlay.dart';
+import '../widgets/overlays/login_overlay.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
