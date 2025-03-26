@@ -7,7 +7,7 @@ import '../widgets/common/progress_bar.dart';
 import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import 'base_game_screen.dart';
-import '../widgets/overlay/video_player_overlay.dart';
+import '../widgets/overlays/video_player_overlay.dart';
 import '../constants/overlay_types.dart';
 import '../widgets/tutorial/video_tap_tutorial.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -288,7 +288,7 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
     // Die lokalisierten Gründe aus dem AppConfig holen
     final localizedReasons = AppConfig.getStrings(context.currentLocale)
         .deepfakeReasons
-        .getReasonsForVideo(deepfakeVideo.id);
+        .getReasonsForVideo(deepfakeVideo.pairId);
 
     return Container(
       width: double.infinity, // Volle Breite
