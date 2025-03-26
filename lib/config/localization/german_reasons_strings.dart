@@ -6,13 +6,11 @@ class GermanDeepfakeReasonStrings implements DeepfakeReasonStrings {
   const GermanDeepfakeReasonStrings();
 
   @override
-  List<String> getReasonsForVideo(String videoId) {
-    // Versuche exakte Übereinstimmung zu finden
-    if (_videoReasons.containsKey(videoId)) {
-      return _videoReasons[videoId]!;
+  List<String> getReasonsForVideo(String pairId) {
+    if (_videoReasons.containsKey(pairId)) {
+      return _videoReasons[pairId]!;
     }
 
-    // Fallback auf generische Gründe
     return genericReasons;
   }
 
@@ -26,16 +24,58 @@ class GermanDeepfakeReasonStrings implements DeepfakeReasonStrings {
       ];
 
   static const Map<String, List<String>> _videoReasons = {
-    // Politische Videos
-    'v1': [
-      'Unnatürliche Lippenbewegungen, besonders bei komplexen Lauten',
-      'Inkonsistente Gesichtsausdrücke während emotionaler Aussagen',
-      'Audio-visuelle Desynchronisation bei schnellen Sprechpassagen'
+    'id01': [
+      'Gesichtsbehaarung fehlt Details',
+      'Lichtreflexionen auf der Haut',
+      'Mundbewegung wirkt künstlich'
     ],
-    'v2': [
-      'Statische, unnatürliche Augenbrauen während des gesamten Gesprächs',
-      'Fehlende oder unregelmäßige Blinzelmuster',
-      'Verschwommene oder verzerrte Übergänge bei Kopfbewegungen'
+    'id02': [
+      'Wangen wirken zu glatt',
+      'Augenpartie passt nicht zum Rest',
+      'Zähne wirken zu glatt'
+    ],
+    'id03': [
+      'Augenpartie wirkt unnatürlich',
+      'Gesichtsbehaarung verwaschen',
+      'Details und Beleuchtung der Nase wirkt unnatürlich'
+    ],
+    'id04': [
+      'Mimik wirkt ausdruckslos',
+      'Augen und Mundpartie wirken unnatürlich',
+      'Übergang von der Nase zu den Augenbrauen',
+      'Lichtreflexionen auf der Haut sind unscharf'
+    ],
+    'id05': [
+      'Mimik wirkt emotionslos',
+      'Gesichtsbehaarung fehlt Details',
+      'Blinzeln unnatürlich'
+    ],
+    'id06': [
+      'Leberfleck nicht konstant gleich',
+      'Oberlippenbart und Übergang zum unteren Bart passen nicht zusammen',
+      'Hautfarbe der Wangen und Augenpartien passen nicht zur Stirn',
+      'untere Zähne nicht sichtbar'
+    ],
+    'id07': [
+      'Wenn der Kopf zur Seite zeigt: Übergang zum Hintergrund verschwimmt',
+      'Wangen und Stirn wirken zu glatt',
+      'Augenpartie passt farblich nicht zum Rest',
+      'Augenringe wirken unnatürlich'
+    ],
+    'id08': ['Farbe der Wangenpartie ändert sich'],
+    'id09': ['Zähne ohne Details', 'Augenpartie wirkt unnatürlich'],
+    'id10': [
+      'Augenpartie wirkt unecht, vor allem bei dem Blick zur Seite',
+      'ganzes Gesicht wirkt zu glatt',
+      'teilweise unterschiedliche Wangenfarbe',
+      'Stirn deutlich dunkler als Augen- und Wangenpartie'
+    ],
+    'id11': [
+      'Video wirkt sprunghaft',
+      'Oberlippenbart passt teilweise nicht zum restlichen Bart und verschwindet teilweise sogar',
+      'Mimik der Augen passt nicht zur Stirn',
+      'unnatürliches Blinzeln',
+      'Augenbrauen wechseln über den Videoverlauf ihre Farbe'
     ],
   };
 }

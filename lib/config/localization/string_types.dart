@@ -297,7 +297,7 @@ abstract class DeepfakeReasonStrings {
   const DeepfakeReasonStrings();
 
   // Gründe für verschiedene Video-IDs
-  List<String> getReasonsForVideo(String videoId);
+  List<String> getReasonsForVideo(String pairId);
 
   // Generische Gründe als Fallback
   List<String> get genericReasons;
