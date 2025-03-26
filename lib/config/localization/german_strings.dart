@@ -38,6 +38,8 @@ class GermanStrings implements AppStrings {
   final videoPlayer = const GermanVideoPlayerStrings();
   @override
   final survey = const GermanSurveyStrings();
+  @override
+  final inactivity = const GermanInactivityStrings();
 }
 
 class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -344,6 +346,20 @@ class GermanSurveyStrings implements SurveyStrings {
 
   @override
   String get continueButton => 'Weiter';
+}
+
+class GermanInactivityStrings implements InactivityStrings {
+  const GermanInactivityStrings();
+
+  @override
+  String get inactivityTitle => 'Inaktivität erkannt';
+
+  @override
+  String get inactivityMessage =>
+      'Das Spiel wird in {seconds} Sekunden zurückgesetzt.';
+
+  @override
+  String get continueButton => 'Weitermachen';
 }
 
 class GermanVideoPlayerStrings implements VideoPlayerStrings {

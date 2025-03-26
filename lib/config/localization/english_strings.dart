@@ -38,6 +38,8 @@ class EnglishStrings implements AppStrings {
   final statistics = const EnglishStatisticsScreenStrings();
   @override
   final survey = const EnglishSurveyStrings();
+  @override
+  final inactivity = const EnglishInactivityStrings();
 }
 
 class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -336,6 +338,19 @@ class EnglishSurveyStrings implements SurveyStrings {
 
   @override
   String get confidenceHigh => 'Very confident';
+
+  @override
+  String get continueButton => 'Continue';
+}
+
+class EnglishInactivityStrings implements InactivityStrings {
+  const EnglishInactivityStrings();
+
+  @override
+  String get inactivityTitle => 'Inactivity Detected';
+
+  @override
+  String get inactivityMessage => 'Game will reset in {seconds} seconds.';
 
   @override
   String get continueButton => 'Continue';

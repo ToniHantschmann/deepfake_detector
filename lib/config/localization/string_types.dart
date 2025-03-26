@@ -19,6 +19,7 @@ abstract class AppStrings {
   DeepfakeReasonStrings get deepfakeReasons;
   VideoPlayerStrings get videoPlayer;
   SurveyStrings get survey;
+  InactivityStrings get inactivity;
 }
 
 abstract class IntroductionScreenStrings {
@@ -301,4 +302,13 @@ abstract class DeepfakeReasonStrings {
 
   // Generische Gründe als Fallback
   List<String> get genericReasons;
+}
+
+abstract class InactivityStrings {
+  const InactivityStrings();
+
+  // Countdown-Overlay
+  String get inactivityTitle;
+  String get inactivityMessage;
+  String get continueButton;
 }
