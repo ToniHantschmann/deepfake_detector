@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
 import '../constants/overlay_types.dart';
+import '../widgets/common/language_selector.dart';
 import '../widgets/overlays/confidence_survey_overlay.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
@@ -64,6 +65,13 @@ class IntroductionScreen extends BaseGameScreen {
                   ),
                 ],
               ),
+            ),
+
+            // Language selector positioned in the top-right corner
+            Positioned(
+              top: 16.0,
+              right: 16.0,
+              child: const LanguageSelector(),
             ),
           ],
         ),
