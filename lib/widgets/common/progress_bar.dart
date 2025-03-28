@@ -2,6 +2,9 @@ import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:deepfake_detector/widgets/common/language_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../blocs/game/game_bloc.dart';
+import '../../blocs/game/game_event.dart';
 import '../../blocs/game/game_state.dart';
 import '../../config/app_config.dart';
 
@@ -87,6 +90,22 @@ class ProgressBar extends StatelessWidget {
 
             // Language Selector rechts positioniert
             const LanguageSelector(),
+
+            // Abstand zwischen Language Selector und Schließen-Button
+            SizedBox(width: 16.0),
+
+            // Schließen-Button
+            IconButton(
+              icon: Icon(
+                Icons.close,
+                color: Colors.white,
+                size: 24,
+              ),
+              onPressed: () {
+                // InitializeGame Event auslösen
+                context.read<GameBloc>().add(const InitializeGame());
+              },
+            ),
           ],
         ),
       ),
