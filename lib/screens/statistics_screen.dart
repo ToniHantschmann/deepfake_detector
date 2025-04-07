@@ -11,7 +11,7 @@ import '../widgets/common/progress_bar.dart';
 import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import '../constants/overlay_types.dart';
-import '../widgets/overlays/timed_pin_registration_overlay.dart';
+import '../widgets/overlays/pin_registration_overlay.dart';
 import '../widgets/tutorial/pin_tutorial.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlays/pin_overlay.dart';
@@ -315,10 +315,9 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
       barrierColor: AppConfig.colors.backgroundDark.withOpacity(0.8),
       builder: (dialogContext) => BlocProvider.value(
         value: context.read<GameBloc>(),
-        child: TimedPinRegistrationOverlay(
+        child: PinRegistrationOverlay(
           pin: pin,
           onClose: () => Navigator.of(dialogContext).pop(),
-          showTimer: true,
         ),
       ),
     );
