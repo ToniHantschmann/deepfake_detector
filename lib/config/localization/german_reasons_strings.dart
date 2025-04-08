@@ -25,57 +25,61 @@ class GermanDeepfakeReasonStrings implements DeepfakeReasonStrings {
 
   static const Map<String, List<String>> _videoReasons = {
     'id01': [
-      'Gesichtsbehaarung fehlt Details',
-      'Lichtreflexionen auf der Haut',
-      'Mundbewegung wirkt künstlich'
+      'Fehlende Details in der Gesichtsbehaarung',
+      'Unnatürliche Lichtreflexionen auf der Haut',
+      'Künstlich wirkende Mundbewegungen beim Sprechen'
     ],
     'id02': [
-      'Wangen wirken zu glatt',
-      'Augenpartie passt nicht zum Rest',
-      'Zähne wirken zu glatt'
+      'Übermäßig glatte Wangenpartie ohne natürliche Textur',
+      'Farbliche Abweichungen der Augenpartie vom Rest des Gesichts',
+      'Zähne erscheinen zu gleichmäßig ohne natürliche Unregelmäßigkeiten'
     ],
     'id03': [
-      'Augenpartie wirkt unnatürlich',
-      'Gesichtsbehaarung verwaschen',
-      'Details und Beleuchtung der Nase wirkt unnatürlich'
+      'Künstlich wirkende Augenpartie',
+      'Fehlende Details in der Gesichtsbehaarung',
+      'Unrealistische Beleuchtung im Nasenbereich??'
     ],
     'id04': [
-      'Mimik wirkt ausdruckslos',
-      'Augen und Mundpartie wirken unnatürlich',
-      'Übergang von der Nase zu den Augenbrauen',
-      'Lichtreflexionen auf der Haut sind unscharf'
+      'Emotionslos wirkende Mimik',
+      'Künstlich wirkende Augen- und Mundpartie',
+      'Unnatürlicher Übergang von Nase zu Augenbrauen',
+      'Unscharfe Lichtreflexionen auf der Hautoberfläche'
     ],
     'id05': [
-      'Mimik wirkt emotionslos',
-      'Gesichtsbehaarung fehlt Details',
-      'Blinzeln unnatürlich'
+      'Emotionslos wirkende Mimik',
+      'Fehlende Details in der Gesichtsbehaarung',
+      'Untypisches Blinzelmuster mit unregelmäßiger Häufigkeit'
     ],
     'id06': [
-      'Leberfleck nicht konstant gleich',
-      'Oberlippenbart und Übergang zum unteren Bart passen nicht zusammen',
-      'Hautfarbe der Wangen und Augenpartien passen nicht zur Stirn',
-      'untere Zähne nicht sichtbar'
+      'Leberfleck verändert Erscheinung und teilweise Position',
+      'Inkonsistente Darstellung zwischen Oberlippenbart und restlichem Bart',
+      'Farbliche Unstimmigkeiten zwischen Wangen, Augenpartie und Stirn',
+      'Untere Zahnreihe bleibt beim Sprechen unsichtbar'
     ],
     'id07': [
-      'Wenn der Kopf zur Seite zeigt: Übergang zum Hintergrund verschwimmt',
-      'Wangen und Stirn wirken zu glatt',
-      'Augenpartie passt farblich nicht zum Rest',
-      'Augenringe wirken unnatürlich'
+      'Unscharfe Übergänge zum Hintergrund bei seitlichen Kopfdrehungen',
+      'Übermäßig glatte Wangen- und Stirnpartie ohne natürliche Textur',
+      'Farbliche Abweichungen der Augenpartie vom Rest des Gesichts',
+      'Unnatürliche Darstellung von Augenringen und Schattierungen'
     ],
-    'id08': ['Farbe der Wangenpartie ändert sich'],
-    'id09': ['Zähne ohne Details', 'Augenpartie wirkt unnatürlich'],
+    'id08': [
+      'Wechselnde Farbgebung im Wangenbereich während der Gesichtsbewegung'
+    ],
+    'id09': [
+      'Zähne erscheinen zu gleichmäßig ohne natürliche Unregelmäßigkeiten',
+      'Künstlich wirkende Augenpartie'
+    ],
     'id10': [
-      'Augenpartie wirkt unecht, vor allem bei dem Blick zur Seite',
-      'ganzes Gesicht wirkt zu glatt',
-      'teilweise unterschiedliche Wangenfarbe',
-      'Stirn deutlich dunkler als Augen- und Wangenpartie'
+      'Künstlich wirkende Augenpartie, besonders bei seitlichen Blickrichtungen',
+      'Insgesamt zu gleichmäßige Gesichtstextur ohne natürliche Variationen',
+      'Stellenweise Farbunterschiede im Wangenbereich',
+      'Deutlich dunklere Stirn im Vergleich zu Augen- und Wangenbereich'
     ],
     'id11': [
-      'Video wirkt sprunghaft',
-      'Oberlippenbart passt teilweise nicht zum restlichen Bart und verschwindet teilweise sogar',
-      'Mimik der Augen passt nicht zur Stirn',
-      'unnatürliches Blinzeln',
-      'Augenbrauen wechseln über den Videoverlauf ihre Farbe'
+      'Inkonsistente Darstellung des Oberlippenbarts mit teilweisem Verschwinden',
+      'Mimik der Augen passt nicht zur Stirnbewegung',
+      'Untypisches Blinzelmuster mit unregelmäßiger Häufigkeit',
+      'Farbliche Veränderungen der Augenbrauen im Verlauf des Videos'
     ],
   };
 }

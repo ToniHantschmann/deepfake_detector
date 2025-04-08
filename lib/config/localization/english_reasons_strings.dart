@@ -27,57 +27,59 @@ class EnglishDeepfakeReasonStrings implements DeepfakeReasonStrings {
 
   static const Map<String, List<String>> _videoReasons = {
     'id01': [
-      'Facial hair lacks details',
-      'Light reflections on the skin',
-      'Mouth movement appears artificial'
+      'Lack of detail in facial hair',
+      'Unnatural light reflections on the skin',
+      'Artificially appearing mouth movements when speaking'
     ],
     'id02': [
-      'Cheeks look too smooth',
-      'Eye area doesn\'t match the rest',
-      'Teeth look too smooth'
+      'Excessively smooth cheek area without natural texture',
+      'Color deviations of the eye area from the rest of the face',
+      'Teeth appear too uniform without natural irregularities'
     ],
     'id03': [
-      'Eye area looks unnatural',
-      'Facial hair appears blurry',
-      'Details and lighting of the nose look unnatural'
+      'Artificially appearing eye area',
+      'Lack of detail in facial hair',
+      'Unrealistic lighting in the nasal region'
     ],
     'id04': [
-      'Facial expressions look emotionless',
-      'Eyes and mouth area look unnatural',
-      'Transition from nose to eyebrows',
-      'Light reflections on the skin are blurry'
+      'Emotionless appearing facial expressions',
+      'Artificially appearing eye and mouth area',
+      'Unnatural transition from nose to eyebrows',
+      'Blurred light reflections on the skin surface'
     ],
     'id05': [
-      'Facial expressions appear emotionless',
-      'Facial hair lacks details',
-      'Unnatural blinking'
+      'Emotionless appearing facial expressions',
+      'Lack of detail in facial hair',
+      'Atypical blinking pattern with irregular frequency'
     ],
     'id06': [
-      'Mole not consistently the same',
-      'Mustache and transition to lower beard don\'t match',
-      'Skin color of cheeks and eye areas don\'t match the forehead',
-      'Lower teeth not visible'
+      'Mole changes appearance and partially position',
+      'Inconsistent representation between mustache and rest of the beard',
+      'Color inconsistencies between cheeks, eye area, and forehead',
+      'Lower row of teeth remains invisible when speaking'
     ],
     'id07': [
-      'When the head turns to the side: transition to background becomes blurry',
-      'Cheeks and forehead look too smooth',
-      'Eye area doesn\'t match the rest in color',
-      'Eye bags look unnatural'
+      'Blurred transitions to the background during lateral head rotations',
+      'Excessively smooth cheek and forehead areas without natural texture',
+      'Color deviations of the eye area from the rest of the face',
+      'Unnatural representation of eye circles and shadowing'
     ],
-    'id08': ['Cheek area color changes'],
-    'id09': ['Teeth without details', 'Eye area looks unnatural'],
+    'id08': ['Changing coloration in the cheek area during facial movement'],
+    'id09': [
+      'Teeth appear too uniform without natural irregularities',
+      'Artificially appearing eye area'
+    ],
     'id10': [
-      'Eye area looks fake, especially when looking to the side',
-      'Entire face looks too smooth',
-      'Partially different cheek colors',
-      'Forehead significantly darker than eye and cheek areas'
+      'Artificially appearing eye area, especially during lateral gaze directions',
+      'Overall too uniform facial texture without natural variations',
+      'Localized color differences in the cheek area',
+      'Significantly darker forehead compared to eye and cheek area'
     ],
     'id11': [
-      'Video appears jumpy',
-      'Mustache sometimes doesn\'t match the rest of the beard and sometimes even disappears',
-      'Eye expression doesn\'t match the forehead',
-      'Unnatural blinking',
-      'Eyebrows change color throughout the video'
+      'Inconsistent representation of the mustache with partial disappearance',
+      'Eye expressions do not match forehead movement',
+      'Atypical blinking pattern with irregular frequency',
+      'Color changes of the eyebrows throughout the video'
     ],
   };
 }
