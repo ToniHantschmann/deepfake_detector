@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
 import '../constants/overlay_types.dart';
-import '../widgets/common/language_selector.dart';
 import '../widgets/overlays/confidence_survey_overlay.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
@@ -65,13 +64,6 @@ class IntroductionScreen extends BaseGameScreen {
                   ),
                 ],
               ),
-            ),
-
-            // Language selector positioned in the top-right corner
-            Positioned(
-              top: 16.0,
-              right: 16.0,
-              child: const LanguageSelector(),
             ),
           ],
         ),
@@ -168,24 +160,47 @@ class IntroductionScreen extends BaseGameScreen {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          strings.subtitle,
-          style: AppConfig.textStyles.bodyLarge.copyWith(
-            fontSize: 28,
-            fontWeight: FontWeight.w500,
-            height: 1.3,
-          ),
-        ),
+        Text(strings.subtitle,
+            style: AppConfig.textStyles.h3.copyWith(fontSize: 36)),
         SizedBox(height: AppConfig.layout.spacingLarge),
-        Text(
-          strings.description,
-          style: AppConfig.textStyles.bodyMedium.copyWith(
-            fontSize: 22,
-            height: 1.4,
-          ),
-        ),
+        // Nummerierte Liste aus Konfiguration-Strings
+        ..._buildNumberedList(strings.steps),
       ],
     );
+  }
+
+  // Hilfsmethode zum Erstellen der nummerierten Liste
+  List<Widget> _buildNumberedList(List<String> items) {
+    return items.asMap().entries.map((entry) {
+      final index = entry.key;
+      final text = entry.value;
+      return Padding(
+        padding: EdgeInsets.only(bottom: AppConfig.layout.spacingMedium),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "${index + 1}. ",
+              style: AppConfig.textStyles.bodyMedium.copyWith(
+                fontSize: 28,
+                height: 1.4,
+                fontWeight: FontWeight.bold,
+                color: AppConfig.colors.primary,
+              ),
+            ),
+            Expanded(
+              child: Text(
+                text,
+                style: AppConfig.textStyles.bodyMedium.copyWith(
+                  fontSize: 28,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   Widget _buildQuickStartButton(
