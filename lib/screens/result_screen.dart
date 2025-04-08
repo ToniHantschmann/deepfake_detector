@@ -8,6 +8,7 @@ import '../config/app_config.dart';
 import '../config/localization/string_types.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlays/video_player_overlay.dart';
+import '../widgets/overlays/result_feedback_overlay.dart';
 import '../constants/overlay_types.dart';
 import '../widgets/tutorial/video_tap_tutorial.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,12 +67,44 @@ class _ResultScreenContent extends StatefulWidget {
 class _ResultScreenContentState extends State<_ResultScreenContent> {
   // Lokaler Override, der das Tutorial sofort ausblenden kann
   bool _showTutorialOverride = true;
+  // Track if we've shown the result feedback overlay
+  bool _hasShownResultFeedback = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Show the result feedback overlay when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_hasShownResultFeedback && mounted) {
+        _showResultFeedback();
+      }
+    });
+  }
 
   void _handleTutorialComplete() {
     setState(() {
       _showTutorialOverride = false;
     });
     widget.onTutorialComplete();
+  }
+
+  void _showResultFeedback() {
+    setState(() {
+      _hasShownResultFeedback = true;
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (BuildContext dialogContext) {
+        return ResultFeedbackOverlay(
+          isCorrect: widget.state.isCorrectGuess!,
+          strings: widget.strings,
+          onDismiss: () => Navigator.of(dialogContext).pop(),
+        );
+      },
+    );
   }
 
   @override
@@ -120,68 +153,58 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
                     return Stack(
                       children: [
                         // Statischer Inhalt in einer begrenzten Box
-                        Container(
+                        SizedBox(
                           width: constraints.maxWidth,
                           height: constraints.maxHeight,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Header Section
-                              Padding(
-                                padding: EdgeInsets.all(
-                                    AppConfig.layout.screenPaddingHorizontal),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Ergebnis-Header
-                                    _buildResultHeader(
-                                        widget.state.isCorrectGuess!,
-                                        widget.strings),
-                                  ],
-                                ),
-                              ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Header-Bereich mit Padding
+                                SizedBox(height: AppConfig.layout.spacingLarge),
 
-                              // Videos Section mit fester Höhe von 50% im horizontalen Layout
-                              Container(
-                                height: isHorizontalLayout
-                                    ? constraints.maxHeight * 0.5
-                                    : // 50% im horizontalen Layout
-                                    constraints.maxHeight *
-                                        0.45, // 45% im vertikalen Layout
-                                padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      AppConfig.layout.screenPaddingHorizontal,
+                                // Videos Section - Feste Höhe für die Videos
+                                Container(
+                                  height: isHorizontalLayout
+                                      ? constraints.maxHeight * 0.5
+                                      : constraints.maxHeight * 0.45,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: AppConfig
+                                        .layout.screenPaddingHorizontal,
+                                  ),
+                                  child: counterpartVideo != null
+                                      ? isHorizontalLayout
+                                          ? _buildHorizontalVideoComparison(
+                                              shownVideo,
+                                              counterpartVideo,
+                                              widget.state.isCorrectGuess!,
+                                              widget.state.userGuessIsDeepfake!,
+                                              context,
+                                              widget.strings)
+                                          : _buildVerticalVideoComparison(
+                                              shownVideo,
+                                              counterpartVideo,
+                                              widget.state.isCorrectGuess!,
+                                              widget.state.userGuessIsDeepfake!,
+                                              context,
+                                              widget.strings)
+                                      : Container(), // Fallback wenn kein counterpartVideo
                                 ),
-                                child: counterpartVideo != null
-                                    ? isHorizontalLayout
-                                        ? _buildHorizontalVideoComparison(
-                                            shownVideo,
-                                            counterpartVideo,
-                                            widget.state.isCorrectGuess!,
-                                            widget.state.userGuessIsDeepfake!,
-                                            context,
-                                            widget.strings)
-                                        : _buildVerticalVideoComparison(
-                                            shownVideo,
-                                            counterpartVideo,
-                                            widget.state.isCorrectGuess!,
-                                            widget.state.userGuessIsDeepfake!,
-                                            context,
-                                            widget.strings)
-                                    : Container(), // Fallback wenn kein counterpartVideo
-                              ),
 
-                              // Indikatoren Section
-                              if (hasDeepfakeIndicators)
-                                Expanded(
-                                  child: Padding(
+                                // Indikatoren Section - Jetzt NICHT mehr in einem Expanded
+                                if (hasDeepfakeIndicators)
+                                  Padding(
                                     padding: EdgeInsets.all(AppConfig
                                         .layout.screenPaddingHorizontal),
                                     child: _buildDeepfakeIndicatorsCard(
                                         deepfakeVideo, widget.strings, context),
                                   ),
-                                ),
-                            ],
+
+                                // Zusätzlicher Platz am Ende, damit der Inhalt nicht von den Navigationspfeilen verdeckt wird
+                                SizedBox(
+                                    height: AppConfig.layout.spacingXLarge * 2),
+                              ],
+                            ),
                           ),
                         ),
 
@@ -282,7 +305,7 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
     );
   }
 
-  // Neue Card für die Deepfake-Indikatoren
+  // Card für die Deepfake-Indikatoren
   Widget _buildDeepfakeIndicatorsCard(
       Video deepfakeVideo, ResultScreenStrings strings, BuildContext context) {
     // Die lokalisierten Gründe aus dem AppConfig holen
@@ -292,7 +315,7 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
 
     return Container(
       width: double.infinity, // Volle Breite
-      height: double.infinity, // Volle verfügbare Höhe
+      // Entfernt: height: double.infinity - Die Höhe wird jetzt durch den Inhalt bestimmt
       decoration: BoxDecoration(
         color: AppConfig.colors.backgroundLight,
         borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
@@ -310,6 +333,7 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, // Wichtig: nur soviel Platz wie nötig
         children: [
           // Header mit Titel
           Container(
@@ -339,50 +363,48 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
             ),
           ),
 
-          // Liste der Indikatoren
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(AppConfig.layout.spacingMedium),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: localizedReasons.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final reasonText = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: AppConfig.colors.warning,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${index + 1}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+          // Liste der Indikatoren - nicht mehr in Expanded
+          Padding(
+            padding: EdgeInsets.all(AppConfig.layout.spacingMedium),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: localizedReasons.asMap().entries.map((entry) {
+                final index = entry.key;
+                final reasonText = entry.value;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: AppConfig.colors.warning,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            reasonText,
-                            style: AppConfig.textStyles.bodyMedium,
-                          ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          reasonText,
+                          style: AppConfig.textStyles.bodyMedium,
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -408,35 +430,6 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
           ),
         );
       },
-    );
-  }
-
-  // Ergebnis-Header
-  Widget _buildResultHeader(bool isCorrect, ResultScreenStrings strings) {
-    return Container(
-      padding: EdgeInsets.all(AppConfig.layout.spacingMedium),
-      decoration: BoxDecoration(
-        color:
-            isCorrect ? AppConfig.colors.success : AppConfig.colors.wrongAnswer,
-        borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            isCorrect ? Icons.check_circle : Icons.error,
-            color: AppConfig.colors.textPrimary,
-            size: 36,
-          ),
-          SizedBox(width: AppConfig.layout.spacingMedium),
-          Expanded(
-            child: Text(
-              isCorrect ? strings.correctTitle : strings.wrongTitle,
-              style: AppConfig.textStyles.h3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

@@ -110,6 +110,8 @@ class GermanResultScreenStrings implements ResultScreenStrings {
   @override
   String get wrongTitle => 'Falsche Entscheidung!';
   @override
+  String get tapToContinue => 'Tippe, um fortzufahren';
+  @override
   String get explanationTitle => 'Warum dies ein Deepfake war:';
   @override
   String get reasonPrefix => 'Grund';

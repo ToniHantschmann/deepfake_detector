@@ -64,6 +64,7 @@ abstract class ResultScreenStrings {
 
   String get correctTitle;
   String get wrongTitle;
+  String get tapToContinue;
   String get explanationTitle;
   String get reasonPrefix;
   String get correctFormat;

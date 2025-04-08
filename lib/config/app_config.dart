@@ -191,7 +191,7 @@ class AppTiming {
   final Duration videoBufferingTimeout = const Duration(seconds: 10);
   final Duration loadingTimeout = const Duration(seconds: 5);
   final Duration overlayTimeout = const Duration(seconds: 30);
-  final Duration pinDisplayTimeout = const Duration(seconds: 5);
+  final Duration countdownTimeout = const Duration(seconds: 10);
 
   // Delays
   final Duration pinDisplayDuration = const Duration(seconds: 3);

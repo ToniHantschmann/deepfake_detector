@@ -110,6 +110,8 @@ class EnglishResultScreenStrings implements ResultScreenStrings {
   @override
   String get wrongTitle => 'Wrong decision!';
   @override
+  String get tapToContinue => 'Tap to continue';
+  @override
   String get explanationTitle => 'Why this was a deepfake:';
   @override
   String get reasonPrefix => 'Reason';

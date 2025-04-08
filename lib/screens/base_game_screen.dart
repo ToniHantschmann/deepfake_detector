@@ -146,4 +146,27 @@ abstract class BaseGameScreen extends StatelessWidget {
   void completeTutorial(BuildContext context, OverlayType tutorialType) {
     dispatchGameEvent(context, OverlayCompleted(tutorialType));
   }
+
+  void makeDeepfakeSelection(BuildContext context, bool isDeepfake) {
+    final bloc = context.read<GameBloc>();
+    // First set the selection to update UI
+    dispatchGameEvent(context, UpdateSelectedVideo(isDeepfake));
+
+    // Short delay to show selection before processing
+    Future.delayed(const Duration(milliseconds: 200), () {
+      // Record decision first
+      bloc.add(MakeDeepfakeDecision(isDeepfake));
+
+      // Wait for state to be updated before navigating
+      bloc.stream
+          .firstWhere((state) =>
+              state.isCorrectGuess != null &&
+              state.userGuessIsDeepfake == isDeepfake)
+          .then((_) {
+        // Now that we're sure the state is updated, navigate
+        bloc.add(MakeDeepfakeDecision(isDeepfake));
+        bloc.add(const NextScreen());
+      });
+    });
+  }
 }

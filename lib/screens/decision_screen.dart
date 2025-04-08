@@ -194,17 +194,7 @@ class DecisionScreen extends BaseGameScreen {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-          // First set the selection
-          dispatchGameEvent(context, UpdateSelectedVideo(isDeepfake));
-
-          // Short delay to show selection before navigating
-          Future.delayed(Duration(milliseconds: 200), () {
-            // Record decision and navigate
-            dispatchGameEvent(context, MakeDeepfakeDecision(isDeepfake));
-            handleNextNavigation(context);
-          });
-        },
+        onTap: () => makeDeepfakeSelection(context, isDeepfake),
         borderRadius: BorderRadius.circular(64),
         child: Container(
           padding: EdgeInsets.symmetric(
