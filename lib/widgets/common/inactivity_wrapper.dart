@@ -9,12 +9,10 @@ import '../overlays/countdown_overlay.dart';
 
 class InactivityWrapper extends StatefulWidget {
   final Widget child;
-  final Duration timeout;
 
   const InactivityWrapper({
     Key? key,
     required this.child,
-    this.timeout = const Duration(seconds: 30),
   }) : super(key: key);
 
   @override
@@ -25,7 +23,13 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
   Timer? _timer;
   Timer? _countdownTimer;
   bool _isShowingCountdown = false;
-  int _countdownSeconds = 10; // 10 seconds countdown
+
+  // Configuration values from AppConfig
+  final Duration _timeout = AppConfig.timing.inactivityTimeout;
+  final int _countdownDuration = AppConfig.timing.countdownTimeout.inSeconds;
+
+  // Current countdown value (mutable)
+  late int _currentCountdown;
 
   @override
   void initState() {
@@ -42,7 +46,7 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
 
   void _startTimer() {
     _timer?.cancel();
-    _timer = Timer(widget.timeout, _onInactivityDetected);
+    _timer = Timer(_timeout, _onInactivityDetected);
   }
 
   void _resetTimers() {
@@ -53,7 +57,6 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
         _isShowingCountdown = false;
       });
     }
-    _countdownSeconds = 10;
     _startTimer();
   }
 
@@ -72,6 +75,8 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
     if (mounted) {
       setState(() {
         _isShowingCountdown = true;
+        // Initialize current countdown from the config value
+        _currentCountdown = _countdownDuration;
         _startCountdown();
       });
     }
@@ -82,8 +87,8 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
-          if (_countdownSeconds > 1) {
-            _countdownSeconds--;
+          if (_currentCountdown > 1) {
+            _currentCountdown--;
           } else {
             _countdownTimer?.cancel();
             _isShowingCountdown = false;
@@ -103,14 +108,11 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
   void _onUserInteraction() {
     // If we're showing the countdown, cancel it
     if (_isShowingCountdown) {
-      setState(() {
-        _isShowingCountdown = false;
-        _countdownTimer?.cancel();
-      });
+      _resetTimers();
+    } else {
+      // Just restart the inactivity timer if countdown is not showing
+      _startTimer();
     }
-
-    // Restart the inactivity timer
-    _startTimer();
   }
 
   @override
@@ -124,14 +126,8 @@ class _InactivityWrapperState extends State<InactivityWrapper> {
           widget.child,
           if (_isShowingCountdown)
             CountdownOverlay(
-              secondsRemaining: _countdownSeconds,
-              onContinue: () {
-                setState(() {
-                  _isShowingCountdown = false;
-                  _countdownTimer?.cancel();
-                  _startTimer();
-                });
-              },
+              secondsRemaining: _currentCountdown,
+              onContinue: () => _resetTimers(),
             ),
         ],
       ),
