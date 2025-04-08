@@ -58,6 +58,14 @@ class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
   String get loginButton => 'Mit PIN einloggen';
   @override
   String get challenge => 'Erkennst du den Unterschied?';
+  @override
+  List<String> get steps => const [
+        "Schaue das Video an",
+        "Entscheide dich ob es ein Deepfake Video ist",
+        "Vergleiche das echte und das Deepfake Video nochmal und entdecke die Unterschiede",
+        "Lerne Strategien um in Zukunft besser unterscheiden zu können",
+        "Schaue an wie du dich geschlagen hast"
+      ];
 }
 
 class GermanVideoScreenStrings implements VideoScreenStrings {
@@ -112,7 +120,10 @@ class GermanResultScreenStrings implements ResultScreenStrings {
   @override
   String get tapToContinue => 'Tippe, um fortzufahren';
   @override
-  String get explanationTitle => 'Warum dies ein Deepfake war:';
+  String get explanationTitleDeepfake => 'Warum dies ein Deepfake war:';
+  @override
+  String get explanationTitleReal =>
+      'Woran man das Deepfake Video erkennen kann:';
   @override
   String get reasonPrefix => 'Grund';
 

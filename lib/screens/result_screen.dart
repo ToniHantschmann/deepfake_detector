@@ -313,9 +313,14 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
         .deepfakeReasons
         .getReasonsForVideo(deepfakeVideo.pairId);
 
+    // Bestimme den Titel basierend auf dem angezeigten Video
+    final isShownVideoDeepfake = widget.state.videos.first.isDeepfake;
+    final explanationTitle = isShownVideoDeepfake
+        ? strings.explanationTitleDeepfake
+        : strings.explanationTitleReal;
+
     return Container(
       width: double.infinity, // Volle Breite
-      // Entfernt: height: double.infinity - Die Höhe wird jetzt durch den Inhalt bestimmt
       decoration: BoxDecoration(
         color: AppConfig.colors.backgroundLight,
         borderRadius: BorderRadius.circular(AppConfig.layout.cardRadius),
@@ -352,11 +357,13 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
                   size: 28,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  strings.explanationTitle,
-                  style: AppConfig.textStyles.bodyLarge.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppConfig.colors.warning,
+                Expanded(
+                  child: Text(
+                    explanationTitle, // Hier wird der dynamische Titel verwendet
+                    style: AppConfig.textStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppConfig.colors.warning,
+                    ),
                   ),
                 ),
               ],

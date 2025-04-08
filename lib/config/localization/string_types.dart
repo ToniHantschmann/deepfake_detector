@@ -31,6 +31,7 @@ abstract class IntroductionScreenStrings {
   String get startButton;
   String get loginButton;
   String get challenge;
+  List<String> get steps;
 }
 
 abstract class VideoScreenStrings {
@@ -65,7 +66,8 @@ abstract class ResultScreenStrings {
   String get correctTitle;
   String get wrongTitle;
   String get tapToContinue;
-  String get explanationTitle;
+  String get explanationTitleDeepfake;
+  String get explanationTitleReal;
   String get reasonPrefix;
   String get correctFormat;
   String get nextButton;
