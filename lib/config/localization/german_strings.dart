@@ -168,31 +168,22 @@ class GermanStatisticsScreenStrings implements StatisticsScreenStrings {
 
   @override
   String get title => 'Deine Statistiken';
-
   @override
   String get subtitle => 'Übersicht über deine Leistung';
-
   @override
   String get correctAnswers => 'Korrekte Antworten:';
-
   @override
   String get viewedPairsTitle => 'Gesehene Videos';
-
   @override
   String get progressLabel => 'Fortschritt:';
-
   @override
   String get nextGameButton => 'Nächstes Spiel';
-
   @override
   String get saveGameButton => 'Spiel speichern';
-
   @override
   String get statisticsOf => 'von';
-
   @override
   String get currentRun => 'Aktueller Durchgang';
-
   @override
   String get overallStats => 'Gesamtstatistik';
 }
@@ -346,17 +337,13 @@ class GermanSurveyStrings implements SurveyStrings {
 
   @override
   String get confidenceTitle => 'Selbsteinschätzung';
-
   @override
   String get confidenceQuestion =>
       'Wie zuversichtlich sind Sie, Deepfake-Videos erkennen zu können?';
-
   @override
   String get confidenceLow => 'Sehr unsicher';
-
   @override
   String get confidenceHigh => 'Sehr zuversichtlich';
-
   @override
   String get continueButton => 'Weiter';
 }
@@ -366,11 +353,9 @@ class GermanInactivityStrings implements InactivityStrings {
 
   @override
   String get inactivityTitle => 'Inaktivität erkannt';
-
   @override
   String get inactivityMessage =>
       'Das Spiel wird in {seconds} Sekunden zurückgesetzt.';
-
   @override
   String get continueButton => 'Weitermachen';
 }

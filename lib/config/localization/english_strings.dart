@@ -165,31 +165,22 @@ class EnglishStatisticsScreenStrings implements StatisticsScreenStrings {
 
   @override
   String get title => 'Your Statistics';
-
   @override
   String get subtitle => 'Overview of your performance';
-
   @override
   String get correctAnswers => 'Correct answers:';
-
   @override
   String get viewedPairsTitle => 'Viewed Videos';
-
   @override
   String get progressLabel => 'Progress:';
-
   @override
   String get nextGameButton => 'Next Game';
-
   @override
   String get saveGameButton => 'Save Game';
-
   @override
   String get statisticsOf => 'of';
-
   @override
   String get currentRun => 'Current Run';
-
   @override
   String get overallStats => 'Overall Statistics';
 }
