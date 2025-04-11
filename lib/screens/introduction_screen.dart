@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
 import '../constants/overlay_types.dart';
 import '../widgets/overlays/confidence_survey_overlay.dart';
+import '../widgets/common/language_selector.dart'; // Import the language selector widget
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
@@ -65,6 +66,13 @@ class IntroductionScreen extends BaseGameScreen {
                 ],
               ),
             ),
+
+            // Add Language Selector to the top right corner
+            Positioned(
+              top: 16.0,
+              right: 16.0,
+              child: const LanguageSelector(),
+            ),
           ],
         ),
       ),
@@ -73,7 +81,7 @@ class IntroductionScreen extends BaseGameScreen {
         icon: const Icon(Icons.login),
         label: Text(
           strings.loginButton,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18, // Größere Schrift
           ),
@@ -102,7 +110,7 @@ class IntroductionScreen extends BaseGameScreen {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 32.0),
+          margin: const EdgeInsets.symmetric(horizontal: 32.0),
           child: AspectRatio(
             aspectRatio: AppConfig.video.minAspectRatio,
             child: PulsingHighlight(
@@ -135,7 +143,7 @@ class IntroductionScreen extends BaseGameScreen {
         ),
         SizedBox(height: AppConfig.layout.spacingMedium),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 32.0),
+          margin: const EdgeInsets.symmetric(horizontal: 32.0),
           width: double.infinity,
           padding: EdgeInsets.symmetric(
             vertical: AppConfig.layout.spacingMedium,
