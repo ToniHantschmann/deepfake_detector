@@ -1,6 +1,5 @@
 import 'package:deepfake_detector/exceptions/app_exceptions.dart';
 import 'package:deepfake_detector/storage/storage.dart';
-import 'package:deepfake_detector/models/user_model.dart';
 import 'package:deepfake_detector/utils/pin_generator_service.dart';
 import 'package:flutter/foundation.dart';
 

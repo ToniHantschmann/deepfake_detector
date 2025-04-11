@@ -1,5 +1,3 @@
-// lib/config/localization/english_strings.dart
-
 import 'string_types.dart';
 import 'english_reasons_strings.dart';
 

@@ -1,5 +1,3 @@
-// lib/screens/decision_screen.dart
-
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';

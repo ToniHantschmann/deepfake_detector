@@ -1,5 +1,3 @@
-// lib/config/localization/german_strings.dart
-
 import 'string_types.dart';
 import 'german_reasons_strings.dart';
 

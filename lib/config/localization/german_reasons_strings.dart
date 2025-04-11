@@ -1,5 +1,3 @@
-// lib/config/localization/german_reason_strings.dart
-
 import 'string_types.dart';
 
 class GermanDeepfakeReasonStrings implements DeepfakeReasonStrings {

@@ -1,15 +1,11 @@
 import 'dart:math';
-
 import 'package:deepfake_detector/constants/overlay_types.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/foundation.dart';
 import '../../repositories/video_repository.dart';
 import '../../repositories/statistics_repository.dart';
 import '../../repositories/user_repository.dart';
 import '../../repositories/internal_statistics_repository.dart';
-
 import '../../models/statistics_model.dart';
-import '../../exceptions/app_exceptions.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 

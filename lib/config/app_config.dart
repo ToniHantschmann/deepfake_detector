@@ -1,5 +1,3 @@
-// lib/config/app_config.dart
-
 import 'package:flutter/material.dart';
 import 'package:deepfake_detector/config/localization/app_locale.dart';
 import 'package:deepfake_detector/config/localization/english_strings.dart';
@@ -25,7 +23,6 @@ class AppConfig {
       case AppLocale.de:
         return const GermanStrings();
       case AppLocale.en:
-      default:
         return const EnglishStrings();
     }
   }

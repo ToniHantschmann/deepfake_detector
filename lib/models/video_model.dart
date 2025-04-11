@@ -1,4 +1,3 @@
-// lib/models/video_model.dart
 class Video {
   final String id;
   final String videoUrl;

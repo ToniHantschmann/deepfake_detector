@@ -1,5 +1,3 @@
-// lib/config/localization/string_types.dart
-
 abstract class AppStrings {
   const AppStrings();
 

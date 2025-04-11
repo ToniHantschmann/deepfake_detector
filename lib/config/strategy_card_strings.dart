@@ -1,5 +1,3 @@
-// lib/config/app_config.dart
-
 class StrategyCardStrings {
   const StrategyCardStrings();
 
