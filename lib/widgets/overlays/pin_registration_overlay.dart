@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../blocs/game/game_bloc.dart';
-import '../../blocs/game/game_event.dart';
 import '../../blocs/game/game_language_extension.dart';
 import '../../config/app_config.dart';
 import '../../config/localization/string_types.dart';
@@ -11,11 +8,13 @@ import '../../config/localization/string_types.dart';
 class PinRegistrationOverlay extends StatefulWidget {
   final String pin;
   final VoidCallback onClose;
+  final VoidCallback onRestart;
 
   const PinRegistrationOverlay({
     Key? key,
     required this.pin,
     required this.onClose,
+    required this.onRestart,
   }) : super(key: key);
 
   @override
@@ -112,7 +111,10 @@ class _PinRegistrationOverlayState extends State<PinRegistrationOverlay> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: widget.onClose,
+        onPressed: () {
+          widget.onClose();
+          widget.onRestart();
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppConfig.colors.secondary,
           padding: EdgeInsets.symmetric(

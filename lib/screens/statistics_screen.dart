@@ -318,6 +318,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
         child: PinRegistrationOverlay(
           pin: pin,
           onClose: () => Navigator.of(dialogContext).pop(),
+          onRestart: () => _handleNextGame(context),
         ),
       ),
     );
