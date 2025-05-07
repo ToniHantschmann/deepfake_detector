@@ -1,0 +1,33 @@
+{
+    "name": "deepfake-detector",
+    "version": "1.0.0",
+    "description": "Deepfake Detector Application",
+    "main": "main.js",
+    "scripts": {
+      "start": "electron .",
+      "build": "electron-builder",
+      "pack-win": "electron-builder --win"
+    },
+    "author": "Anton Hantschmann",
+    "license": "MIT",
+    "devDependencies": {
+      "electron": "^25.0.0",
+      "electron-builder": "^24.0.0"
+    },
+    "build": {
+      "appId": "com.hantschmann.deepfakedetector",
+      "productName": "Deepfake Detector",
+      "directories": {
+        "output": "dist"
+      },
+      "files": [
+        "!dist/**/*",
+        "!build/**/*",
+        "**/*"
+      ],
+      "win": {
+        "target": "nsis",
+        "icon": "resources/icon.ico"
+      }
+    }
+  }

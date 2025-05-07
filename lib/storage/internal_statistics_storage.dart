@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:universal_html/html.dart' show window;
 import '../exceptions/app_exceptions.dart';
 import '../models/internal_statistics_model.dart';
 
@@ -13,6 +14,9 @@ class InternalStatisticsStorage {
   late Box _box;
   bool _initialized = false;
 
+  // Helper für Electron-Erkennung
+  bool get isElectron => kIsWeb && window.location.protocol == 'file:';
+
   static final InternalStatisticsStorage _instance =
       InternalStatisticsStorage._internal();
   factory InternalStatisticsStorage() => _instance;
@@ -21,6 +25,12 @@ class InternalStatisticsStorage {
   Future<void> initialize() async {
     if (_initialized) return;
     try {
+      // Für Electron angepasst
+      if (kIsWeb && isElectron) {
+        // Für Electron - gebe einen Speicherort an
+        await Hive.initFlutter('deepfake_detector_storage');
+      }
+
       _box = await Hive.openBox(_statsBoxName);
       _initialized = true;
     } catch (e) {

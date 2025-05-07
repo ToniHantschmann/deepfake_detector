@@ -97,5 +97,10 @@ deepfake_users.json
 !web/assets/videos/.gitkeep
 !web/assets/thumbnails/.gitkeep
 
-# Web specific files
+# Electron files
+electron-deepfake-detector/dist/*
+electron-deepfake-detector/web/*
+electron-deepfake-detector/node_modules/*
+electron-deepfake-detector/package-lock.json
+
 

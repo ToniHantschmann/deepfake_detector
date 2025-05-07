@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'dart:js' as js;
+import 'dart:html' as html;
 import '../storage/internal_statistics_storage.dart';
 import '../exceptions/app_exceptions.dart';
 import '../models/internal_statistics_model.dart';
-import 'dart:js' as js;
-import 'dart:html' as html;
 
 class InternalStatisticsRepository {
   InternalStatisticsStorage? _storage;
@@ -290,55 +290,107 @@ class InternalStatisticsRepository {
   }
 
   void registerConsoleCommands() {
-    // Bestehende Download-Funktion
-    js.context['getDeepfakeStats'] = () async {
-      final stats = await getFormattedStatistics();
-      final jsonString = JsonEncoder.withIndent('  ').convert(stats);
+    // Prüfe, ob wir in Electron laufen
+    bool isElectron = kIsWeb && _isElectronEnvironment();
 
-      final blob = html.Blob([jsonString], 'text/plain');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-
-      final anchor = html.AnchorElement()
-        ..href = url
-        ..download = 'deepfake_stats_$timestamp.json'
-        ..style.display = 'none';
-
-      html.document.body?.children.add(anchor);
-      anchor.click();
-      html.document.body?.children.remove(anchor);
-      html.Url.revokeObjectUrl(url);
-    };
-
-    // Neue Reset-Funktion
-    js.context['resetDeepfakeStats'] = () async {
-      try {
-        await clear();
-        print('Deepfake statistics have been reset successfully.');
-
-        // Optional: Zeige aktuelle (leere) Statistiken
-        final newStats = await getFormattedStatistics();
-        print('Current statistics:');
-        print(JsonEncoder.withIndent('  ').convert(newStats));
-
-        return true;
-      } catch (e) {
-        print('Error resetting deepfake statistics: $e');
-        return false;
-      }
-    };
-
-    // Hilfsfunktion zum Anzeigen der aktuellen Statistiken
-    js.context['showDeepfakeStats'] = () async {
-      try {
+    if (!isElectron) {
+      // Standard Web-Implementierung
+      js.context['getDeepfakeStats'] = () async {
         final stats = await getFormattedStatistics();
-        print(JsonEncoder.withIndent('  ').convert(stats));
-        return true;
-      } catch (e) {
-        print('Error showing deepfake statistics: $e');
-        return false;
-      }
-    };
+        final jsonString = const JsonEncoder.withIndent('  ').convert(stats);
+
+        final blob = html.Blob([jsonString], 'text/plain');
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+
+        final anchor = html.AnchorElement()
+          ..href = url
+          ..download = 'deepfake_stats_$timestamp.json'
+          ..style.display = 'none';
+
+        html.document.body?.children.add(anchor);
+        anchor.click();
+        html.document.body?.children.remove(anchor);
+        html.Url.revokeObjectUrl(url);
+      };
+
+      js.context['resetDeepfakeStats'] = () async {
+        try {
+          await clear();
+          print('Deepfake statistics have been reset successfully.');
+
+          // Optional: Zeige aktuelle (leere) Statistiken
+          final newStats = await getFormattedStatistics();
+          print('Current statistics:');
+          print(const JsonEncoder.withIndent('  ').convert(newStats));
+
+          return true;
+        } catch (e) {
+          print('Error resetting deepfake statistics: $e');
+          return false;
+        }
+      };
+
+      js.context['showDeepfakeStats'] = () async {
+        try {
+          final stats = await getFormattedStatistics();
+          print(const JsonEncoder.withIndent('  ').convert(stats));
+          return true;
+        } catch (e) {
+          print('Error showing deepfake statistics: $e');
+          return false;
+        }
+      };
+    } else {
+      // Electron-spezifische Implementierung
+      js.context['getDeepfakeStats'] = () async {
+        try {
+          final stats = await getFormattedStatistics();
+          final jsonString = const JsonEncoder.withIndent('  ').convert(stats);
+
+          // Verwende Electron's IPC zum Speichern der Datei
+          js.context.callMethod('electronSaveFile', [
+            'deepfake_stats_${DateTime.now().toIso8601String().replaceAll(':', '-')}.json',
+            jsonString
+          ]);
+
+          return true;
+        } catch (e) {
+          print('Error exporting deepfake statistics: $e');
+          return false;
+        }
+      };
+
+      js.context['resetDeepfakeStats'] = () async {
+        try {
+          await clear();
+          print('Deepfake statistics have been reset successfully.');
+          return true;
+        } catch (e) {
+          print('Error resetting deepfake statistics: $e');
+          return false;
+        }
+      };
+
+      js.context['showDeepfakeStats'] = () async {
+        try {
+          final stats = await getFormattedStatistics();
+          print(const JsonEncoder.withIndent('  ').convert(stats));
+          return true;
+        } catch (e) {
+          print('Error showing deepfake statistics: $e');
+          return false;
+        }
+      };
+    }
+  }
+
+  bool _isElectronEnvironment() {
+    try {
+      return js.context.hasProperty('electron');
+    } catch (e) {
+      return false;
+    }
   }
 
   @visibleForTesting
