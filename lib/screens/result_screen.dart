@@ -553,19 +553,22 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
                 // Play-Button
                 Positioned(
                   bottom: 12,
-                  right: 12,
-                  child: InkWell(
-                    onTap: () => _showVideoOverlay(context, video),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppConfig.colors.primary.withOpacity(0.8),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 28,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: InkWell(
+                      onTap: () => _showVideoOverlay(context, video),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppConfig.colors.primary.withOpacity(0.8),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
                     ),
                   ),
