@@ -1,12 +1,13 @@
 {
     "name": "deepfake-detector",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Deepfake Detector Application",
     "main": "main.js",
     "scripts": {
       "start": "electron .",
       "build": "electron-builder",
-      "pack-win": "electron-builder --win"
+      "pack-win": "electron-builder --win",
+      "prepare" : "node ../prepare.js"
     },
     "author": "Anton Hantschmann",
     "license": "MIT",
@@ -21,13 +22,31 @@
         "output": "dist"
       },
       "files": [
-        "!dist/**/*",
-        "!build/**/*",
-        "**/*"
+        "!node_modules/**/*",
+        "!src/**/*",
+        "main.js",
+        "preload.js",
+        "package.json",
+        "web/**/*",
+        "resources/**/*"
       ],
-      "win": {
-        "target": "nsis",
-        "icon": "resources/icon.ico"
+      "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets"
       }
+    ],
+      "win": {
+  "target": "nsis",
+  "icon": "resources/icon.ico"
+  },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "runAfterFinish": false,
+      "uninstallDisplayName": "${productName} ${version}",
+      "deleteAppDataOnUninstall": true
+    }
     }
   }

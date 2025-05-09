@@ -3,11 +3,6 @@ const path = require('path');
 const fs = require('fs');
 const url = require('url');
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling
-// if (require('electron-squirrel-startup')) {
-//  app.quit();
-//}
-
 let mainWindow;
 
 function createWindow() {
@@ -19,49 +14,97 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false
+      // Sandbox ist standardmäßig aktiviert, daher keine explizite Angabe
     },
     title: "Deepfake Detector",
     icon: path.join(__dirname, 'resources/icon.ico')
   });
 
+  // Debugging aktivieren - später entfernen für Produktion
+  mainWindow.webContents.openDevTools();
+
+  // Log app path für Debugging
+  console.log('App path:', __dirname);
+  console.log('Preload path:', path.join(__dirname, 'preload.js'));
+
   // Load the Flutter web app
-  mainWindow.loadURL(url.format({
+  const startUrl = url.format({
     pathname: path.join(__dirname, 'web/index.html'),
     protocol: 'file:',
     slashes: true
-  }));
-
-  // Uncomment for development tools
-  // mainWindow.webContents.openDevTools();
+  });
+  console.log('Loading URL:', startUrl);
+  
+  mainWindow.loadURL(startUrl);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('Seite konnte nicht geladen werden:', errorDescription);
+  });
+  
+  
+  // Protokolliere die URL, die wir laden
+  console.log('Lade URL:', startUrl);
 }
 
 // Register file: protocol handler for Flutter web assets
 app.whenReady().then(() => {
+  // Verbesserte Protokollverarbeitung für file://
   protocol.registerFileProtocol('file', (request, callback) => {
-    const url = request.url.substr(7); /* all urls start with 'file://' */
-    callback({ path: path.normalize(`${__dirname}/${url}`) });
+    const filePath = request.url.replace('file://', '');
+    const decodedPath = decodeURI(filePath);
+    
+    // Debug-Ausgabe für wichtige Dateien
+    if (decodedPath.includes('flutter.js') || decodedPath.includes('main.dart.js')) {
+      console.log(`Kritische Datei angefordert: ${decodedPath}`);
+    }
+    
+    try {
+      return callback(decodedPath);
+    } catch (error) {
+      console.error(`Protokollfehler für ${decodedPath}:`, error);
+      return callback(404);
+    }
   });
   
   createWindow();
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+  
+  // Überprüfe das Web-Verzeichnis und flutter.js
+  const webDir = path.join(__dirname, 'web');
+  if (fs.existsSync(webDir)) {
+    console.log('Web-Verzeichnisinhalt:', fs.readdirSync(webDir));
+    
+    // Prüfe explizit auf flutter.js
+    const flutterJsPath = path.join(webDir, 'flutter.js');
+    if (fs.existsSync(flutterJsPath)) {
+      console.log('flutter.js existiert');
+    } else {
+      console.error('flutter.js fehlt!');
+    }
+  } else {
+    console.error('Web-Verzeichnis existiert nicht!');
   }
 });
 
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+// IPC Handler für Dateizugriffe
+ipcMain.handle('read-asset-file', async (event, filePath) => {
+  try {
+    const fullPath = path.join(__dirname, filePath);
+    console.log('Reading file from:', fullPath);
+    const content = fs.readFileSync(fullPath, 'utf8');
+    console.log(`File read success: ${filePath}, length: ${content.length}`);
+    return content;
+  } catch (error) {
+    console.error('Error reading file:', error);
+    return null;
   }
 });
 
+// IPC Handler für Datei speichern
 ipcMain.handle('save-file', async (event, args) => {
+  console.log('Saving file:', args.filename);
   const { filename, content } = args;
   
   const { filePath } = await dialog.showSaveDialog({
@@ -75,8 +118,22 @@ ipcMain.handle('save-file', async (event, args) => {
   
   if (filePath) {
     fs.writeFileSync(filePath, content);
+    console.log('File saved successfully:', filePath);
     return { success: true, filePath };
   }
   
+  console.log('File save cancelled');
   return { success: false };
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });

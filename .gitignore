@@ -99,7 +99,7 @@ deepfake_users.json
 
 # Electron files
 electron-deepfake-detector/dist/*
-electron-deepfake-detector/web/*
+
 electron-deepfake-detector/node_modules/*
 electron-deepfake-detector/package-lock.json
 

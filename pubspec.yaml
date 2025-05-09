@@ -70,8 +70,9 @@ flutter:
     - assets/videos/real/
     - assets/thumbnails/real/
     - assets/thumbnails/deepfake/
-    - assets/data/videos_db.json
+    - assets/data/
     - assets/screenshots/
+    - assets/images/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
