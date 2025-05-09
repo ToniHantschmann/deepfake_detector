@@ -35,7 +35,7 @@ class GermanDeepfakeReasonStrings implements DeepfakeReasonStrings {
     'id03': [
       'Künstlich wirkende Augenpartie',
       'Fehlende Details in der Gesichtsbehaarung',
-      'Unrealistische Beleuchtung im Nasenbereich??'
+      'verwaschen wirkende Gesichtskonturen'
     ],
     'id04': [
       'Emotionslos wirkende Mimik',
@@ -74,7 +74,7 @@ class GermanDeepfakeReasonStrings implements DeepfakeReasonStrings {
       'Deutlich dunklere Stirn im Vergleich zu Augen- und Wangenbereich'
     ],
     'id11': [
-      'Inkonsistente Darstellung des Oberlippenbarts mit teilweisem Verschwinden',
+      'Inkonsistente Darstellung des Oberlippenbarts, der teilweise verschwindet',
       'Mimik der Augen passt nicht zur Stirnbewegung',
       'Untypisches Blinzelmuster mit unregelmäßiger Häufigkeit',
       'Farbliche Veränderungen der Augenbrauen im Verlauf des Videos'

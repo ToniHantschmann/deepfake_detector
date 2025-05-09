@@ -39,7 +39,7 @@ class EnglishDeepfakeReasonStrings implements DeepfakeReasonStrings {
     'id03': [
       'Artificially appearing eye area',
       'Lack of detail in facial hair',
-      'Unrealistic lighting in the nasal region'
+      'Blurred facial contours'
     ],
     'id04': [
       'Emotionless appearing facial expressions',
@@ -76,7 +76,7 @@ class EnglishDeepfakeReasonStrings implements DeepfakeReasonStrings {
       'Significantly darker forehead compared to eye and cheek area'
     ],
     'id11': [
-      'Inconsistent representation of the mustache with partial disappearance',
+      'Inconsistent representation of the mustache, which partially disappears',
       'Eye expressions do not match forehead movement',
       'Atypical blinking pattern with irregular frequency',
       'Color changes of the eyebrows throughout the video'

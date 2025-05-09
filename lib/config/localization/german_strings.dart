@@ -60,7 +60,7 @@ class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
   List<String> get steps => const [
         "Schaue das Video an",
         "Entscheide dich ob es ein Deepfake Video ist",
-        "Vergleiche das echte und das Deepfake Video nochmal und entdecke die Unterschiede",
+        "Vergleiche das echte und das Deepfake Video nocheinmal und entdecke die Unterschiede",
         "Lerne Strategien um in Zukunft besser unterscheiden zu können",
         "Schaue an wie du dich geschlagen hast"
       ];
