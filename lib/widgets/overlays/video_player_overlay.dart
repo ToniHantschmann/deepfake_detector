@@ -1,9 +1,11 @@
 import 'package:deepfake_detector/config/localization/string_types.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import '../../config/localization/app_locale.dart';
 import '../../models/video_model.dart';
 import '../../config/app_config.dart';
+
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart' as media_kit;
 
 // Vereinfachte Komponente ohne eigene Overlay-Logik
 class VideoPlayerContent extends StatefulWidget {
@@ -23,7 +25,8 @@ class VideoPlayerContent extends StatefulWidget {
 }
 
 class _VideoPlayerContentState extends State<VideoPlayerContent> {
-  late VideoPlayerController _controller;
+  late final Player _player;
+  late final media_kit.VideoController _controller;
   bool _isInitialized = false;
   bool _isBuffering = false;
   Duration _position = Duration.zero;
@@ -32,41 +35,60 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
   @override
   void initState() {
     super.initState();
+    _player = Player();
+    _controller = media_kit.VideoController(_player);
     _initializeVideo();
   }
 
   Future<void> _initializeVideo() async {
     try {
-      _controller = VideoPlayerController.asset(widget.video.videoUrl);
-      await _controller.initialize();
-      _controller.addListener(_videoListener);
+      final videoUrl = widget.video.videoUrl;
+      await _player.open(Media('asset:///$videoUrl'));
+
+      _player.stream.position.listen((position) {
+        if (mounted) {
+          setState(() {
+            _position = position;
+          });
+        }
+      });
+
+      _player.stream.duration.listen((duration) {
+        if (mounted) {
+          setState(() {
+            _duration = duration;
+          });
+        }
+      });
+
+      _player.stream.buffering.listen((buffering) {
+        if (mounted) {
+          setState(() {
+            _isBuffering = buffering;
+          });
+        }
+      });
+
+      // Warten auf Initialisierung
+      await Future.delayed(const Duration(milliseconds: 500));
 
       if (mounted) {
         setState(() {
           _isInitialized = true;
-          _duration = _controller.value.duration;
+          _duration = _player.state.duration;
         });
+
         // Auto-play the video
-        _controller.play();
+        _player.play();
       }
     } catch (e) {
       debugPrint('Error initializing video: $e');
     }
   }
 
-  void _videoListener() {
-    if (!mounted) return;
-
-    setState(() {
-      _position = _controller.value.position;
-      _isBuffering = _controller.value.isBuffering;
-    });
-  }
-
   @override
   void dispose() {
-    _controller.removeListener(_videoListener);
-    _controller.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -194,7 +216,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
       alignment: Alignment.center,
       children: [
         // Actual video player
-        VideoPlayer(_controller),
+        media_kit.Video(controller: _controller),
 
         // Buffering indicator
         if (_isBuffering)
@@ -208,17 +230,17 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
             behavior: HitTestBehavior.opaque,
             onTap: () {
               setState(() {
-                if (_controller.value.isPlaying) {
-                  _controller.pause();
+                if (_player.state.playing) {
+                  _player.pause();
                 } else {
-                  _controller.play();
+                  _player.play();
                 }
               });
             },
             child: Container(
               color: Colors.transparent,
               child: AnimatedOpacity(
-                opacity: _controller.value.isPlaying ? 0.0 : 1.0,
+                opacity: _player.state.playing ? 0.0 : 1.0,
                 duration: const Duration(milliseconds: 200),
                 child: Center(
                   child: Container(
@@ -228,9 +250,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      _controller.value.isPlaying
-                          ? Icons.pause
-                          : Icons.play_arrow,
+                      _player.state.playing ? Icons.pause : Icons.play_arrow,
                       color: Colors.white,
                       size: 40,
                     ),
@@ -280,10 +300,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
                 min: 0,
                 max: _duration.inMilliseconds.toDouble(),
                 onChanged: (value) {
-                  setState(() {
-                    _position = Duration(milliseconds: value.toInt());
-                  });
-                  _controller.seekTo(_position);
+                  _player.seek(Duration(milliseconds: value.toInt()));
                 },
               ),
             ),
@@ -308,17 +325,17 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          _controller.value.isPlaying
+                          _player.state.playing
                               ? Icons.pause
                               : Icons.play_arrow,
                           color: AppConfig.colors.textPrimary,
                         ),
                         onPressed: () {
                           setState(() {
-                            if (_controller.value.isPlaying) {
-                              _controller.pause();
+                            if (_player.state.playing) {
+                              _player.pause();
                             } else {
-                              _controller.play();
+                              _player.play();
                             }
                           });
                         },
@@ -333,8 +350,8 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> {
                           color: AppConfig.colors.textPrimary,
                         ),
                         onPressed: () {
-                          _controller.seekTo(Duration.zero);
-                          _controller.play();
+                          _player.seek(Duration.zero);
+                          _player.play();
                         },
                         padding: const EdgeInsets.all(4),
                         constraints: const BoxConstraints(),

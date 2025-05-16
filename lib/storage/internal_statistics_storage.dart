@@ -1,10 +1,11 @@
 // internal_statistics_storage.dart
 
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../exceptions/app_exceptions.dart';
-import '../models/internal_statistics_model.dart';
+
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class InternalStatisticsStorage {
   static const String _statsBoxName = 'internal_statistics';
@@ -21,6 +22,18 @@ class InternalStatisticsStorage {
   Future<void> initialize() async {
     if (_initialized) return;
     try {
+      final directory = await getApplicationDocumentsDirectory();
+      final path = '${directory.path}/deepfake_detector';
+
+      // Ensure directory exists
+      final dir = Directory(path);
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+
+      // Initialize Hive with the specific path
+      Hive.init(path);
+
       _box = await Hive.openBox(_statsBoxName);
       _initialized = true;
     } catch (e) {

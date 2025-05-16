@@ -3,8 +3,9 @@ import 'package:flutter/foundation.dart';
 import '../storage/internal_statistics_storage.dart';
 import '../exceptions/app_exceptions.dart';
 import '../models/internal_statistics_model.dart';
-import 'dart:js' as js;
-import 'dart:html' as html;
+
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class InternalStatisticsRepository {
   InternalStatisticsStorage? _storage;
@@ -289,56 +290,26 @@ class InternalStatisticsRepository {
     }
   }
 
-  void registerConsoleCommands() {
-    // Bestehende Download-Funktion
-    js.context['getDeepfakeStats'] = () async {
+  // Diese Methode muss komplett überarbeitet werden, da sie JS-Interop verwendet
+  void registerDesktopCommands() {
+    // Statt Konsolen-Befehlen implementieren wir Desktop-Funktionalität
+    // z.B. über Tastenkürzel oder ein Admin-Menü
+    debugPrint(
+        'Desktop commands registered. Use the export menu option to download statistics.');
+
+    // Hier könnten später Tastaturkürzel oder System-Tray-Menü implementiert werden
+  }
+
+  Future<void> exportStatisticsToFile(String filePath) async {
+    try {
       final stats = await getFormattedStatistics();
-      final jsonString = JsonEncoder.withIndent('  ').convert(stats);
+      final jsonString = const JsonEncoder.withIndent('  ').convert(stats);
 
-      final blob = html.Blob([jsonString], 'text/plain');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-
-      final anchor = html.AnchorElement()
-        ..href = url
-        ..download = 'deepfake_stats_$timestamp.json'
-        ..style.display = 'none';
-
-      html.document.body?.children.add(anchor);
-      anchor.click();
-      html.document.body?.children.remove(anchor);
-      html.Url.revokeObjectUrl(url);
-    };
-
-    // Neue Reset-Funktion
-    js.context['resetDeepfakeStats'] = () async {
-      try {
-        await clear();
-        print('Deepfake statistics have been reset successfully.');
-
-        // Optional: Zeige aktuelle (leere) Statistiken
-        final newStats = await getFormattedStatistics();
-        print('Current statistics:');
-        print(JsonEncoder.withIndent('  ').convert(newStats));
-
-        return true;
-      } catch (e) {
-        print('Error resetting deepfake statistics: $e');
-        return false;
-      }
-    };
-
-    // Hilfsfunktion zum Anzeigen der aktuellen Statistiken
-    js.context['showDeepfakeStats'] = () async {
-      try {
-        final stats = await getFormattedStatistics();
-        print(JsonEncoder.withIndent('  ').convert(stats));
-        return true;
-      } catch (e) {
-        print('Error showing deepfake statistics: $e');
-        return false;
-      }
-    };
+      final file = File(filePath);
+      await file.writeAsString(jsonString);
+    } catch (e) {
+      throw RepositoryException('Failed to export statistics: $e');
+    }
   }
 
   @visibleForTesting

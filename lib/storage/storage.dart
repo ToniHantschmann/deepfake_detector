@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/foundation.dart';
-import 'package:universal_html/html.dart' show window;
 import '../exceptions/app_exceptions.dart';
 import '../models/statistics_model.dart';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class Storage {
   static const String statsFileName = 'deepfake_stats';
@@ -26,9 +28,8 @@ class Storage {
   Future<void> _init() async {
     if (!_initialized) {
       try {
-        await Hive.initFlutter();
-        //await Hive.deleteBoxFromDisk(usersFileName);
-        //await Hive.deleteBoxFromDisk(statsFileName);
+        final appDocDirectory = await getApplicationDocumentsDirectory();
+        Hive.init(appDocDirectory.path);
         _statsBox = await Hive.openBox(statsFileName);
         _usersBox = await Hive.openBox(usersFileName);
         _initialized = true;
@@ -78,9 +79,7 @@ class Storage {
 
   Future<Map<String, dynamic>> getVideos() async {
     try {
-      final String jsonString = await window
-          .fetch(videosFileName)
-          .then((response) => response.text());
+      final String jsonString = await rootBundle.loadString(videosFileName);
       return json.decode(jsonString) as Map<String, dynamic>;
     } catch (e) {
       throw StorageException('Failed to read asset file $videosFileName: $e');

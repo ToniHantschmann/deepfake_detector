@@ -1,6 +1,5 @@
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'dart:async';
 import '../config/localization/string_types.dart';
 import '../models/video_model.dart';
@@ -9,6 +8,12 @@ import 'base_game_screen.dart';
 import '../widgets/common/navigaton_buttons.dart';
 import '../widgets/common/progress_bar.dart';
 import '../config/app_config.dart';
+
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart' as media_kit;
 
 class VideoScreen extends BaseGameScreen {
   final Video video;
@@ -60,7 +65,8 @@ class _VideoScreenContent extends StatefulWidget {
 }
 
 class _VideoScreenContentState extends State<_VideoScreenContent> {
-  late VideoPlayerController _controller;
+  late final Player _player;
+  late final media_kit.VideoController _controller;
   bool _isInitialized = false;
   bool _isBuffering = false;
   Duration _position = Duration.zero;
@@ -70,20 +76,49 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   @override
   void initState() {
     super.initState();
+    _player = Player();
+    _controller = media_kit.VideoController(_player);
     _initializeVideo();
   }
 
   Future<void> _initializeVideo() async {
     try {
-      _controller = VideoPlayerController.asset(widget.video.videoUrl);
-      await _controller.initialize();
-      _controller.addListener(_videoListener);
-      await _controller.seekTo(Duration.zero);
+      // Asset-Pfad für media_kit
+      final videoUrl = widget.video.videoUrl;
+      await _player.open(Media('asset:///$videoUrl'));
+
+      // Player-Events abonnieren
+      _player.stream.position.listen((position) {
+        if (mounted) {
+          setState(() {
+            _position = position;
+          });
+        }
+      });
+
+      _player.stream.duration.listen((duration) {
+        if (mounted) {
+          setState(() {
+            _duration = duration;
+          });
+        }
+      });
+
+      _player.stream.buffering.listen((buffering) {
+        if (mounted) {
+          setState(() {
+            _isBuffering = buffering;
+          });
+        }
+      });
+
+      // Warten auf Initialisierung
+      await Future.delayed(const Duration(milliseconds: 500));
 
       if (mounted) {
         setState(() {
           _isInitialized = true;
-          _duration = _controller.value.duration;
+          _duration = _player.state.duration;
         });
         _startAutoPlayTimer();
       }
@@ -95,18 +130,9 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   void _startAutoPlayTimer() {
     _autoPlayTimer?.cancel();
     _autoPlayTimer = Timer(const Duration(seconds: 1), () {
-      if (mounted && _controller.value.isInitialized) {
-        _controller.play();
+      if (mounted && _isInitialized) {
+        _player.play();
       }
-    });
-  }
-
-  void _videoListener() {
-    if (!mounted) return;
-
-    setState(() {
-      _position = _controller.value.position;
-      _isBuffering = _controller.value.isBuffering;
     });
   }
 
@@ -114,7 +140,10 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   void didUpdateWidget(_VideoScreenContent oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.video.videoUrl != widget.video.videoUrl) {
-      _controller.dispose();
+      // Video wechseln
+      _player.dispose();
+      _player = Player();
+      _controller = media_kit.VideoController(_player);
       _initializeVideo();
     } else if (_isInitialized) {
       _startAutoPlayTimer();
@@ -124,8 +153,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   @override
   void dispose() {
     _autoPlayTimer?.cancel();
-    _controller.removeListener(_videoListener);
-    _controller.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -138,8 +166,8 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
 
   Future<void> _handleNavigation(bool isForward) async {
     _autoPlayTimer?.cancel();
-    await _controller.pause();
-    await _controller.seekTo(Duration.zero);
+    await _player.pause();
+    await _player.seek(Duration.zero);
     if (isForward) {
       widget.onNext();
     } else {
@@ -209,7 +237,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           alignment: Alignment.center,
           children: [
             if (_isInitialized) ...[
-              VideoPlayer(_controller),
+              media_kit.Video(controller: _controller),
               _buildTapToPlayOverlay(),
             ] else
               Container(
@@ -255,7 +283,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
                 setState(() {
                   _position = Duration(milliseconds: value.toInt());
                 });
-                _controller.seekTo(_position);
+                _player.seek(Duration(milliseconds: value.toInt()));
               },
             ),
           ),
@@ -289,19 +317,19 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           splashFactory: NoSplash.splashFactory,
           highlightColor: Colors.transparent,
           onTap: () {
-            setState(() {
-              if (_controller.value.isPlaying) {
-                _controller.pause();
-              } else {
-                _controller.play();
-              }
-            });
+            if (_player.state.playing) {
+              _player.pause();
+            } else {
+              _player.play();
+            }
+            // Erzwinge UI-Update
+            setState(() {});
           },
           child: AnimatedOpacity(
-            opacity: _controller.value.isPlaying ? 0.0 : 1.0,
+            opacity: _player.state.playing ? 0.0 : 1.0,
             duration: AppConfig.animation.normal,
             child: Icon(
-              _controller.value.isPlaying
+              _player.state.playing
                   ? Icons.pause_circle_outline
                   : Icons.play_circle_outline,
               size: AppConfig.layout.videoControlSize * 1.5,
@@ -319,18 +347,18 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
       children: [
         IconButton(
           icon: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+            _player.state.playing ? Icons.pause : Icons.play_arrow,
             color: AppConfig.colors.textPrimary,
             size: AppConfig.layout.videoControlSize,
           ),
           onPressed: () {
-            setState(() {
-              if (_controller.value.isPlaying) {
-                _controller.pause();
-              } else {
-                _controller.play();
-              }
-            });
+            if (_player.state.playing) {
+              _player.pause();
+            } else {
+              _player.play();
+            }
+            // Erzwinge UI-Update
+            setState(() {});
           },
         ),
         SizedBox(width: AppConfig.layout.spacingMedium),
@@ -341,8 +369,8 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
             size: AppConfig.layout.videoControlSize,
           ),
           onPressed: () {
-            _controller.seekTo(Duration.zero);
-            _controller.play();
+            _player.seek(Duration.zero);
+            _player.play();
           },
         ),
       ],

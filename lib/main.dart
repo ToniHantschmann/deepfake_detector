@@ -5,10 +5,24 @@ import './storage/game_attempt_adapter.dart';
 import './storage/user_statistics_adapter.dart';
 import 'repositories/internal_statistics_repository.dart';
 
+import 'package:window_size/window_size.dart';
+import 'dart:io';
+import 'package:media_kit/media_kit.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  MediaKit.ensureInitialized();
+
+  // Windows-spezifische Initialisierung
+  if (Platform.isWindows) {
+    setWindowTitle('Deepfake Detector');
+    setWindowMinSize(const Size(1024, 768));
+    setWindowMaxSize(Size.infinite);
+  }
+
   initStorage();
-  InternalStatisticsRepository().registerConsoleCommands();
+  InternalStatisticsRepository().registerDesktopCommands();
   runApp(const DeepfakeDetectorApp());
 }
 

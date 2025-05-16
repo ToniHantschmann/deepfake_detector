@@ -37,6 +37,15 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   visibility_detector: ^0.4.0
+  window_size: ^0.1.0          # Für Fenstersteuerung
+  desktop_window: ^0.4.0       # Alternative für Fensterverwaltung
+  flutter_acrylic: ^1.0.0+2 
+  
+  # Media Kit für Video-Wiedergabe
+  media_kit: ^1.1.10                    # Kern-Bibliothek
+  media_kit_video: ^1.1.10              # Video-Widget
+  media_kit_native_event_loop: ^1.0.8   # Native Event Loop
+  media_kit_libs_windows_video: ^1.0.9
   
   
 
