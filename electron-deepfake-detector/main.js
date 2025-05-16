@@ -44,7 +44,6 @@ function createWindow() {
     console.error('Seite konnte nicht geladen werden:', errorDescription);
   });
   
-  
   // Protokolliere die URL, die wir laden
   console.log('Lade URL:', startUrl);
 }
@@ -88,16 +87,47 @@ app.whenReady().then(() => {
   }
 });
 
-// IPC Handler für Dateizugriffe
-ipcMain.handle('read-asset-file', async (event, filePath) => {
+// Handler für Text-Assets (JSON, etc.)
+ipcMain.handle('fetch-asset', async (event, assetPath) => {
+  console.log('Asset request received:', assetPath);
+  
+  // Direkter Pfad zum Asset
+  const assetFullPath = path.join(__dirname, 'web', 'assets', assetPath);
+  console.log('Loading asset from:', assetFullPath);
+  
   try {
-    const fullPath = path.join(__dirname, filePath);
-    console.log('Reading file from:', fullPath);
-    const content = fs.readFileSync(fullPath, 'utf8');
-    console.log(`File read success: ${filePath}, length: ${content.length}`);
-    return content;
+    if (fs.existsSync(assetFullPath)) {
+      console.log('Asset found, loading content');
+      return fs.readFileSync(assetFullPath, 'utf8');
+    } else {
+      console.error('Asset not found:', assetFullPath);
+      return null;
+    }
   } catch (error) {
-    console.error('Error reading file:', error);
+    console.error('Error reading asset file:', error);
+    return null;
+  }
+});
+
+// Handler für Binärdaten (Bilder, Videos)
+ipcMain.handle('fetch-asset-binary', async (event, assetPath) => {
+  console.log('Binary asset request received:', assetPath);
+  
+  // Direkter Pfad zum Asset
+  const assetFullPath = path.join(__dirname, 'web', 'assets', assetPath);
+  console.log('Loading binary from:', assetFullPath);
+  
+  try {
+    if (fs.existsSync(assetFullPath)) {
+      console.log('Binary asset found');
+      const buffer = fs.readFileSync(assetFullPath);
+      return buffer.toString('base64');
+    } else {
+      console.error('Binary asset not found:', assetFullPath);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error reading binary asset:', error);
     return null;
   }
 });
