@@ -113,7 +113,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
       });
 
       // Warten auf Initialisierung
-      await Future.delayed(const Duration(milliseconds: 500));
+      //await Future.delayed(const Duration(milliseconds: 500));
 
       if (mounted) {
         setState(() {
