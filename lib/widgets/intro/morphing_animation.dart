@@ -101,18 +101,24 @@ class _MorphingAnimationState extends State<MorphingAnimation>
   }
 
   Widget _buildImage(String path) {
-    final image = Image.asset(
-      path,
-      fit: widget.fit,
-    );
-
-    if (widget.borderRadius != null) {
-      return ClipRRect(
-        borderRadius: widget.borderRadius!,
-        child: image,
+    try {
+      debugPrint("Loading image from path: $path");
+      final image = Image.asset(
+        path,
+        fit: widget.fit,
       );
-    }
 
-    return image;
+      if (widget.borderRadius != null) {
+        return ClipRRect(
+          borderRadius: widget.borderRadius!,
+          child: image,
+        );
+      }
+
+      return image;
+    } catch (e) {
+      debugPrint("Error loading image: $e");
+      return Container(color: Colors.red.shade400);
+    }
   }
 }

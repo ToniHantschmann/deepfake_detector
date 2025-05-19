@@ -46,9 +46,15 @@ class VideoRepository {
 
     try {
       final data = await _storage!.getVideos();
-      _videos = (data['videos'] as List?)
-              ?.map((json) => Video.fromJson(json as Map<String, dynamic>))
-              .toList() ??
+      _videos = (data['videos'] as List?)?.map((json) {
+            // Anpassen der Video-Pfade vor der Erstellung des Video-Objekts
+            Map<String, dynamic> modifiedJson =
+                Map<String, dynamic>.from(json as Map<String, dynamic>);
+            modifiedJson['videoUrl'] = 'assets/${modifiedJson['videoUrl']}';
+            modifiedJson['thumbnailUrl'] =
+                'assets/${modifiedJson['thumbnailUrl']}';
+            return Video.fromJson(modifiedJson);
+          }).toList() ??
           [];
     } catch (e) {
       if (e is VideoException) rethrow;

@@ -130,8 +130,8 @@ class IntroductionScreen extends BaseGameScreen {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: MorphingAnimation(
-                    realImagePath: 'images/real_Pope.jpg',
-                    fakeImagePath: 'images/deepfake_Pope.jpg',
+                    realImagePath: 'assets/images/real_Pope.jpg',
+                    fakeImagePath: 'assets/images/deepfake_Pope.jpg',
                     duration: const Duration(seconds: 3),
                     fit: BoxFit.cover,
                     borderRadius: BorderRadius.circular(10),
