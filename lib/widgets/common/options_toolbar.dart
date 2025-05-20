@@ -1,4 +1,5 @@
 import 'package:deepfake_detector/repositories/internal_statistics_repository.dart';
+import 'package:deepfake_detector/widgets/common/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../config/app_config.dart';
@@ -17,7 +18,8 @@ class OptionsToolbar extends StatefulWidget {
 
 class _OptionsToolbarState extends State<OptionsToolbar> {
   bool _isExporting = false;
-  String? _exportResult;
+  bool _isResetting = false;
+  String? _statusMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +40,15 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
             children: [
               const Spacer(),
 
-              // Statusmeldung für Export
-              if (_exportResult != null)
+              // Statusmeldung für Operationen
+              if (_statusMessage != null)
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      _exportResult!,
+                      _statusMessage!,
                       style: TextStyle(
-                        color: _exportResult!.startsWith('Fehler')
+                        color: _statusMessage!.startsWith('Fehler')
                             ? AppConfig.colors.error
                             : AppConfig.colors.success,
                         fontSize: 14,
@@ -60,7 +62,20 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
               _buildToolbarButton(
                 icon: Icons.download,
                 label: 'Statistikdaten exportieren',
-                onPressed: _isExporting ? null : _exportStatistics,
+                onPressed:
+                    (_isExporting || _isResetting) ? null : _exportStatistics,
+              ),
+
+              const SizedBox(width: 8),
+
+              // Reset-Button
+              _buildToolbarButton(
+                icon: Icons.restore,
+                label: 'Statistiken zurücksetzen',
+                onPressed: (_isExporting || _isResetting)
+                    ? null
+                    : _showResetConfirmation,
+                buttonColor: AppConfig.colors.warning,
               ),
 
               const SizedBox(width: 8),
@@ -84,6 +99,7 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
     required IconData icon,
     required String label,
     required VoidCallback? onPressed,
+    Color? buttonColor,
   }) {
     return Tooltip(
       message: label,
@@ -92,7 +108,7 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
         icon: Icon(icon, size: 18),
         label: Text(label.split(' ')[0]), // Zeige nur das erste Wort an
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppConfig.colors.primary,
+          backgroundColor: buttonColor ?? AppConfig.colors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           textStyle: const TextStyle(fontSize: 14),
@@ -106,7 +122,7 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
 
     setState(() {
       _isExporting = true;
-      _exportResult = null;
+      _statusMessage = null;
     });
 
     try {
@@ -142,13 +158,13 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
       await jsonFile.writeAsString(json.encode(stats.toJson()));
 
       setState(() {
-        _exportResult = 'Exportiert nach: $exportPath';
+        _statusMessage = 'Exportiert nach: $exportPath';
       });
 
       // Kopiere Pfad in die Zwischenablage
       await Clipboard.setData(ClipboardData(text: exportPath));
       setState(() {
-        _exportResult = 'Exportiert und Pfad kopiert';
+        _statusMessage = 'Exportiert und Pfad kopiert';
       });
 
       // Optional: Öffne den Ordner mit der exportierten Datei
@@ -161,7 +177,7 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
       }
     } catch (e) {
       setState(() {
-        _exportResult = 'Fehler beim Exportieren: $e';
+        _statusMessage = 'Fehler beim Exportieren: $e';
       });
     } finally {
       setState(() {
@@ -169,15 +185,64 @@ class _OptionsToolbarState extends State<OptionsToolbar> {
       });
 
       // Blende die Erfolgsmeldung nach einiger Zeit aus
-      if (_exportResult != null && !_exportResult!.startsWith('Fehler')) {
-        Future.delayed(const Duration(seconds: 5), () {
-          if (mounted) {
-            setState(() {
-              _exportResult = null;
-            });
-          }
-        });
-      }
+      _clearStatusMessageAfterDelay();
+    }
+  }
+
+  Future<void> _resetStatistics() async {
+    if (_isResetting) return;
+
+    setState(() {
+      _isResetting = true;
+      _statusMessage = 'Statistiken werden zurückgesetzt...';
+    });
+
+    try {
+      final internalStatsRepo = InternalStatisticsRepository();
+      await internalStatsRepo.clearAllStatistics();
+
+      setState(() {
+        _statusMessage = 'Statistiken erfolgreich zurückgesetzt';
+      });
+    } catch (e) {
+      setState(() {
+        _statusMessage = 'Fehler beim Zurücksetzen: $e';
+      });
+    } finally {
+      setState(() {
+        _isResetting = false;
+      });
+
+      // Blende die Erfolgsmeldung nach einiger Zeit aus
+      _clearStatusMessageAfterDelay();
+    }
+  }
+
+  void _clearStatusMessageAfterDelay() {
+    if (_statusMessage != null && !_statusMessage!.startsWith('Fehler')) {
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted) {
+          setState(() {
+            _statusMessage = null;
+          });
+        }
+      });
+    }
+  }
+
+  Future<void> _showResetConfirmation() async {
+    final confirmed = await ConfirmationDialog.show(
+      context: context,
+      title: 'Statistiken zurücksetzen',
+      message:
+          'Alle internen Statistiken werden unwiderruflich gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.\n\nFortfahren?',
+      confirmText: 'Zurücksetzen',
+      confirmColor: AppConfig.colors.warning,
+      confirmIcon: Icons.restore,
+    );
+
+    if (confirmed == true) {
+      await _resetStatistics();
     }
   }
 }
