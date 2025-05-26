@@ -73,16 +73,7 @@ class DecisionScreen extends BaseGameScreen {
                       ],
                     ),
                   ),
-                  // Navigation buttons are still included but we don't need them
-                  // for our primary interaction flow since buttons now directly navigate
                   NavigationButtons.forGameScreen(
-                    onNext: () {
-                      if (state.userGuessIsDeepfake != null) {
-                        dispatchGameEvent(context,
-                            MakeDeepfakeDecision(state.userGuessIsDeepfake!));
-                        handleNextNavigation(context);
-                      }
-                    },
                     onBack: () => handleBackNavigation(context),
                     currentScreen: GameScreen.decision,
                     enableNext: state.userGuessIsDeepfake != null,

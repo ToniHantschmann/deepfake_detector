@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/mixins/game_navigation_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
@@ -15,6 +16,7 @@ import '../widgets/overlays/pin_registration_overlay.dart';
 import '../widgets/tutorial/pin_tutorial.dart';
 import 'base_game_screen.dart';
 import '../widgets/overlays/pin_overlay.dart';
+import 'qr_code_screen.dart';
 
 class StatisticsScreen extends BaseGameScreen {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -34,8 +36,6 @@ class StatisticsScreen extends BaseGameScreen {
       showTutorial: state.isTemporarySession &&
           state.userStatistics != null &&
           !state.hasOverlayBeenShown(OverlayType.pinGenerate),
-      onTutorialComplete: () =>
-          completeTutorial(context, OverlayType.pinGenerate),
     );
   }
 }
@@ -43,13 +43,11 @@ class StatisticsScreen extends BaseGameScreen {
 class _StatisticsScreenContent extends StatefulWidget {
   final GameState state;
   final bool showTutorial;
-  final VoidCallback onTutorialComplete;
 
   const _StatisticsScreenContent({
     Key? key,
     required this.state,
     required this.showTutorial,
-    required this.onTutorialComplete,
   }) : super(key: key);
 
   @override
@@ -57,7 +55,8 @@ class _StatisticsScreenContent extends StatefulWidget {
       _StatisticsScreenContentState();
 }
 
-class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
+class _StatisticsScreenContentState extends State<_StatisticsScreenContent>
+    with GameNavigationMixin {
   // Lokaler Override, der das Tutorial sofort ausblenden kann
   bool _showTutorialOverride = true;
 
@@ -65,11 +64,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
     setState(() {
       _showTutorialOverride = false;
     });
-    widget.onTutorialComplete();
-  }
-
-  void _handleBackNavigation() {
-    context.read<GameBloc>().add(const PreviousScreen());
+    completeTutorial(context, OverlayType.pinGenerate);
   }
 
   @override
@@ -251,10 +246,23 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
                               children: [
                                 // Nächstes Spiel Button (links)
                                 _buildActionButton(
-                                  onPressed: () => _handleNextGame(context),
+                                  onPressed: () =>
+                                      handleNextNavigation(context),
                                   text: strings.nextGameButton,
                                   icon: Icons.play_arrow,
                                   color: AppConfig.colors.primary,
+                                ),
+
+                                SizedBox(width: AppConfig.layout.spacingXLarge),
+
+                                // Umfrage QR-Code Button (mittig)
+                                _buildActionButton(
+                                  onPressed: () =>
+                                      handleQrCodeNavigation(context),
+                                  text: 'Umfrage',
+                                  icon: Icons.qr_code,
+                                  color: Colors
+                                      .purple, // Andere Farbe zur Differenzierung
                                 ),
 
                                 // Platzhalter zwischen Buttons, nur wenn PIN-Button angezeigt wird
@@ -280,7 +288,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
 
                     // Navigation Button (nur Next, kein Back)
                     NavigationButtons.forGameScreen(
-                      onBack: () => _handleBackNavigation(),
+                      onBack: () => handleBackNavigation(context),
                       currentScreen: widget.state.currentScreen,
                     ),
                   ],
@@ -318,14 +326,10 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
         child: PinRegistrationOverlay(
           pin: pin,
           onClose: () => Navigator.of(dialogContext).pop(),
-          onRestart: () => _handleNextGame(context),
+          onRestart: () => handleRestartGame(context),
         ),
       ),
     );
-  }
-
-  void _handleNextGame(BuildContext context) {
-    context.read<GameBloc>().add(const RestartGame());
   }
 
   // Action Button im Stil des StrategiesScreens
@@ -336,7 +340,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent> {
     required Color color,
   }) {
     return SizedBox(
-      width: 600,
+      width: 500,
       height: 90,
       child: ElevatedButton.icon(
         onPressed: onPressed,

@@ -1,3 +1,5 @@
+import 'package:deepfake_detector/mixins/game_navigation_mixin.dart';
+import 'package:deepfake_detector/screens/qr_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
@@ -8,7 +10,7 @@ import '../widgets/common/swipe_navigation_wrapper.dart';
 
 /// Base class for all game screens
 /// Provides common functionality and ensures consistent behavior
-abstract class BaseGameScreen extends StatelessWidget {
+abstract class BaseGameScreen extends StatelessWidget with GameNavigationMixin {
   const BaseGameScreen({Key? key}) : super(key: key);
 
   @override
@@ -35,30 +37,12 @@ abstract class BaseGameScreen extends StatelessWidget {
     return SwipeNavigationWrapper(
       currentScreen: state.currentScreen,
       onNext: state.currentScreen.canNavigateForward
-          ? () {
-              final bool canProceed = _canNavigateToNextScreen(state);
-              if (canProceed) {
-                // Special handling for comparison screen
-                if (state.currentScreen == GameScreen.decision &&
-                    state.userGuessIsDeepfake != null) {
-                  // Capture the GameBloc instance before using it with Future.delayed
-                  final gameBloc = context.read<GameBloc>();
-                  // First record the selection
-                  gameBloc
-                      .add(MakeDeepfakeDecision(state.userGuessIsDeepfake!));
-                  // Then navigate using the captured bloc instance
-                  gameBloc.add(const NextScreen());
-                } else {
-                  // Normal navigation for other screens
-                  handleNextNavigation(context);
-                }
-              }
-            }
+          ? () => handleNextNavigation(context)
           : null,
       onBack: state.currentScreen.canNavigateBack
           ? () => handleBackNavigation(context)
           : null,
-      enableNext: _canNavigateToNextScreen(state),
+      enableNext: state.currentScreen.canNavigateForward,
       child: buildGameScreen(context, state),
     );
   }
@@ -123,49 +107,5 @@ abstract class BaseGameScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// Helper method to dispatch events to the GameBloc
-  void dispatchGameEvent(BuildContext context, GameEvent event) {
-    context.read<GameBloc>().add(event);
-  }
-
-  /// Helper methods for navigation
-  void handleBackNavigation(BuildContext context) {
-    dispatchGameEvent(context, const PreviousScreen());
-  }
-
-  void handleNextNavigation(BuildContext context) {
-    dispatchGameEvent(context, const NextScreen());
-  }
-
-  void handleLoginNavigation(BuildContext context) {
-    dispatchGameEvent(context, const ShowLogin());
-  }
-
-  void completeTutorial(BuildContext context, OverlayType tutorialType) {
-    dispatchGameEvent(context, OverlayCompleted(tutorialType));
-  }
-
-  void makeDeepfakeSelection(BuildContext context, bool isDeepfake) {
-    final bloc = context.read<GameBloc>();
-    // First set the selection to update UI
-    dispatchGameEvent(context, UpdateSelectedVideo(isDeepfake));
-
-    // Short delay to show selection before processing
-    Future.delayed(const Duration(milliseconds: 200), () {
-      // Record decision first
-      bloc.add(MakeDeepfakeDecision(isDeepfake));
-
-      // Wait for state to be updated before navigating
-      bloc.stream
-          .firstWhere((state) =>
-              state.isCorrectGuess != null &&
-              state.userGuessIsDeepfake == isDeepfake)
-          .then((_) {
-        // Now that we're sure the state is updated, navigate
-        bloc.add(const NextScreen());
-      });
-    });
   }
 }

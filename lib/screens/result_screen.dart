@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/mixins/game_navigation_mixin.dart';
 import 'package:flutter/material.dart';
 import '../models/video_model.dart';
 import '../blocs/game/game_state.dart';
@@ -38,8 +39,6 @@ class ResultScreen extends BaseGameScreen {
       state: state,
       strings: strings,
       showTutorial: showTutorial,
-      onTutorialComplete: () => completeTutorial(context, OverlayType.videoTap),
-      onNextNavigation: () => handleNextNavigation(context),
     );
   }
 }
@@ -48,23 +47,20 @@ class _ResultScreenContent extends StatefulWidget {
   final GameState state;
   final ResultScreenStrings strings;
   final bool showTutorial;
-  final VoidCallback onTutorialComplete;
-  final VoidCallback onNextNavigation;
 
   const _ResultScreenContent({
     Key? key,
     required this.state,
     required this.strings,
     required this.showTutorial,
-    required this.onTutorialComplete,
-    required this.onNextNavigation,
   }) : super(key: key);
 
   @override
   State<_ResultScreenContent> createState() => _ResultScreenContentState();
 }
 
-class _ResultScreenContentState extends State<_ResultScreenContent> {
+class _ResultScreenContentState extends State<_ResultScreenContent>
+    with GameNavigationMixin {
   // Lokaler Override, der das Tutorial sofort ausblenden kann
   bool _showTutorialOverride = true;
   // Track if we've shown the result feedback overlay
@@ -85,7 +81,7 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
     setState(() {
       _showTutorialOverride = false;
     });
-    widget.onTutorialComplete();
+    completeTutorial(context, OverlayType.videoTap);
   }
 
   void _showResultFeedback() {
@@ -156,54 +152,72 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
                         SizedBox(
                           width: constraints.maxWidth,
                           height: constraints.maxHeight,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Header-Bereich mit Padding
-                                SizedBox(height: AppConfig.layout.spacingLarge),
-
-                                // Videos Section - Feste Höhe für die Videos
-                                Container(
-                                  height: isHorizontalLayout
-                                      ? constraints.maxHeight * 0.5
-                                      : constraints.maxHeight * 0.45,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: AppConfig
-                                        .layout.screenPaddingHorizontal,
-                                  ),
-                                  child: counterpartVideo != null
-                                      ? isHorizontalLayout
-                                          ? _buildHorizontalVideoComparison(
-                                              shownVideo,
-                                              counterpartVideo,
-                                              widget.state.isCorrectGuess!,
-                                              widget.state.userGuessIsDeepfake!,
-                                              context,
-                                              widget.strings)
-                                          : _buildVerticalVideoComparison(
-                                              shownVideo,
-                                              counterpartVideo,
-                                              widget.state.isCorrectGuess!,
-                                              widget.state.userGuessIsDeepfake!,
-                                              context,
-                                              widget.strings)
-                                      : Container(), // Fallback wenn kein counterpartVideo
-                                ),
-
-                                // Indikatoren Section - Jetzt NICHT mehr in einem Expanded
-                                if (hasDeepfakeIndicators)
-                                  Padding(
-                                    padding: EdgeInsets.all(AppConfig
-                                        .layout.screenPaddingHorizontal),
-                                    child: _buildDeepfakeIndicatorsCard(
-                                        deepfakeVideo, widget.strings, context),
+                          child: Center(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Videos Section - Feste Höhe für die Videos
+                                  Container(
+                                    height: isHorizontalLayout
+                                        ? constraints.maxHeight * 0.5
+                                        : constraints.maxHeight * 0.45,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isHorizontalLayout
+                                          ? AppConfig.layout
+                                                  .screenPaddingHorizontal +
+                                              80 // Extra Platz für Navigation Buttons
+                                          : AppConfig
+                                              .layout.screenPaddingHorizontal,
+                                    ),
+                                    child: counterpartVideo != null
+                                        ? isHorizontalLayout
+                                            ? _buildHorizontalVideoComparison(
+                                                shownVideo,
+                                                counterpartVideo,
+                                                widget.state.isCorrectGuess!,
+                                                widget
+                                                    .state.userGuessIsDeepfake!,
+                                                context,
+                                                widget.strings)
+                                            : _buildVerticalVideoComparison(
+                                                shownVideo,
+                                                counterpartVideo,
+                                                widget.state.isCorrectGuess!,
+                                                widget
+                                                    .state.userGuessIsDeepfake!,
+                                                context,
+                                                widget.strings)
+                                        : Container(), // Fallback wenn kein counterpartVideo
                                   ),
 
-                                // Zusätzlicher Platz am Ende, damit der Inhalt nicht von den Navigationspfeilen verdeckt wird
-                                SizedBox(
-                                    height: AppConfig.layout.spacingXLarge * 2),
-                              ],
+                                  // Indikatoren Section - Jetzt NICHT mehr in einem Expanded
+                                  if (hasDeepfakeIndicators)
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        left: isHorizontalLayout
+                                            ? AppConfig.layout
+                                                    .screenPaddingHorizontal +
+                                                80
+                                            : AppConfig
+                                                .layout.screenPaddingHorizontal,
+                                        right: isHorizontalLayout
+                                            ? AppConfig.layout
+                                                    .screenPaddingHorizontal +
+                                                80
+                                            : AppConfig
+                                                .layout.screenPaddingHorizontal,
+                                        top: AppConfig.layout.spacingLarge,
+                                        bottom: 0,
+                                      ),
+                                      child: _buildDeepfakeIndicatorsCard(
+                                          deepfakeVideo,
+                                          widget.strings,
+                                          context),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -213,7 +227,7 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
                           child: Align(
                             alignment: Alignment.center,
                             child: NavigationButtons.forGameScreen(
-                              onNext: widget.onNextNavigation,
+                              onNext: () => handleNextNavigation(context),
                               currentScreen: widget.state.currentScreen,
                             ),
                           ),
@@ -257,7 +271,7 @@ class _ResultScreenContentState extends State<_ResultScreenContent> {
             strings: strings,
           ),
         ),
-        const SizedBox(width: 16.0),
+        const SizedBox(width: 12.0), // Reduziert von 16.0 auf 12.0
         Expanded(
           child: _buildVideoCard(
             video: counterpartVideo,

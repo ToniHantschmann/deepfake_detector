@@ -1,5 +1,6 @@
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
 import 'package:deepfake_detector/constants/overlay_types.dart';
+import 'package:deepfake_detector/mixins/game_navigation_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
@@ -48,7 +49,8 @@ class _StrategiesScreenContent extends StatefulWidget {
       _StrategiesScreenContentState();
 }
 
-class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
+class _StrategiesScreenContentState extends State<_StrategiesScreenContent>
+    with GameNavigationMixin {
   bool _showTutorial = true;
 
   @override
@@ -64,21 +66,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
     setState(() {
       _showTutorial = false;
     });
-    context
-        .read<GameBloc>()
-        .add(const OverlayCompleted(OverlayType.strategySwipe));
-  }
-
-  void _handleRestartGame() {
-    context.read<GameBloc>().add(const RestartGame());
-  }
-
-  void _handleShowStatistics() {
-    context.read<GameBloc>().add(const NextScreen());
-  }
-
-  void _handleBackNavigation() {
-    context.read<GameBloc>().add(const PreviousScreen());
+    completeTutorial(context, OverlayType.strategySwipe);
   }
 
   @override
@@ -173,7 +161,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   _buildActionButton(
-                                    onPressed: _handleRestartGame,
+                                    onPressed: () => handleRestartGame(context),
                                     text: strings.nextGameButton,
                                     icon: Icons.play_arrow,
                                     color: AppConfig.colors.primary,
@@ -181,7 +169,17 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                                   SizedBox(
                                       width: AppConfig.layout.spacingXLarge),
                                   _buildActionButton(
-                                    onPressed: _handleShowStatistics,
+                                    onPressed: () =>
+                                        handleQrCodeNavigation(context),
+                                    text: 'Umfrage',
+                                    icon: Icons.qr_code,
+                                    color: Colors.purple,
+                                  ),
+                                  SizedBox(
+                                      width: AppConfig.layout.spacingXLarge),
+                                  _buildActionButton(
+                                    onPressed: () =>
+                                        handleNextNavigation(context),
                                     text: strings.statsButton,
                                     icon: Icons.bar_chart,
                                     color: AppConfig.colors.secondary,
@@ -194,7 +192,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
                       },
                     ),
                     NavigationButtons.forGameScreen(
-                      onBack: _handleBackNavigation,
+                      onBack: () => handleBackNavigation(context),
                       currentScreen: widget.state.currentScreen,
                     ),
                   ],
@@ -218,7 +216,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent> {
     required Color color,
   }) {
     return SizedBox(
-      width: 600,
+      width: 500,
       height: 90,
       child: ElevatedButton.icon(
         onPressed: onPressed,

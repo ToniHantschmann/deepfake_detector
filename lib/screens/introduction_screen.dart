@@ -1,4 +1,5 @@
 import 'package:deepfake_detector/blocs/game/game_bloc.dart';
+import 'package:deepfake_detector/mixins/game_navigation_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
@@ -77,7 +78,7 @@ class IntroductionScreen extends BaseGameScreen {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => dispatchGameEvent(context, const ShowLogin()),
+        onPressed: () => handleLoginNavigation(context),
         icon: const Icon(Icons.login),
         label: Text(
           strings.loginButton,
@@ -248,14 +249,14 @@ class IntroductionScreen extends BaseGameScreen {
               // Jetzt das Spiel starten, nachdem die Umfrage abgeschlossen wurde
               // Die Events SetInitialConfidenceRating und OverlayCompleted werden bereits
               // in _handleSubmit() der ConfidenceSurveyDialog-Klasse gesendet
-              gameBloc.add(const QuickStartGame());
+              handleQuickstartGame(context);
             },
           ),
         ),
       );
     } else {
       // Wenn keine Umfrage nötig ist, einfach das Spiel starten
-      dispatchGameEvent(context, const QuickStartGame());
+      handleQuickstartGame(context);
     }
   }
 }
