@@ -38,6 +38,8 @@ class GermanStrings implements AppStrings {
   final survey = const GermanSurveyStrings();
   @override
   final inactivity = const GermanInactivityStrings();
+  @override
+  QrCodeScreenStrings get qrCode => const GermanQrCodeScreenStrings();
 }
 
 class GermanIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -186,6 +188,20 @@ class GermanStatisticsScreenStrings implements StatisticsScreenStrings {
   String get overallStats => 'Gesamtstatistik';
 }
 
+class GermanQrCodeScreenStrings extends QrCodeScreenStrings {
+  const GermanQrCodeScreenStrings();
+
+  @override
+  String get title => 'Scannen Sie diesen QR-Code für unsere Studie';
+
+  @override
+  String get description =>
+      'Bitte nehmen Sie an unserer kurzen Umfrage teil, um uns Feedback zur Deepfake-Erkennung zu geben.';
+
+  @override
+  String get backButton => 'Zurück';
+}
+
 class GermanAuthStrings implements AuthStrings {
   const GermanAuthStrings();
 
@@ -288,6 +304,8 @@ class GermanProgressBarStrings implements ProgressBarStrings {
   String get strategies => 'Strategien';
   @override
   String get statistics => 'Statistiken';
+  @override
+  String get survey => 'Umfrage';
 }
 
 class GermanPinDisplayStrings implements PinDisplayStrings {

@@ -18,6 +18,7 @@ abstract class AppStrings {
   VideoPlayerStrings get videoPlayer;
   SurveyStrings get survey;
   InactivityStrings get inactivity;
+  QrCodeScreenStrings get qrCode;
 }
 
 abstract class IntroductionScreenStrings {
@@ -104,6 +105,14 @@ abstract class StatisticsScreenStrings {
   String get overallStats;
 }
 
+abstract class QrCodeScreenStrings {
+  const QrCodeScreenStrings();
+
+  String get title;
+  String get description;
+  String get backButton;
+}
+
 abstract class AuthStrings {
   const AuthStrings();
 
@@ -167,6 +176,7 @@ abstract class ProgressBarStrings {
   String get result;
   String get strategies;
   String get statistics;
+  String get survey;
 }
 
 abstract class PinDisplayStrings {

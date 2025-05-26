@@ -11,6 +11,7 @@ enum GameScreen {
   result,
   strategy,
   statistics,
+  qrCode,
 }
 
 /// Extension für GameScreen-spezifische Navigation

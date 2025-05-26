@@ -38,6 +38,8 @@ class EnglishStrings implements AppStrings {
   final survey = const EnglishSurveyStrings();
   @override
   final inactivity = const EnglishInactivityStrings();
+  @override
+  QrCodeScreenStrings get qrCode => const EnglishQrCodeScreenStrings();
 }
 
 class EnglishIntroductionScreenStrings implements IntroductionScreenStrings {
@@ -183,6 +185,20 @@ class EnglishStatisticsScreenStrings implements StatisticsScreenStrings {
   String get overallStats => 'Overall Statistics';
 }
 
+class EnglishQrCodeScreenStrings extends QrCodeScreenStrings {
+  const EnglishQrCodeScreenStrings();
+
+  @override
+  String get title => 'Scan this QR code for our study';
+
+  @override
+  String get description =>
+      'Please participate in our short survey to give us feedback on deepfake detection.';
+
+  @override
+  String get backButton => 'Back';
+}
+
 class EnglishAuthStrings implements AuthStrings {
   const EnglishAuthStrings();
 
@@ -284,6 +300,8 @@ class EnglishProgressBarStrings implements ProgressBarStrings {
   String get strategies => 'Strategies';
   @override
   String get statistics => 'Statistics';
+  @override
+  String get survey => 'Survey';
 }
 
 class EnglishPinDisplayStrings implements PinDisplayStrings {
