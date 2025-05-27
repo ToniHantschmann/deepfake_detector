@@ -43,7 +43,7 @@ class QrCodeScreen extends BaseGameScreen {
                     final sessionId = snapshot.data;
                     final studyUrl = sessionId != null
                         ? SessionIdGenerator.generateSoSciSurveyUrl(sessionId)
-                        : 'https://www.soscisurvey.de/deepfake-studie/'; // Fallback
+                        : 'https://survey.ifkw.lmu.de/deepfakeDetectionGame/'; // Fallback
 
                     return _buildQrCodeScreen(
                         context, strings, studyUrl, sessionId);
