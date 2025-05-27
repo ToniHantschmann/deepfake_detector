@@ -33,19 +33,6 @@ mixin GameNavigationMixin {
     dispatchGameEvent(context, const QuickStartGame());
   }
 
-  /// Navigate to the QR code screen
-  void handleQrCodeNavigation(BuildContext context) {
-    final gameBloc = context.read<GameBloc>();
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => BlocProvider.value(
-          value: gameBloc,
-          child: const QrCodeScreen(),
-        ),
-      ),
-    );
-  }
-
   /// Mark a tutorial as completed
   void completeTutorial(BuildContext context, OverlayType tutorialType) {
     dispatchGameEvent(context, OverlayCompleted(tutorialType));

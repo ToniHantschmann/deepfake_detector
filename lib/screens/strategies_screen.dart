@@ -170,15 +170,6 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent>
                                       width: AppConfig.layout.spacingXLarge),
                                   _buildActionButton(
                                     onPressed: () =>
-                                        handleQrCodeNavigation(context),
-                                    text: 'Umfrage',
-                                    icon: Icons.qr_code,
-                                    color: Colors.purple,
-                                  ),
-                                  SizedBox(
-                                      width: AppConfig.layout.spacingXLarge),
-                                  _buildActionButton(
-                                    onPressed: () =>
                                         handleNextNavigation(context),
                                     text: strings.statsButton,
                                     icon: Icons.bar_chart,

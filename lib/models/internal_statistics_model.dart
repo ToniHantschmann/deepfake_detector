@@ -1,5 +1,8 @@
+import 'package:deepfake_detector/utils/session_id_generator.dart';
+
 class InternalPlayerStatistics {
   final String id; // Unique ID für den Spieler (z.B. Pin oder UUID)
+  final String sessionId;
   final int gamesPlayed; // Anzahl gespielter Spiele
   final int correctGuesses; // Anzahl richtiger Vermutungen
   final int loginCount; // Wie oft hat sich der Spieler eingeloggt
@@ -13,6 +16,7 @@ class InternalPlayerStatistics {
 
   InternalPlayerStatistics({
     required this.id,
+    required this.sessionId,
     this.gamesPlayed = 0,
     this.correctGuesses = 0,
     this.loginCount = 0,
@@ -32,6 +36,7 @@ class InternalPlayerStatistics {
   factory InternalPlayerStatistics.newPlayer(String id) {
     return InternalPlayerStatistics(
       id: id,
+      sessionId: SessionIdGenerator.generateSessionId(),
       firstGameTimestamp: DateTime.now(),
     );
   }
@@ -39,6 +44,7 @@ class InternalPlayerStatistics {
   // Kopieren mit optionaler Änderung einzelner Felder
   InternalPlayerStatistics copyWith({
     String? id,
+    String? sessionId,
     int? gamesPlayed,
     int? correctGuesses,
     int? loginCount,
@@ -50,6 +56,7 @@ class InternalPlayerStatistics {
   }) {
     return InternalPlayerStatistics(
       id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
       gamesPlayed: gamesPlayed ?? this.gamesPlayed,
       correctGuesses: correctGuesses ?? this.correctGuesses,
       loginCount: loginCount ?? this.loginCount,
@@ -66,6 +73,7 @@ class InternalPlayerStatistics {
   // Konvertierung in JSON
   Map<String, dynamic> toJson() => {
         'id': id,
+        'sessionId': sessionId,
         'gamesPlayed': gamesPlayed,
         'correctGuesses': correctGuesses,
         'loginCount': loginCount,
@@ -81,6 +89,7 @@ class InternalPlayerStatistics {
   factory InternalPlayerStatistics.fromJson(Map<String, dynamic> json) {
     return InternalPlayerStatistics(
       id: json['id'] as String,
+      sessionId: json['sessionId'] as String,
       gamesPlayed: json['gamesPlayed'] as int,
       correctGuesses: json['correctGuesses'] as int,
       loginCount: json['loginCount'] as int,

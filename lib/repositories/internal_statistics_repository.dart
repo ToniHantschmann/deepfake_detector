@@ -195,6 +195,20 @@ class InternalStatisticsRepository {
     }
   }
 
+  Future<String?> getSessionIdForPlayer(String playerId) async {
+    try {
+      final stats = await getStatistics();
+      final player = stats.players.firstWhere(
+        (p) => p.id == playerId,
+        orElse: () => throw Exception('Player not found'),
+      );
+      return player.sessionId;
+    } catch (e) {
+      debugPrint('Error getting session ID: $e');
+      return null;
+    }
+  }
+
   // Desktop-Befehle für interne Statistiken (Erweiterung für Windows)
   void registerDesktopCommands() {
     // In der Desktop-Version können wir mehr Funktionalität bieten

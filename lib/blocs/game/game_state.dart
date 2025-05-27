@@ -29,9 +29,9 @@ extension GameScreenNavigation on GameScreen {
 
   bool get canNavigateForward {
     switch (this) {
-      case GameScreen.strategy:
-      case GameScreen.statistics:
       case GameScreen.decision:
+      case GameScreen.strategy:
+      case GameScreen.qrCode:
         return false;
       default:
         return true;

@@ -160,7 +160,7 @@ class GermanStrategyScreenStrings implements StrategyScreenStrings {
   @override
   String get getPinButton => 'PIN erhalten';
   @override
-  String get statsButton => 'Zu den Statistiken';
+  String get statsButton => 'Weiter zu den Statistiken';
 }
 
 class GermanStatisticsScreenStrings implements StatisticsScreenStrings {
@@ -186,6 +186,8 @@ class GermanStatisticsScreenStrings implements StatisticsScreenStrings {
   String get currentRun => 'Aktueller Durchgang';
   @override
   String get overallStats => 'Gesamtstatistik';
+  @override
+  String get continueButton => 'Weiter zur Umfrage';
 }
 
 class GermanQrCodeScreenStrings extends QrCodeScreenStrings {
@@ -193,13 +195,31 @@ class GermanQrCodeScreenStrings extends QrCodeScreenStrings {
 
   @override
   String get title => 'Scannen Sie diesen QR-Code für unsere Studie';
-
   @override
   String get description =>
       'Bitte nehmen Sie an unserer kurzen Umfrage teil, um uns Feedback zur Deepfake-Erkennung zu geben.';
-
   @override
   String get backButton => 'Zurück';
+  @override
+  String get automaticTransferTitle => 'Automatische Code-Übertragung';
+  @override
+  String get automaticTransferDescription =>
+      'Ihr Spielcode wird automatisch übertragen.\nScannen Sie einfach den QR-Code!';
+  @override
+  String get yourCodeLabel => 'Ihr Code';
+  @override
+  String get codeWillBeTransferred => 'Wird automatisch übertragen';
+  @override
+  String get manualFallbackTitle => 'Manuelle Teilnahme';
+  @override
+  String get manualFallbackDescription =>
+      'Scannen Sie den QR-Code und geben Sie Ihren Code in der ersten Frage ein.';
+  @override
+  String get scanQrCode => 'QR-Code scannen';
+  @override
+  String get loadingSessionId => 'Code wird geladen...';
+  @override
+  String get continueToNextGame => 'Nächstes Spiel starten';
 }
 
 class GermanAuthStrings implements AuthStrings {

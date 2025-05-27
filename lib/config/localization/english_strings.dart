@@ -157,7 +157,7 @@ class EnglishStrategyScreenStrings implements StrategyScreenStrings {
   @override
   String get getPinButton => 'Get PIN';
   @override
-  String get statsButton => 'Go to statistics';
+  String get statsButton => 'Continue to the statistics';
 }
 
 class EnglishStatisticsScreenStrings implements StatisticsScreenStrings {
@@ -183,6 +183,8 @@ class EnglishStatisticsScreenStrings implements StatisticsScreenStrings {
   String get currentRun => 'Current Run';
   @override
   String get overallStats => 'Overall Statistics';
+  @override
+  String get continueButton => 'Continue to Survey';
 }
 
 class EnglishQrCodeScreenStrings extends QrCodeScreenStrings {
@@ -190,13 +192,31 @@ class EnglishQrCodeScreenStrings extends QrCodeScreenStrings {
 
   @override
   String get title => 'Scan this QR code for our study';
-
   @override
   String get description =>
       'Please participate in our short survey to give us feedback on deepfake detection.';
-
   @override
   String get backButton => 'Back';
+  @override
+  String get automaticTransferTitle => 'Automatic Code Transfer';
+  @override
+  String get automaticTransferDescription =>
+      'Your game code will be transferred automatically.\nJust scan the QR code!';
+  @override
+  String get yourCodeLabel => 'Your Code';
+  @override
+  String get codeWillBeTransferred => 'Will be transferred automatically';
+  @override
+  String get manualFallbackTitle => 'Manual Participation';
+  @override
+  String get manualFallbackDescription =>
+      'Scan the QR code and enter your code in the first question.';
+  @override
+  String get scanQrCode => 'Scan QR Code';
+  @override
+  String get loadingSessionId => 'Loading code...';
+  @override
+  String get continueToNextGame => 'Start Next Game';
 }
 
 class EnglishAuthStrings implements AuthStrings {

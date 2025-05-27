@@ -258,13 +258,11 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent>
                                 // Umfrage QR-Code Button (mittig)
                                 _buildActionButton(
                                   onPressed: () =>
-                                      handleQrCodeNavigation(context),
-                                  text: 'Umfrage',
-                                  icon: Icons.qr_code,
-                                  color: Colors
-                                      .purple, // Andere Farbe zur Differenzierung
+                                      handleNextNavigation(context),
+                                  text: strings.continueButton,
+                                  icon: Icons.arrow_forward,
+                                  color: AppConfig.colors.primary,
                                 ),
-
                                 // Platzhalter zwischen Buttons, nur wenn PIN-Button angezeigt wird
                                 if (widget.state.currentPin == null)
                                   SizedBox(
@@ -285,9 +283,8 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent>
                         ],
                       ),
                     ),
-
-                    // Navigation Button (nur Next, kein Back)
                     NavigationButtons.forGameScreen(
+                      onNext: () => handleNextNavigation(context),
                       onBack: () => handleBackNavigation(context),
                       currentScreen: widget.state.currentScreen,
                     ),

@@ -15,6 +15,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   final UserRepository _userRepository;
   final InternalStatisticsRepository _internalStatsRepository;
 
+  InternalStatisticsRepository get internalStatsRepository =>
+      _internalStatsRepository;
+
   GameBloc({
     required VideoRepository videoRepository,
     required StatisticsRepository statisticsRepository,
@@ -374,8 +377,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         emit(state.copyWith(currentScreen: GameScreen.statistics));
         break;
       case GameScreen.statistics:
-        add(const RestartGame());
+        emit(state.copyWith(currentScreen: GameScreen.qrCode));
         break;
+      case GameScreen.qrCode:
+        add(const RestartGame());
       default:
         break;
     }
@@ -394,7 +399,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       case GameScreen.statistics:
         previousScreen = GameScreen.strategy;
         break;
-
+      case GameScreen.qrCode:
+        previousScreen = GameScreen.statistics;
+        break;
       default:
         return;
     }

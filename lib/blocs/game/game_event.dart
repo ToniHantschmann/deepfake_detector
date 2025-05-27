@@ -94,3 +94,7 @@ class SetInitialConfidenceRating extends GameEvent {
 class SurveyCompleted extends GameEvent {
   const SurveyCompleted();
 }
+
+class CreateStudySession extends GameEvent {
+  const CreateStudySession();
+}

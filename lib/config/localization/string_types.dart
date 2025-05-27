@@ -103,6 +103,7 @@ abstract class StatisticsScreenStrings {
   String get statisticsOf;
   String get currentRun;
   String get overallStats;
+  String get continueButton;
 }
 
 abstract class QrCodeScreenStrings {
@@ -111,6 +112,15 @@ abstract class QrCodeScreenStrings {
   String get title;
   String get description;
   String get backButton;
+  String get automaticTransferTitle;
+  String get automaticTransferDescription;
+  String get yourCodeLabel;
+  String get codeWillBeTransferred;
+  String get manualFallbackTitle;
+  String get manualFallbackDescription;
+  String get scanQrCode;
+  String get loadingSessionId;
+  String get continueToNextGame;
 }
 
 abstract class AuthStrings {
