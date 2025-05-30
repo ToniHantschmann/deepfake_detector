@@ -121,6 +121,7 @@ abstract class QrCodeScreenStrings {
   String get scanQrCode;
   String get loadingSessionId;
   String get continueToNextGame;
+  String get endGameButton;
 }
 
 abstract class AuthStrings {

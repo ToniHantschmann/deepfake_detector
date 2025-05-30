@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../constants/overlay_types.dart';
-import '../screens/qr_code_screen.dart';
 
 /// Mixin that provides navigation functionality for game screens
 /// Can be used by both BaseGameScreen and State classes
@@ -36,6 +35,11 @@ mixin GameNavigationMixin {
   /// Mark a tutorial as completed
   void completeTutorial(BuildContext context, OverlayType tutorialType) {
     dispatchGameEvent(context, OverlayCompleted(tutorialType));
+  }
+
+  /// Quit game and show Intro Screen
+  void handleEndGame(BuildContext context) {
+    dispatchGameEvent(context, const InitializeGame());
   }
 
   /// Make a deepfake selection with proper timing and navigation

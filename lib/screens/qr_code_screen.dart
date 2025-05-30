@@ -159,74 +159,59 @@ class QrCodeScreen extends BaseGameScreen {
                 errorCorrectionLevel: QrErrorCorrectLevel.M,
               ),
             ),
-
-            // Session-ID Anzeige (falls verfügbar)
-            if (sessionId != null) ...[
-              SizedBox(height: AppConfig.layout.spacingXLarge),
-              Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 280),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppConfig.layout.spacingLarge,
-                    vertical: AppConfig.layout.spacingMedium,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppConfig.colors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: AppConfig.colors.primary.withOpacity(0.3),
-                      width: 2,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        strings.yourCodeLabel,
-                        style: AppConfig.textStyles.bodyMedium.copyWith(
-                          color: AppConfig.colors.textSecondary,
-                        ),
-                      ),
-                      SizedBox(height: AppConfig.layout.spacingSmall),
-                      Text(
-                        sessionId,
-                        style: AppConfig.textStyles.h3.copyWith(
-                          color: AppConfig.colors.primary,
-                          letterSpacing: 3,
-                          fontFamily: 'monospace',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-
             SizedBox(height: AppConfig.layout.spacingXLarge * 3),
 
-            // Call-to-Action Button
-            Center(
-              child: SizedBox(
-                width: 400,
-                height: 80,
-                child: ElevatedButton.icon(
-                  onPressed: () => handleNextNavigation(context),
-                  icon: const Icon(Icons.play_arrow,
-                      color: Colors.white, size: 32),
-                  label: Text(
-                    strings.continueToNextGame,
-                    style: AppConfig.textStyles.buttonLarge,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppConfig.colors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
+            SizedBox(height: AppConfig.layout.spacingXLarge),
+
+// Zwei Buttons nebeneinander
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // End Game Button (links, weniger prominent)
+                SizedBox(
+                  width: 280,
+                  height: 80,
+                  child: ElevatedButton.icon(
+                    onPressed: () => handleEndGame(context),
+                    icon: const Icon(Icons.home, color: Colors.white, size: 28),
+                    label: Text(
+                      strings.endGameButton,
+                      style: AppConfig.textStyles.buttonLarge
+                          .copyWith(fontSize: 20),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppConfig.colors.textSecondary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
 
-            SizedBox(height: AppConfig.layout.spacingXLarge),
+                SizedBox(width: AppConfig.layout.spacingXLarge),
+
+                // Continue Game Button (rechts, prominent)
+                SizedBox(
+                  width: 400,
+                  height: 80,
+                  child: ElevatedButton.icon(
+                    onPressed: () => handleNextNavigation(context),
+                    icon: const Icon(Icons.play_arrow,
+                        color: Colors.white, size: 32),
+                    label: Text(
+                      strings.continueToNextGame,
+                      style: AppConfig.textStyles.buttonLarge,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppConfig.colors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

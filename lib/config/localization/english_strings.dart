@@ -217,6 +217,8 @@ class EnglishQrCodeScreenStrings extends QrCodeScreenStrings {
   String get loadingSessionId => 'Loading code...';
   @override
   String get continueToNextGame => 'Start Next Game';
+  @override
+  String get endGameButton => 'End Game';
 }
 
 class EnglishAuthStrings implements AuthStrings {

@@ -220,6 +220,8 @@ class GermanQrCodeScreenStrings extends QrCodeScreenStrings {
   String get loadingSessionId => 'Code wird geladen...';
   @override
   String get continueToNextGame => 'Nächstes Spiel starten';
+  @override
+  String get endGameButton => 'Spiel beenden';
 }
 
 class GermanAuthStrings implements AuthStrings {
