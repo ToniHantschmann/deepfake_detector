@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../config/localization/string_types.dart';
 import '../constants/overlay_types.dart';
 import '../widgets/overlays/confidence_survey_overlay.dart';
-import '../widgets/common/language_selector.dart'; // Import the language selector widget
+import '../widgets/overlays/login_overlay.dart';
+import '../widgets/common/language_selector.dart';
 import 'base_game_screen.dart';
 import '../blocs/game/game_state.dart';
 import '../blocs/game/game_event.dart';
@@ -26,73 +27,129 @@ class IntroductionScreen extends BaseGameScreen {
 
   @override
   Widget buildGameScreen(BuildContext context, GameState state) {
-    final strings = AppConfig.getStrings(state.locale).introduction;
+    return _IntroductionScreenContent(state: state);
+  }
+}
 
-    return Scaffold(
-      backgroundColor: AppConfig.colors.background,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(AppConfig.layout.screenPaddingHorizontal),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: AppConfig.layout.spacingMedium),
-                  _buildHeader(strings),
-                  SizedBox(height: AppConfig.layout.spacingXLarge),
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: _buildLeftColumn(strings),
-                        ),
-                        SizedBox(width: AppConfig.layout.spacingXLarge),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildRightColumnContent(strings),
-                              SizedBox(
-                                  height: AppConfig.layout.spacingXLarge * 2),
-                              _buildQuickStartButton(context, strings),
-                            ],
+class _IntroductionScreenContent extends StatefulWidget {
+  final GameState state;
+
+  const _IntroductionScreenContent({
+    Key? key,
+    required this.state,
+  }) : super(key: key);
+
+  @override
+  State<_IntroductionScreenContent> createState() =>
+      _IntroductionScreenContentState();
+}
+
+class _IntroductionScreenContentState extends State<_IntroductionScreenContent>
+    with GameNavigationMixin {
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppConfig.getStrings(widget.state.locale).introduction;
+
+    return BlocListener<GameBloc, GameState>(
+      listener: (context, state) {
+        // Listener für waitingForSurvey Status - zeigt automatisch die Survey an
+        if (state.status == GameStatus.waitingForSurvey &&
+            !state.hasOverlayBeenShown(OverlayType.confidenceSurvey)) {
+          _showConfidenceSurvey(context);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppConfig.colors.background,
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Padding(
+                padding:
+                    EdgeInsets.all(AppConfig.layout.screenPaddingHorizontal),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: AppConfig.layout.spacingMedium),
+                    _buildHeader(strings),
+                    SizedBox(height: AppConfig.layout.spacingXLarge),
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: _buildLeftColumn(strings),
                           ),
-                        ),
-                      ],
+                          SizedBox(width: AppConfig.layout.spacingXLarge),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildRightColumnContent(strings),
+                                SizedBox(
+                                    height: AppConfig.layout.spacingXLarge * 2),
+                                _buildQuickStartButton(context, strings),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            // Add Language Selector to the top right corner
-            Positioned(
-              top: 16.0,
-              right: 16.0,
-              child: const LanguageSelector(),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => handleLoginNavigation(context),
-        icon: const Icon(Icons.login),
-        label: Text(
-          strings.loginButton,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18, // Größere Schrift
+              // Add Language Selector to the top right corner
+              Positioned(
+                top: 16.0,
+                right: 16.0,
+                child: const LanguageSelector(),
+              ),
+            ],
           ),
         ),
-        backgroundColor: AppConfig.colors.primary,
-        // Größerer Button
-        extendedPadding:
-            const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _showLoginDialog(context),
+          icon: const Icon(Icons.login),
+          label: Text(
+            strings.loginButton,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+          backgroundColor: AppConfig.colors.primary,
+          extendedPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        ),
       ),
     );
+  }
+
+  // Login Dialog direkt im IntroductionScreen behandeln
+  Future<void> _showLoginDialog(BuildContext context) async {
+    final bloc = context.read<GameBloc>();
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.8),
+      builder: (dialogContext) => BlocProvider.value(
+        value: bloc,
+        child: const LoginOverlay(),
+      ),
+    );
+
+    // Reagiere auf das Ergebnis des Login Dialogs
+    if (result == 'continue_without_pin') {
+      debugPrint("quickStartGame wird aufgerufen");
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _handleStartGame(context);
+        }
+      });
+    }
+    // Bei result == 'success' ist der Nutzer bereits eingeloggt und das Spiel läuft
+    // Bei result == null wurde der Dialog abgebrochen - nichts zu tun
   }
 
   Widget _buildHeader(IntroductionScreenStrings strings) {
@@ -127,7 +184,6 @@ class IntroductionScreen extends BaseGameScreen {
                     width: 2,
                   ),
                 ),
-                // Hier haben wir das einfache Image durch die Morphing-Animation ersetzt
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: MorphingAnimation(
@@ -172,13 +228,11 @@ class IntroductionScreen extends BaseGameScreen {
         Text(strings.subtitle,
             style: AppConfig.textStyles.h3.copyWith(fontSize: 36)),
         SizedBox(height: AppConfig.layout.spacingLarge),
-        // Nummerierte Liste aus Konfiguration-Strings
         ..._buildNumberedList(strings.steps),
       ],
     );
   }
 
-  // Hilfsmethode zum Erstellen der nummerierten Liste
   List<Widget> _buildNumberedList(List<String> items) {
     return items.asMap().entries.map((entry) {
       final index = entry.key;
@@ -229,34 +283,32 @@ class IntroductionScreen extends BaseGameScreen {
   }
 
   void _handleStartGame(BuildContext context) {
-    // Zuerst prüfen, ob die Umfrage bereits gezeigt wurde
     final gameBloc = context.read<GameBloc>();
     final bool showSurvey =
         !gameBloc.state.hasOverlayBeenShown(OverlayType.confidenceSurvey);
 
     if (showSurvey) {
-      // Sofort Dialog anzeigen, ohne vorher den State zu ändern
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (dialogContext) => BlocProvider.value(
-          value: gameBloc,
-          child: ConfidenceSurveyDialog(
-            onComplete: () {
-              // Dialog schließen
-              Navigator.of(dialogContext).pop();
-
-              // Jetzt das Spiel starten, nachdem die Umfrage abgeschlossen wurde
-              // Die Events SetInitialConfidenceRating und OverlayCompleted werden bereits
-              // in _handleSubmit() der ConfidenceSurveyDialog-Klasse gesendet
-              handleQuickstartGame(context);
-            },
-          ),
-        ),
-      );
+      _showConfidenceSurvey(context);
     } else {
-      // Wenn keine Umfrage nötig ist, einfach das Spiel starten
       handleQuickstartGame(context);
     }
+  }
+
+  // Confidence Survey anzeigen
+  void _showConfidenceSurvey(BuildContext context) {
+    final gameBloc = context.read<GameBloc>();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => BlocProvider.value(
+        value: gameBloc,
+        child: ConfidenceSurveyDialog(
+          onComplete: () {
+            Navigator.of(dialogContext).pop();
+            gameBloc.add(const QuickStartGame());
+          },
+        ),
+      ),
+    );
   }
 }

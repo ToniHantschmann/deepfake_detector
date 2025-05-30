@@ -1,4 +1,5 @@
 import 'package:deepfake_detector/blocs/game/game_language_extension.dart';
+import 'package:deepfake_detector/mixins/game_navigation_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/game/game_bloc.dart';
@@ -9,14 +10,14 @@ import '../auth/pin_display.dart';
 import '../auth/number_pad.dart';
 import '../../config/app_config.dart';
 
-class LoginOverlay extends StatefulWidget {
+class LoginOverlay extends StatefulWidget with GameNavigationMixin {
   const LoginOverlay({Key? key}) : super(key: key);
 
   @override
   State<LoginOverlay> createState() => _LoginOverlayState();
 }
 
-class _LoginOverlayState extends State<LoginOverlay> {
+class _LoginOverlayState extends State<LoginOverlay> with GameNavigationMixin {
   String _pin = '';
   String? _errorMessage;
 
@@ -51,13 +52,17 @@ class _LoginOverlayState extends State<LoginOverlay> {
     Navigator.of(context).pop();
   }
 
+  void _handleContinueWithoutPin() {
+    Navigator.of(context).pop('continue_without_pin');
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppConfig.getStrings(context.currentLocale).auth;
     return BlocConsumer<GameBloc, GameState>(
       listener: (context, state) {
         if (state.status == GameStatus.playing) {
-          Navigator.of(context).pop();
+          Navigator.of(context).pop("success");
         } else if (state.status == GameStatus.loginError) {
           setState(() {
             _errorMessage = state.errorMessage;
@@ -95,9 +100,7 @@ class _LoginOverlayState extends State<LoginOverlay> {
             ),
             SizedBox(height: AppConfig.layout.spacingLarge),
             TextButton(
-              onPressed: () {
-                context.read<GameBloc>().add(const QuickStartGame());
-              },
+              onPressed: _handleContinueWithoutPin,
               child: Text(
                 strings.continueWithoutPin,
                 style: AppConfig.textStyles.bodyMedium.copyWith(

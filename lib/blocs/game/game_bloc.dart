@@ -423,6 +423,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       generatedPin: null,
       currentStrategyIndex: 0,
       viewedStrategyIds: {},
+      shownOverlays: {},
     ));
   }
 

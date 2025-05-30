@@ -1,4 +1,3 @@
-import 'package:deepfake_detector/screens/qr_code_screen.dart';
 import 'package:deepfake_detector/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +10,6 @@ import '../screens/introduction_screen.dart';
 import 'decision_screen.dart';
 import '../screens/result_screen.dart';
 import '../screens/strategies_screen.dart';
-import '../widgets/overlays/login_overlay.dart';
 import '../blocs/game/game_bloc.dart';
 import '../blocs/game/game_event.dart';
 import '../blocs/game/game_state.dart';
@@ -28,8 +26,7 @@ class GameWrapper extends StatelessWidget {
         videoRepository: VideoRepository(),
         statisticsRepository: StatisticsRepository(),
         userRepository: UserRepository(),
-        internalStatsRepository:
-            InternalStatisticsRepository(), // Neu hinzugefügt
+        internalStatsRepository: InternalStatisticsRepository(),
       ),
       child: const GameWrapperView(),
     );
@@ -46,16 +43,7 @@ class GameWrapperView extends StatefulWidget {
 class _GameWrapperViewState extends State<GameWrapperView> {
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GameBloc, GameState>(
-      listenWhen: (previous, current) =>
-          current.status == GameStatus.showLogin &&
-          current.currentScreen == GameScreen.login &&
-          previous.status != GameStatus.loginError,
-      listener: (context, state) {
-        if (state.currentScreen == GameScreen.login) {
-          _showLoginDialog(context);
-        }
-      },
+    return BlocBuilder<GameBloc, GameState>(
       buildWhen: (previous, current) =>
           previous.status != current.status ||
           previous.currentScreen != current.currentScreen,
@@ -96,23 +84,6 @@ class _GameWrapperViewState extends State<GameWrapperView> {
     );
   }
 
-  Future<void> _showLoginDialog(BuildContext context) async {
-    final bloc = context.read<GameBloc>();
-    await showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.8),
-      builder: (dialogContext) => BlocProvider.value(
-        value: bloc,
-        child: const LoginOverlay(),
-      ),
-    );
-
-    if (mounted && bloc.state.status != GameStatus.playing) {
-      bloc.add(const CancelLogin());
-    }
-  }
-
   Widget _buildCurrentScreen(GameState state) {
     switch (state.currentScreen) {
       case GameScreen.introduction:
@@ -138,9 +109,6 @@ class _GameWrapperViewState extends State<GameWrapperView> {
 
       case GameScreen.statistics:
         return const StatisticsScreen();
-
-      case GameScreen.qrCode:
-        return const QrCodeScreen();
 
       default:
         return const IntroductionScreen();
