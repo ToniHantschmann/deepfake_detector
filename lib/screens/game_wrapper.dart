@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/screens/qr_code_screen.dart';
 import 'package:deepfake_detector/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -109,6 +110,9 @@ class _GameWrapperViewState extends State<GameWrapperView> {
 
       case GameScreen.statistics:
         return const StatisticsScreen();
+
+      case GameScreen.qrCode:
+        return const QrCodeScreen();
 
       default:
         return const IntroductionScreen();

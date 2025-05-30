@@ -246,8 +246,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent>
                               children: [
                                 // Nächstes Spiel Button (links)
                                 _buildActionButton(
-                                  onPressed: () =>
-                                      handleNextNavigation(context),
+                                  onPressed: () => handleRestartGame(context),
                                   text: strings.nextGameButton,
                                   icon: Icons.play_arrow,
                                   color: AppConfig.colors.primary,
