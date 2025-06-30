@@ -194,19 +194,19 @@ class GermanQrCodeScreenStrings extends QrCodeScreenStrings {
   const GermanQrCodeScreenStrings();
 
   @override
-  String get title => 'Scannen Sie diesen QR-Code für unsere Studie';
+  String get title => 'Scanne diesen QR-Code für unsere Studie';
   @override
   String get description =>
-      'Bitte nehmen Sie an unserer kurzen Umfrage teil, um uns Feedback zur Deepfake-Erkennung zu geben.';
+      'Bitte nimm an unserer kurzen Umfrage teil, um uns Feedback zur Deepfake-Erkennung zu geben.';
   @override
   String get backButton => 'Zurück';
   @override
   String get automaticTransferTitle => 'Automatische Code-Übertragung';
   @override
   String get automaticTransferDescription =>
-      'Ihr Spielcode wird automatisch übertragen.\nScannen Sie einfach den QR-Code!';
+      'Dein Spielcode wird automatisch übertragen.\nScanne einfach den QR-Code!';
   @override
-  String get yourCodeLabel => 'Ihr Code';
+  String get yourCodeLabel => 'Dein Code';
   @override
   String get codeWillBeTransferred => 'Wird automatisch übertragen';
   @override
@@ -377,7 +377,7 @@ class GermanSurveyStrings implements SurveyStrings {
   String get confidenceTitle => 'Selbsteinschätzung';
   @override
   String get confidenceQuestion =>
-      'Wie zuversichtlich sind Sie, Deepfake-Videos erkennen zu können?';
+      'Wie würdest du deine Fähigkeit einschätzen, Deepfake-Videos zu erkennen?';
   @override
   String get confidenceLow => 'Sehr unsicher';
   @override
@@ -431,7 +431,7 @@ class GermanStrategyCardStrings implements StrategyCardStrings {
   String get facialFeaturesTitle => 'Altersmerkmale prüfen';
   @override
   String get facialFeaturesDescription =>
-      'Achten Sie auf die Wangen und die Stirn. Wirkt die Haut zu glatt oder zu faltig? Ist das Alter der Haut ähnlich wie das Alter der Haare und Augen? DeepFakes können in einigen Dimensionen inkongruent sein.';
+      'Achte auf die Wangen und die Stirn. Wirkt die Haut zu glatt oder zu faltig? Ist das Alter der Haut ähnlich wie das Alter der Haare und Augen? DeepFakes können in einigen Dimensionen inkongruent sein.';
   @override
   String get facialFeaturesOriginal => 'Natürliche Alterung';
   @override
