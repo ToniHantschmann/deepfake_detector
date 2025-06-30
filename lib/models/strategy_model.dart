@@ -99,12 +99,12 @@ List<Strategy> getImplementedStrategies(BuildContext context) {
       description: strings.blinkingDescription,
       animation: const BlinkingAnimation(),
     ),
-    Strategy(
+    /*Strategy(
       id: 'lip_sync',
       title: strings.lipSyncTitle,
       description: strings.lipSyncDescription,
       animation: const LipSyncAnimation(),
-    ),
+    ),*/
     Strategy(
       id: 'research',
       title: strings.researchTitle,
