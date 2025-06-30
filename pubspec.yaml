@@ -60,6 +60,7 @@ dev_dependencies:
   mockito: ^5.4.5
   build_runner: ^2.4.8
   bloc_test: ^9.1.7
+  msix: ^3.16.9
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -67,6 +68,17 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+msix_config:
+  display_name: Deepfake Detector
+  publisher_display_name: DeepfakeDetector
+  identity_name: com.deepfake.detector
+  capabilities: 'runFullTrust'
+  app_installer:
+    publish_folder_path: build/windows
+  certificate_path: deepfake_certificate.pfx
+  certificate_password: DeepfakeDetector2024
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -87,6 +99,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
