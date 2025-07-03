@@ -65,6 +65,8 @@ class _ResultScreenContentState extends State<_ResultScreenContent>
   bool _showTutorialOverride = true;
   // Track if we've shown the result feedback overlay
   bool _hasShownResultFeedback = false;
+  // Track if the result feedback has been dismissed
+  bool _resultFeedbackDismissed = false;
 
   @override
   void initState() {
@@ -95,10 +97,15 @@ class _ResultScreenContentState extends State<_ResultScreenContent>
       barrierColor: Colors.black.withOpacity(0.7),
       builder: (BuildContext dialogContext) {
         return ResultFeedbackOverlay(
-          isCorrect: widget.state.isCorrectGuess!,
-          strings: widget.strings,
-          onDismiss: () => Navigator.of(dialogContext).pop(),
-        );
+            isCorrect: widget.state.isCorrectGuess!,
+            strings: widget.strings,
+            onDismiss: () {
+              Navigator.of(dialogContext).pop();
+              // Mark result feedback as dismissed
+              setState(() {
+                _resultFeedbackDismissed = true;
+              });
+            });
       },
     );
   }
@@ -242,7 +249,9 @@ class _ResultScreenContentState extends State<_ResultScreenContent>
         ),
 
         // Tutorial Overlay, falls aktiviert
-        if (widget.showTutorial && _showTutorialOverride)
+        if (widget.showTutorial &&
+            _showTutorialOverride &&
+            _resultFeedbackDismissed)
           VideoTapTutorialOverlay(
             onComplete: _handleTutorialComplete,
           ),
