@@ -352,7 +352,8 @@ class EnglishTutorialStrings implements TutorialStrings {
   const EnglishTutorialStrings();
 
   @override
-  String get swipeTooltip => 'Swipe to see more strategies!';
+  String get swipeTooltip =>
+      '"Tap on the arrows or swipe to see more strategies!';
   @override
   String get touchToContinue => 'Touch anywhere to continue';
   @override

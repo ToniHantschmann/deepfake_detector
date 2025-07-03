@@ -356,7 +356,8 @@ class GermanTutorialStrings implements TutorialStrings {
   const GermanTutorialStrings();
 
   @override
-  String get swipeTooltip => 'Wische, um weitere Strategien zu sehen!';
+  String get swipeTooltip =>
+      'Tippe auf die Pfeile oder Wische, um weitere Strategien zu sehen!';
   @override
   String get touchToContinue => 'Tippe irgendwo, um fortzufahren';
   @override
