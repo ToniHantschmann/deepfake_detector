@@ -238,8 +238,11 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent>
 
                           // Buttons wie im StrategiesScreen
                           Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: AppConfig.layout.spacingLarge,
+                            padding: EdgeInsets.only(
+                              left: AppConfig.layout.screenPaddingHorizontal,
+                              right: AppConfig.layout.screenPaddingHorizontal,
+                              top: AppConfig.layout.spacingLarge * 1.5,
+                              bottom: AppConfig.layout.spacingXLarge * 1.5,
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -337,7 +340,7 @@ class _StatisticsScreenContentState extends State<_StatisticsScreenContent>
   }) {
     return SizedBox(
       width: 500,
-      height: 90,
+      height: 100,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, color: Colors.white),

@@ -152,10 +152,11 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent>
                             ),
                             // Buttons Container
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    AppConfig.layout.screenPaddingHorizontal,
-                                vertical: AppConfig.layout.spacingLarge,
+                              padding: EdgeInsets.only(
+                                left: AppConfig.layout.screenPaddingHorizontal,
+                                right: AppConfig.layout.screenPaddingHorizontal,
+                                top: AppConfig.layout.spacingLarge * 1.5,
+                                bottom: AppConfig.layout.spacingXLarge * 1.5,
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -207,8 +208,8 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent>
     required Color color,
   }) {
     return SizedBox(
-      width: 500,
-      height: 90,
+      width: 600,
+      height: 100,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, color: Colors.white),
