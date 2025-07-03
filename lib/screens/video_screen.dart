@@ -212,13 +212,16 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            SizedBox(
+                height:
+                    AppConfig.layout.spacingLarge), // Etwas Abstand nach oben
             _buildVideoPlayer(constraints),
             if (_isInitialized) ...[
-              SizedBox(height: AppConfig.layout.spacingSmall),
+              SizedBox(height: AppConfig.layout.spacingLarge),
               _buildProgressBar(),
               SizedBox(height: AppConfig.layout.spacingMedium),
               _buildControlButtons(),
-              SizedBox(height: AppConfig.layout.spacingMedium),
+              SizedBox(height: AppConfig.layout.spacingLarge),
             ],
           ],
         ),
@@ -227,32 +230,50 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   }
 
   Widget _buildVideoPlayer(BoxConstraints constraints) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: constraints.maxHeight - AppConfig.layout.spacingXLarge * 6,
-      ),
-      child: AspectRatio(
-        aspectRatio: AppConfig.video.minAspectRatio,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (_isInitialized) ...[
-              media_kit.Video(controller: _controller),
-              _buildTapToPlayOverlay(),
-            ] else
-              Container(
-                color: AppConfig.colors.backgroundDark,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: AppConfig.colors.textPrimary,
+    // Berechne die maximale Breite basierend auf dem Konfigurationsfaktor
+    final screenWidth = MediaQuery.of(context).size.width;
+    final maxVideoWidth = screenWidth * AppConfig.video.mainVideoMaxWidthFactor;
+
+    // Berechne die entsprechende Höhe basierend auf dem Seitenverhältnis
+    final maxVideoHeight = maxVideoWidth / AppConfig.video.minAspectRatio;
+
+    // Stelle sicher, dass das Video nicht höher als verfügbar ist
+    final availableHeight =
+        constraints.maxHeight - AppConfig.layout.spacingXLarge * 6;
+    final videoHeight =
+        maxVideoHeight > availableHeight ? availableHeight : maxVideoHeight;
+    final videoWidth = videoHeight * AppConfig.video.minAspectRatio;
+
+    return Center(
+      // Zentriere das Video
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: videoWidth,
+          maxHeight: videoHeight,
+        ),
+        child: AspectRatio(
+          aspectRatio: AppConfig.video.minAspectRatio,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (_isInitialized) ...[
+                media_kit.Video(controller: _controller),
+                _buildTapToPlayOverlay(),
+              ] else
+                Container(
+                  color: AppConfig.colors.backgroundDark,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: AppConfig.colors.textPrimary,
+                    ),
                   ),
                 ),
-              ),
-            if (_isBuffering && _isInitialized)
-              CircularProgressIndicator(
-                color: AppConfig.colors.textPrimary,
-              ),
-          ],
+              if (_isBuffering && _isInitialized)
+                CircularProgressIndicator(
+                  color: AppConfig.colors.textPrimary,
+                ),
+            ],
+          ),
         ),
       ),
     );

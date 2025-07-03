@@ -212,6 +212,10 @@ class AppVideo {
   final int minResolution = 720; // height in pixels
   final int targetBitrate = 2500000; // bits per second
   final double introImageAspectRatio = 4 / 3;
+
+  // Video Size Settings
+  final double mainVideoMaxWidthFactor = 0.6; // 60% der Bildschirmbreite
+  final double popupVideoMaxWidthFactor = 0.5; // 50% der Bildschirmbreite
 }
 
 class AppTextStyles {
