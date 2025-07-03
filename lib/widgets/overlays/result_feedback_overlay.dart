@@ -16,7 +16,7 @@ class ResultFeedbackOverlay extends StatefulWidget {
     required this.isCorrect,
     required this.strings,
     required this.onDismiss,
-    this.autoDismissDelay = const Duration(seconds: 5),
+    this.autoDismissDelay = const Duration(seconds: 2),
   }) : super(key: key);
 
   @override
