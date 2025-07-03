@@ -94,51 +94,137 @@ class _StrategyCarouselState extends State<StrategyCarousel> {
     }
   }
 
+  void _navigateToPreviousStrategy() {
+    if (_pageController.hasClients) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _navigateToNextStrategy() {
+    if (_pageController.hasClients) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          child: ScrollConfiguration(
-            behavior: AppScrollBehavior(),
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: _handlePageChanged,
-              scrollBehavior: AppScrollBehavior(),
-              physics: const PageScrollPhysics(),
-              itemBuilder: (context, index) {
-                final actualIndex = index % widget.strategies.length;
-                final strategy = widget.strategies[actualIndex];
-                final hasBeenViewed =
-                    widget.viewedStrategyIds.contains(strategy.id);
+          child: Stack(
+            children: [
+              ScrollConfiguration(
+                behavior: AppScrollBehavior(),
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: _handlePageChanged,
+                  scrollBehavior: AppScrollBehavior(),
+                  physics: const PageScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final actualIndex = index % widget.strategies.length;
+                    final strategy = widget.strategies[actualIndex];
+                    final hasBeenViewed =
+                        widget.viewedStrategyIds.contains(strategy.id);
 
-                return AnimatedBuilder(
-                  animation: _pageController,
-                  builder: (context, child) {
-                    double value = 1.0;
-                    if (_pageController.position.haveDimensions) {
-                      value = _pageController.page! - index;
-                    } else {
-                      // Provide initial scaling before scrolling
-                      value = _currentPage.toDouble() - index;
-                    }
-                    value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
-                    return Transform.scale(
-                      scale: value,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppConfig.layout.spacingMedium,
-                        ),
-                        child: StrategyCard(
-                          strategy: strategy,
-                          hasBeenViewed: hasBeenViewed,
-                        ),
-                      ),
+                    return AnimatedBuilder(
+                      animation: _pageController,
+                      builder: (context, child) {
+                        double value = 1.0;
+                        if (_pageController.position.haveDimensions) {
+                          value = _pageController.page! - index;
+                        } else {
+                          // Provide initial scaling before scrolling
+                          value = _currentPage.toDouble() - index;
+                        }
+                        value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
+                        return Transform.scale(
+                          scale: value,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppConfig.layout.spacingMedium,
+                            ),
+                            child: StrategyCard(
+                              strategy: strategy,
+                              hasBeenViewed: hasBeenViewed,
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
+              ),
+
+              // Navigation Button für vorherige Strategie
+              Positioned(
+                left: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: AppConfig.colors.backgroundDark.withOpacity(0.8),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.chevron_left,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                      onPressed: _navigateToPreviousStrategy,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Navigation Button für nächste Strategie
+              Positioned(
+                right: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: AppConfig.colors.backgroundDark.withOpacity(0.8),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.chevron_right,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                      onPressed: _navigateToNextStrategy,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Padding(
