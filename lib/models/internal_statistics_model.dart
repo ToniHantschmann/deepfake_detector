@@ -153,13 +153,21 @@ class InternalStatistics {
   }
 
   // Spieler hinzufügen oder aktualisieren
-  InternalStatistics updatePlayer(InternalPlayerStatistics updatedPlayer) {
-    final playerIndex = players.indexWhere((p) => p.id == updatedPlayer.id);
+  InternalStatistics updatePlayer(
+    InternalPlayerStatistics updatedPlayer, {
+    String? replacePlayerId,
+  }) {
     final List<InternalPlayerStatistics> updatedPlayers = List.from(players);
 
+    // Bestimme welche ID zum Suchen verwendet werden soll
+    final searchId = replacePlayerId ?? updatedPlayer.id;
+    final playerIndex = updatedPlayers.indexWhere((p) => p.id == searchId);
+
     if (playerIndex >= 0) {
+      // Existierenden Spieler ersetzen
       updatedPlayers[playerIndex] = updatedPlayer;
     } else {
+      // Neuen Spieler hinzufügen (falls nicht gefunden)
       updatedPlayers.add(updatedPlayer);
     }
 
