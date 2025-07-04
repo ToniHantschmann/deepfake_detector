@@ -60,7 +60,7 @@ mixin GameNavigationMixin {
               state.userGuessIsDeepfake == isDeepfake)
           .then((_) {
         // Now that we're sure the state is updated, navigate
-        bloc.add(MakeDeepfakeDecision(isDeepfake));
+        //bloc.add(MakeDeepfakeDecision(isDeepfake));
         bloc.add(const NextScreen());
       });
     });
