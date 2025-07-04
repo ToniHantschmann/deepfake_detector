@@ -424,6 +424,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       currentStrategyIndex: 0,
       viewedStrategyIds: {},
       shownOverlays: {},
+      playerId: null,
     ));
   }
 
@@ -458,6 +459,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (state.currentPin != null) {
       return state.currentPin.toString();
     }
+    //TODO: in pin service auslagern?
     return 'temp_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}';
   }
 
@@ -499,6 +501,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       SetInitialConfidenceRating event, Emitter<GameState> emit) async {
     try {
       // Speichere den Wert in internal_statistics_repository wenn nötig
+      // warum nur speichern wenn nötig? das muss bei neuen Spielern immer
+      // gespeichert werden
       if (state.playerId != null) {
         await _internalStatsRepository.recordConfidenceRating(
           playerId: state.playerId!,

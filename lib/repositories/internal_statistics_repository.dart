@@ -65,6 +65,7 @@ class InternalStatisticsRepository {
     if (playerIndex >= 0) {
       return stats.players[playerIndex];
     } else {
+      _cachedStatistics = null;
       return InternalPlayerStatistics.newPlayer(playerId);
     }
   }
@@ -96,7 +97,7 @@ class InternalStatisticsRepository {
 
       final updatedPlayer = player.copyWith(
         loginCount: player.loginCount + 1,
-        hasReturnedWithPin: true,
+        hasReturnedWithPin: player.loginCount > 0,
       );
 
       final updatedStats = stats.updatePlayer(updatedPlayer);
@@ -116,12 +117,15 @@ class InternalStatisticsRepository {
       final tempPlayer = await getOrCreatePlayer(tempPlayerId);
 
       // Aktualisiere temporären Spieler
-      final updatedPlayer = tempPlayer.copyWith(
+      final permanentPlayer = tempPlayer.copyWith(
         id: newPin,
         hasPinRegistered: true,
       );
 
-      final updatedStats = stats.updatePlayer(updatedPlayer);
+      final updatedStats = stats.updatePlayer(
+        permanentPlayer,
+        replacePlayerId: tempPlayerId,
+      );
       await saveStatistics(updatedStats);
     } catch (e) {
       debugPrint('Error recording PIN registration: $e');
