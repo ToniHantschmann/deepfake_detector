@@ -283,15 +283,7 @@ class _IntroductionScreenContentState extends State<_IntroductionScreenContent>
   }
 
   void _handleStartGame(BuildContext context) {
-    final gameBloc = context.read<GameBloc>();
-    final bool showSurvey =
-        !gameBloc.state.hasOverlayBeenShown(OverlayType.confidenceSurvey);
-
-    if (showSurvey) {
-      _showConfidenceSurvey(context);
-    } else {
-      handleQuickstartGame(context);
-    }
+    handleQuickstartGame(context);
   }
 
   // Confidence Survey anzeigen
@@ -305,7 +297,7 @@ class _IntroductionScreenContentState extends State<_IntroductionScreenContent>
         child: ConfidenceSurveyDialog(
           onComplete: () {
             Navigator.of(dialogContext).pop();
-            gameBloc.add(const QuickStartGame());
+            //gameBloc.add(const QuickStartGame());
           },
         ),
       ),
