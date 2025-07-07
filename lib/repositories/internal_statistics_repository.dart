@@ -97,8 +97,9 @@ class InternalStatisticsRepository {
 
       final updatedPlayer = player.copyWith(
         loginCount: player.loginCount + 1,
-        hasReturnedWithPin: player.loginCount > 0,
+        hasReturnedWithPin: true,
       );
+      debugPrint("pin login recorded");
 
       final updatedStats = stats.updatePlayer(updatedPlayer);
       await saveStatistics(updatedStats);
@@ -193,6 +194,7 @@ class InternalStatisticsRepository {
 
         final updatedStats = stats.updatePlayer(updatedPlayer);
         await saveStatistics(updatedStats);
+        debugPrint("rating gespeichert: $rating");
       }
     } catch (e) {
       debugPrint('Error recording confidence rating: $e');
