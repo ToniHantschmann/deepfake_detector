@@ -286,12 +286,13 @@ class _IntroductionScreenContentState extends State<_IntroductionScreenContent>
       barrierDismissible: false,
       builder: (dialogContext) => BlocProvider.value(
         value: gameBloc,
-        child: ConfidenceSurveyDialog(
-          onComplete: () {
-            Navigator.of(dialogContext).pop();
-            //gameBloc.add(const QuickStartGame());
-          },
-        ),
+        child: ConfidenceSurveyDialog(onComplete: () {
+          Navigator.of(dialogContext).pop();
+          //gameBloc.add(const QuickStartGame());
+        }, onClose: () {
+          Navigator.of(dialogContext).pop();
+          gameBloc.add(const InitializeGame());
+        }),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:deepfake_detector/mixins/game_navigation_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/game/game_bloc.dart';
@@ -6,12 +7,14 @@ import '../../blocs/game/game_language_extension.dart';
 import '../../config/app_config.dart';
 import '../../constants/overlay_types.dart';
 
-class ConfidenceSurveyDialog extends StatelessWidget {
+class ConfidenceSurveyDialog extends StatelessWidget with GameNavigationMixin {
   final VoidCallback onComplete;
+  final VoidCallback? onClose;
 
   const ConfidenceSurveyDialog({
     Key? key,
     required this.onComplete,
+    this.onClose,
   }) : super(key: key);
 
   @override
@@ -42,7 +45,10 @@ class ConfidenceSurveyDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Header
+            // Header with close button (only if needed)
+            if (onClose != null) _buildHeader(context),
+
+            // Title
             Text(
               strings.confidenceTitle,
               style: AppConfig.textStyles.overlayTitle,
@@ -92,6 +98,20 @@ class ConfidenceSurveyDialog extends StatelessWidget {
     );
   }
 
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: onClose!,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+        ),
+      ],
+    );
+  }
+
   Widget _buildRatingButton(int value, BuildContext context) {
     return GestureDetector(
       onTap: () => _handleRatingSelection(value, context),
@@ -126,18 +146,10 @@ class ConfidenceSurveyDialog extends StatelessWidget {
   }
 
   void _handleRatingSelection(int rating, BuildContext context) {
-    final gameBloc = context.read<GameBloc>();
-
-    // Save the confidence rating in state
-    gameBloc.add(SetInitialConfidenceRating(rating));
-
-    // Mark the confidence survey as shown
-    gameBloc.add(const OverlayCompleted(OverlayType.confidenceSurvey));
-
-    // Proceed with the game
-    gameBloc.add(const SurveyCompleted());
-
-    // Close the dialog
+    dispatchGameEvent(context, SetInitialConfidenceRating(rating));
+    dispatchGameEvent(
+        context, const OverlayCompleted(OverlayType.confidenceSurvey));
+    dispatchGameEvent(context, const SurveyCompleted());
     onComplete();
   }
 }
