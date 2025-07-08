@@ -279,21 +279,23 @@ class _IntroductionScreenContentState extends State<_IntroductionScreenContent>
   }
 
   // Confidence Survey anzeigen
-  void _showConfidenceSurvey(BuildContext context) {
+  void _showConfidenceSurvey(BuildContext context) async {
     final gameBloc = context.read<GameBloc>();
-    showDialog(
+    final result = await showDialog<bool>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (dialogContext) => BlocProvider.value(
         value: gameBloc,
         child: ConfidenceSurveyDialog(onComplete: () {
           Navigator.of(dialogContext).pop();
-          //gameBloc.add(const QuickStartGame());
         }, onClose: () {
           Navigator.of(dialogContext).pop();
           gameBloc.add(const InitializeGame());
         }),
       ),
     );
+    if (result == false) {
+      gameBloc.add(const InitializeGame());
+    }
   }
 }
