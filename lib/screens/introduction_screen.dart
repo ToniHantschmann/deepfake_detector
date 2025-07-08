@@ -20,9 +20,10 @@ class IntroductionScreen extends BaseGameScreen {
 
   @override
   bool shouldRebuild(GameState previous, GameState current) {
-    return previous.currentScreen != current.currentScreen ||
-        previous.status != current.status ||
-        previous.locale != current.locale;
+    if (current.status != GameStatus.initial) {
+      return false;
+    }
+    return previous.locale != current.locale;
   }
 
   @override
@@ -50,78 +51,68 @@ class _IntroductionScreenContentState extends State<_IntroductionScreenContent>
   Widget build(BuildContext context) {
     final strings = AppConfig.getStrings(widget.state.locale).introduction;
 
-    return BlocListener<GameBloc, GameState>(
-      listener: (context, state) {
-        // Listener für waitingForSurvey Status - zeigt automatisch die Survey an
-        if (state.status == GameStatus.waitingForSurvey &&
-            !state.hasOverlayBeenShown(OverlayType.confidenceSurvey)) {
-          _showConfidenceSurvey(context);
-        }
-      },
-      child: Scaffold(
-        backgroundColor: AppConfig.colors.background,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Padding(
-                padding:
-                    EdgeInsets.all(AppConfig.layout.screenPaddingHorizontal),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: AppConfig.layout.spacingMedium),
-                    _buildHeader(strings),
-                    SizedBox(height: AppConfig.layout.spacingXLarge),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: _buildLeftColumn(strings),
+    return Scaffold(
+      backgroundColor: AppConfig.colors.background,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(AppConfig.layout.screenPaddingHorizontal),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: AppConfig.layout.spacingMedium),
+                  _buildHeader(strings),
+                  SizedBox(height: AppConfig.layout.spacingXLarge),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: _buildLeftColumn(strings),
+                        ),
+                        SizedBox(width: AppConfig.layout.spacingXLarge),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildRightColumnContent(strings),
+                              SizedBox(
+                                  height: AppConfig.layout.spacingXLarge * 2),
+                              _buildQuickStartButton(context, strings),
+                            ],
                           ),
-                          SizedBox(width: AppConfig.layout.spacingXLarge),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildRightColumnContent(strings),
-                                SizedBox(
-                                    height: AppConfig.layout.spacingXLarge * 2),
-                                _buildQuickStartButton(context, strings),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              // Add Language Selector to the top right corner
-              Positioned(
-                top: 16.0,
-                right: 16.0,
-                child: const LanguageSelector(),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => _showLoginDialog(context),
-          icon: const Icon(Icons.login),
-          label: Text(
-            strings.loginButton,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
             ),
-          ),
-          backgroundColor: AppConfig.colors.primary,
-          extendedPadding:
-              const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+
+            // Add Language Selector to the top right corner
+            Positioned(
+              top: 16.0,
+              right: 16.0,
+              child: const LanguageSelector(),
+            ),
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showLoginDialog(context),
+        icon: const Icon(Icons.login),
+        label: Text(
+          strings.loginButton,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+        backgroundColor: AppConfig.colors.primary,
+        extendedPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       ),
     );
   }
@@ -284,6 +275,7 @@ class _IntroductionScreenContentState extends State<_IntroductionScreenContent>
 
   void _handleStartGame(BuildContext context) {
     handleQuickstartGame(context);
+    _showConfidenceSurvey(context);
   }
 
   // Confidence Survey anzeigen
