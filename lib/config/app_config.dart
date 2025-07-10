@@ -184,7 +184,7 @@ class AppTiming {
   const AppTiming();
 
   // Timeouts
-  final Duration inactivityTimeout = const Duration(seconds: 30);
+  final Duration inactivityTimeout = const Duration(seconds: 60);
   final Duration videoBufferingTimeout = const Duration(seconds: 10);
   final Duration loadingTimeout = const Duration(seconds: 5);
   final Duration overlayTimeout = const Duration(seconds: 30);

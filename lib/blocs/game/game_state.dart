@@ -21,6 +21,7 @@ extension GameScreenNavigation on GameScreen {
       case GameScreen.introduction:
       case GameScreen.result:
       case GameScreen.strategy:
+      case GameScreen.firstVideo:
         return false;
       default:
         return true;
