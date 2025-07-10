@@ -88,7 +88,7 @@ class StatisticsRepository {
       recentAttempts: [
         ...currentStats.recentAttempts,
         attempt,
-      ].take(10).toList(),
+      ],
       seenPairIds: {...currentStats.seenPairIds, attempt.pairId},
     );
   }
@@ -102,7 +102,7 @@ class StatisticsRepository {
       recentAttempts: [
         ...stats.recentAttempts,
         attempt,
-      ].take(10).toList(),
+      ],
       seenPairIds: {...stats.seenPairIds, attempt.pairId},
     );
 
