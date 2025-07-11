@@ -1,4 +1,3 @@
-// lib/main.dart (Modifizierte Version)
 import 'package:deepfake_detector/screens/game_wrapper.dart';
 import 'package:deepfake_detector/utils/window_manager.dart';
 import 'package:deepfake_detector/widgets/common/options_toolbar.dart';
@@ -7,12 +6,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 import './storage/game_attempt_adapter.dart';
 import './storage/user_statistics_adapter.dart';
 import 'repositories/internal_statistics_repository.dart';
+import 'package:deepfake_detector/utils/crash_logger.dart';
 
 import 'dart:io';
 import 'package:media_kit/media_kit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SimpleCrashLogger.initialize();
 
   MediaKit.ensureInitialized();
 
