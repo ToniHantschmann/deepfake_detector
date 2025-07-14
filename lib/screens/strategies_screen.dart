@@ -161,14 +161,29 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent>
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  // Nächstes Spiel Button
                                   _buildActionButton(
                                     onPressed: () => handleRestartGame(context),
                                     text: strings.nextGameButton,
                                     icon: Icons.play_arrow,
                                     color: AppConfig.colors.primary,
                                   ),
+
                                   SizedBox(
-                                      width: AppConfig.layout.spacingXLarge),
+                                      width: AppConfig.layout.spacingMedium),
+
+                                  // Umfrage Button
+                                  _buildActionButton(
+                                    onPressed: () => navigateToQR(context),
+                                    text: strings.continueButton,
+                                    icon: Icons.arrow_forward,
+                                    color: AppConfig.colors.primary,
+                                  ),
+
+                                  SizedBox(
+                                      width: AppConfig.layout.spacingMedium),
+
+                                  // Statistiken Button
                                   _buildActionButton(
                                     onPressed: () =>
                                         handleNextNavigation(context),
@@ -208,7 +223,7 @@ class _StrategiesScreenContentState extends State<_StrategiesScreenContent>
     required Color color,
   }) {
     return SizedBox(
-      width: 600,
+      width: 500,
       height: 100,
       child: ElevatedButton.icon(
         onPressed: onPressed,

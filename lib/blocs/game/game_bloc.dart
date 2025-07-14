@@ -45,6 +45,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<OverlayCompleted>(_onOverlayCompleted);
     on<SetInitialConfidenceRating>(_onSetInitialConfidenceRating);
     on<SurveyCompleted>(_onSurveyCompleted);
+    on<NavigateToQR>(_onNavigateToQR);
   }
 
   Future<void> _onQuickStartGame(
@@ -528,5 +529,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       status: GameStatus.playing,
       currentScreen: GameScreen.firstVideo,
     ));
+  }
+
+  Future<void> _onNavigateToQR(
+      NavigateToQR event, Emitter<GameState> emit) async {
+    if (state.status != GameStatus.playing) return;
+
+    emit(state.copyWith(currentScreen: GameScreen.qrCode));
   }
 }

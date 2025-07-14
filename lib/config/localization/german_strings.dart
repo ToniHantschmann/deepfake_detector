@@ -161,6 +161,8 @@ class GermanStrategyScreenStrings implements StrategyScreenStrings {
   String get getPinButton => 'PIN erhalten';
   @override
   String get statsButton => 'Weiter zu den Statistiken';
+  @override
+  String get continueButton => 'Weiter zur Umfrage';
 }
 
 class GermanStatisticsScreenStrings implements StatisticsScreenStrings {

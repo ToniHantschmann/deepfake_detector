@@ -158,6 +158,8 @@ class EnglishStrategyScreenStrings implements StrategyScreenStrings {
   String get getPinButton => 'Get PIN';
   @override
   String get statsButton => 'Continue to the statistics';
+  @override
+  String get continueButton => 'Continue to Survey';
 }
 
 class EnglishStatisticsScreenStrings implements StatisticsScreenStrings {

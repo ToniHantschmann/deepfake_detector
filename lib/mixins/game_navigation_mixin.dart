@@ -66,6 +66,10 @@ mixin GameNavigationMixin {
     });
   }
 
+  void navigateToQR(BuildContext context) {
+    dispatchGameEvent(context, const NavigateToQR());
+  }
+
   /// Helper method to dispatch events to the GameBloc
   void dispatchGameEvent(BuildContext context, GameEvent event) {
     context.read<GameBloc>().add(event);

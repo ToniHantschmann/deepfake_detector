@@ -98,3 +98,7 @@ class SurveyCompleted extends GameEvent {
 class CreateStudySession extends GameEvent {
   const CreateStudySession();
 }
+
+class NavigateToQR extends GameEvent {
+  const NavigateToQR();
+}

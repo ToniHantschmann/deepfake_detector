@@ -88,6 +88,7 @@ abstract class StrategyScreenStrings {
   String get nextGameButton;
   String get getPinButton;
   String get statsButton;
+  String get continueButton;
 }
 
 abstract class StatisticsScreenStrings {
