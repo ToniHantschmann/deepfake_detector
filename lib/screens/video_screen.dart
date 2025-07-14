@@ -64,7 +64,8 @@ class _VideoScreenContent extends StatefulWidget {
   _VideoScreenContentState createState() => _VideoScreenContentState();
 }
 
-class _VideoScreenContentState extends State<_VideoScreenContent> {
+class _VideoScreenContentState extends State<_VideoScreenContent>
+    with TickerProviderStateMixin {
   late final Player _player;
   late final media_kit.VideoController _controller;
   bool _isInitialized = false;
@@ -73,11 +74,31 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   Duration _duration = Duration.zero;
   Timer? _autoPlayTimer;
 
+  // Animation für den pulsing Effekt
+  late AnimationController _pulseAnimationController;
+  late Animation<double> _pulseAnimation;
+  bool _videoCompleted = false;
+
   @override
   void initState() {
     super.initState();
     _player = Player();
     _controller = media_kit.VideoController(_player);
+
+    // Pulse Animation Setup
+    _pulseAnimationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    _pulseAnimation = Tween<double>(
+      begin: 2.5, // Start größer
+      end: 0.6, // Schrumpfe kleiner
+    ).animate(CurvedAnimation(
+      parent: _pulseAnimationController,
+      curve: Curves.easeInOut,
+    ));
+
     _initializeVideo();
   }
 
@@ -93,6 +114,12 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
           setState(() {
             _position = position;
           });
+
+          // Prüfe ob Video zu Ende ist
+          if (_duration.inMilliseconds > 0 &&
+              position.inMilliseconds >= _duration.inMilliseconds - 100) {
+            _onVideoCompleted();
+          }
         }
       });
 
@@ -113,8 +140,6 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
       });
 
       // Warten auf Initialisierung
-      //await Future.delayed(const Duration(milliseconds: 500));
-
       if (mounted) {
         setState(() {
           _isInitialized = true;
@@ -124,6 +149,16 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
       }
     } catch (e) {
       debugPrint('Error initializing video: $e');
+    }
+  }
+
+  void _onVideoCompleted() {
+    if (!_videoCompleted) {
+      setState(() {
+        _videoCompleted = true;
+      });
+      // Starte die pulsing Animation
+      _pulseAnimationController.repeat(reverse: true);
     }
   }
 
@@ -140,7 +175,11 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   void didUpdateWidget(_VideoScreenContent oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.video.videoUrl != widget.video.videoUrl) {
-      // Video wechseln
+      // Video wechseln - Reset state
+      _videoCompleted = false;
+      _pulseAnimationController.stop();
+      _pulseAnimationController.reset();
+
       _player.dispose();
       _player = Player();
       _controller = media_kit.VideoController(_player);
@@ -153,6 +192,7 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   @override
   void dispose() {
     _autoPlayTimer?.cancel();
+    _pulseAnimationController.dispose();
     _player.dispose();
     super.dispose();
   }
@@ -175,6 +215,44 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
     }
   }
 
+  Widget _buildNextButtonPulseOverlay() {
+    if (!_videoCompleted) {
+      return const SizedBox.shrink();
+    }
+
+    final screenSize = MediaQuery.of(context).size;
+    // Position über dem rechten Navigationsbutton
+    // Rechter Navigationsbutton ist normalerweise bei right: 16px vom Bildschirmrand
+    final leftPosition = screenSize.width -
+        56 -
+        40; // Bildschirmbreite - Button Position - halber Kreis
+    final topPosition = screenSize.height * 0.43;
+
+    return Positioned(
+      left: leftPosition,
+      top: topPosition,
+      child: IgnorePointer(
+        // Lässt Touch-Events durch
+        child: AnimatedBuilder(
+          animation: _pulseAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _pulseAnimation.value,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.4),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,6 +273,8 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
                           onBack: () => _handleNavigation(false),
                           currentScreen: widget.currentScreen,
                         ),
+                      // Pulsing Animation über dem rechten Pfeil
+                      _buildNextButtonPulseOverlay(),
                     ],
                   );
                 },
@@ -232,7 +312,9 @@ class _VideoScreenContentState extends State<_VideoScreenContent> {
   Widget _buildVideoPlayer(BoxConstraints constraints) {
     // Berechne die maximale Breite basierend auf dem Konfigurationsfaktor
     final screenWidth = MediaQuery.of(context).size.width;
-    final maxVideoWidth = screenWidth * AppConfig.video.mainVideoMaxWidthFactor;
+    final maxVideoWidth = screenWidth *
+        AppConfig.video
+            .mainVideoMaxWidthFactor; // Fallback falls AppConfig.video.mainVideoMaxWidthFactor nicht existiert
 
     // Berechne die entsprechende Höhe basierend auf dem Seitenverhältnis
     final maxVideoHeight = maxVideoWidth / AppConfig.video.minAspectRatio;
