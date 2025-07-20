@@ -230,9 +230,9 @@ Zusätzlich zu den benötigten Hauptfunktionen, also Startbildschirm, Videoansic
 \end{itemize}
 Das Spiel wurde mit dem Cross-Platform Framework Flutter entwickelt, ursprünglich als Webanwendung und letztendlich als native Windowsanwendung. 
 Dies zeigt auch eine Stärke von Flutter, die einfache Verwendung auf verschiedenen Plattformen.
-Die darunter liegende Softwarestruktur basiert vor allem auf dem BloC-Pattern (bloclibary Link), vergleichbar mit dem bekannten MVC-Pattern. 
+Die darunter liegende Softwarestruktur basiert vor allem auf dem BloC-Pattern \cite{BlocStateManagement}, vergleichbar mit dem bekannten MVC-Pattern. 
 Hier wird die Logik in drei Ebenen aufgeteilt, die Präsentation, die Geschäfts-Logik und die Datenebene. 
-Die Datenebene ist aufgeteilt in die Data Providers, also die Datenquellen, und die Repositories, die aus den rohen Daten verwendbare Objekte machen. (wieder bloc libary Quelle mit link zu Architektur Seite)
+Die Datenebene ist aufgeteilt in die Data Providers, also die Datenquellen, und die Repositories, die aus den rohen Daten verwendbare Objekte machen. \cite{Architecture}
 Zur Kommunikation zwischen den Ebenen wird mit Zuständen und Events gearbeitet.
 \section{Implementierung} 
 Im folgenden wird gezeigt wie das BloC-Pattern und zentrale Funktionen konkret implementiert wurden. 
@@ -246,7 +246,7 @@ Dabei bezieht beispielsweise das video repository mithilfe der storage Klasse di
 Diese Liste wird dann wie im video model beschrieben in eine Liste mit video Objekten umgewandelt. 
 Alles was die Logik Ebene zu sehen bekommt sind dann die generierten Video Objekte. 
 Die restliche Datenverarbeitung funktioniert parallel zu diesem Beispiel.
-Die persistente Datenspeicherung der Spielerstatistiken erfolgt über die Flutter Bibliothek Hive (Quelle Hive). 
+Die persistente Datenspeicherung der Spielerstatistiken erfolgt über die Flutter Bibliothek Hive \cite{IsarHive2025}. 
 Besonders hilfreich für die Nutzung im Rahmen der Studie und die Auswertung der Ergebnisse ist das QR-Code Feature. 
 Für jeden Spieler wird ein eigener QR-Code generiert, der auf den Link zur Umfrage verweist und zusätzlich eine 6-stellige Referenznummer enthält, 
 die gleichzeitig die interne Session-ID für jeden Spieler ist. 
@@ -259,11 +259,65 @@ Jede Strategie wird als eigene Karte in einem horizontalen Karussell dargestellt
 Für jede Strategie kann der Nutzer sich jeweils eine simple Abbildung anschauen, einmal wie der reale Inhalt aussehen würde, und einmal wie der Deepfake Inhalt aussehen würde. 
 Die Navigation in dem Karussell erfolgt über horizontale Swipe Gesten. 
 ufgrund von eingeschränkter Swipe Funktionalität auf dem Testgerät wurden noch simple Buttons zur Navigation nach links und rechts implementiert.
-\chapter{Results}
+\chapter{Studiendesign}
+\section{Hypthesen}
+Um die in der Einführung beschriebenen Forschungsfragen beantworten zu können, werden folgende Hypothesen aufgestellt:
+...
+\section{Aufbau der Studie}
+Die Studie erfolgt als Feldstudie mit einer nachfolgenden optionalen Umfrage und ist in zwei Phasen aufgeteilt. 
+In der ersten Phase werden Teilnehmer aktiv angesprochen und zu der Teilnahme an dem Spiel und der Umfrage eingeladen. 
+Hierbei gibt es weder Einflussnahme wie gespielt werden soll, noch auf die Spieldauer der Teilnehmer. 
+Diese Phase ist auf 4 Tage, jeweils von 10:00 bis 16:00 Uhr angesetzt. 
+In der zweiten Phase wird das Spiel ohne Aufsicht und aktives Ansprechen für 8 Tage fortlaufen. 
+Die Einteilung in zwei Phasen erfolgt um zuerst sicher zu stellen, dass sich ausreichend Teilnehmer (30-40) für die Studie finden. 
+Durch das aktive Einladen der Teilnehmer ist natürlich nicht messbar, ob und wie viele Passanten von sich aus den Public Display nutzen. 
+Um dies herauszufinden gibt es dann die zweite Phase der Studie.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at nunc ut ex aliquam fermentum nec ut orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus sollicitudin pulvinar est, quis porttitor nisi egestas id. Cras et dignissim elit, vitae fringilla arcu. Aliquam rhoncus convallis aliquam. Aliquam erat volutpat. Proin efficitur sapien et velit aliquet imperdiet. Aenean tristique augue ultricies enim venenatis, ut mattis massa fringilla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Duis vitae lobortis nunc. Nulla facilisis leo sed gravida elementum. Integer suscipit scelerisque lacinia. Nulla consectetur maximus purus a varius. Curabitur porta orci nisi, non porttitor lectus hendrerit vitae. Nam rutrum elementum nibh et luctus. Donec nec augue ultrices, ornare mauris non, iaculis nisl.
+Das Setup besteht aus einem 55 Zoll Touchscreen mit angeschlossenem Workstation PC basierend auf Windows 11. 
+Aufgebaut ist es in einem Durchgangsraum der LMU München während auch aktiv Vorlesungen in dieser Zeit stattfinden. 
+In dem Raum gibt es eine hohen Frequenz an Passanten und Studenten, die in diesem Raum lernen oder Pause machen. 
+Das Display steht direkt an dem Korridor den die Passanten durchlaufen und gleichzeitig gut sichtbar im Blickfeld der an den im selben Raum befindlichen Tischen, 
+an denen die Studenten sitzen. Mögliche Störfaktoren sind vor allem die zwei temporären Verkaufsstände von Studentenzeitungen und Magazinen. 
+Diese könnten potentiell die Aufmerksamkeit der Passanten auf sich und damit weg von dem Public Display ziehen.
 
-Morbi faucibus lectus nec est imperdiet, quis placerat ligula pretium. Ut dignissim in orci eu ornare. Aenean id diam nunc. Integer dictum vitae lorem sit amet consectetur. Phasellus ac ipsum eget nisi gravida vehicula ac et metus. Vestibulum ac odio at diam dapibus tristique non quis massa. Praesent nec sollicitudin mauris. Nam elementum dictum est, id lacinia eros finibus quis. Suspendisse potenti. Quisque libero leo, iaculis sed sem quis, euismod tempor tellus. Aenean sit amet ex dapibus, fringilla purus et, sagittis metus. Aenean semper eget erat ac ullamcorper. Suspendisse convallis molestie nisi vitae dignissim.
+Als Hauptzielgruppe der Teilnehmer ergeben sich natürlich vorrangig Studenten, grundsätzlich ist aber ein breites Teilnehmerfeld möglich. 
+Einschränkungen an die Teilnehmer gibt es im Grunde keine, vorausgesetzt die Bedienung des Touchscreens ist möglich und der Teilnehmer hat ein Smartphone dabei um die Umfrage auszufüllen. 
+Erwartet werden für die erste Phase ca. 30-40 Teilnehmer, für die zweite Phase ist die Anzahl nicht vorhersehbar wobei es theoretisch auch keinerlei Teilnehmer geben kann.
+
+\section{Methoden der Datenerhebung}
+Jetzt gilt es noch zu klären wie die Daten und welche Daten eigentlich erhoben werden. 
+Auch das passiert zwei geteilt. 
+Zum einen werden während der Laufzeit des Spiels interne Statistiken aufgezeichnet und in einer JSON Datei gespeichert. 
+Diese umfassen für jeden Spieler folgende für die Auswertung interessante Variablen:
+\begin{itemize}
+    \item Session ID: übergreifende ID zur Verknüpfung der internen Statistiken und Umfrage
+    \item Anzahl gespielter Spiele
+    \item Anzahl richtiger "Entscheidungen" (Entscheidung ob spezielles Video real oder Deepfake ist)
+    \item Anzahl der Anmeldungen eines Spielers (wie oft hat er sich eingeloggt?)
+    \item Boolean "hat mindestens ein Spiel komplett durchgespielt"
+    \item Boolean "hat das Spiel gespeichert und einen Pin generiert"
+    \item Boolean "hat sich wieder eingeloggt (mit seinem Pin)"
+    \item Zeitstempel des ersten Spiels
+    \item Zeitstempel des letzten Spiels
+    \item "Confidence Rating": Antwort von 1-5 auf die Frage "Wie würdest du deine Fähigkeit einschätzen, Deepfake-Videos zu erkennen?"
+\end{itemize}
+Der andere Teil der Daten wird über eine Online-Umfrage erfasst. 
+Dazu erhalten die Nutzer des Spiels die Möglichkeit nach dem Spielen einen QR-Code abzuscannen, der zu der Umfrage führt. 
+Der Fragebogen steht auf Deutsch und Englisch zu Verfügung, im folgenden eine Übersicht der deutschen Fragen mit den Antwortmöglichkeiten:
+
+\begin{enumerate}
+    \item Confidence Check: Frage "Wie würdest du deine Fähigkeit (nach dem Spielen) einschätzen, Deepfake-Videos zu erkennen?" mit den Antwortmöglichkeiten als Likert Skala von 1-5
+    \item Frage "Welche Erfahrungen hast du mit Deepfakes bereits gemacht?" (multiple-choice, nur bei Antwort d single-choice)
+    \begin{enumerate} [label=\alph*)]
+        \item Ich habe bereits Deepfakes gesehen (z. B. in sozialen Medien, Nachrichten)
+        \item Ich habe bereits Deepfakes erstellt
+        \item Ich habe bereits Spiele zur Erkennung von Deepfakes gespielt
+        \item Ich habe noch keine Erfahrung mit Deepfakes
+        \item Andere: (offene Texteingabe)
+    \end{enumerate}
+    \item Frage "Ich habe durch das Spiel neue Informationen über die Erkennung von Deepfakes gewonnen.": Likert Skala von 1-7
+\end{enumerate}
+
 
 \gls{er}
 
