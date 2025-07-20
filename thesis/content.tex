@@ -8,30 +8,7 @@
 \chapter{Introduction}
 \label{sec:introduction}
 
-This is a typical human-computer interaction thesis structure for an introduction which is structured in four paragraphs as follows:
-% First Paragraph
-% CORE MESSAGE OF THIS PARAGRAPH:
-\todo{P1.1. What is the large scope of the problem?}
-\todo{P1.2. What is the specific problem?}
-
-% Second Paragraph
-% CORE MESSAGE OF THIS PARAGRAPH:
-\todo{P2.1. The second paragraph should be about what have others been doing}
-\todo{P2.2. Why is the problem important? Why was this work carried out?}
-
-% Third Paragraph
-% CORE MESSAGE OF THIS PARAGRAPH:
-\todo{P3.1. What have you done?}
-\todo{P3.2. What is new about your work?}
-
-% Fourth paragraph
-% CORE MESSAGE OF THIS PARAGRAPH:
-\todo{P4.1. What did you find out? What are the concrete results?}
-\todo{P4.2. What are the implications? What does this mean for the bigger picture?}
-
-LaTeX hints are provided in \autoref{chap:latexhints}.
-
-\chapter{Background and related Work}
+\chapter{Hintergrund und verwandte Arbeiten}
 \section{Relevante Konzepte und Definitionen}
 \subsection{Deepfakes}
 "Deepfakes - Wenn man Augen und Ohren nicht mehr trauen kann" \cite{bildungDeepfakesWennMan2023} - 
@@ -115,8 +92,8 @@ Eingesetzt werden diese Interfaces, um bestimmte Ziele zu erreichen, die im folg
 \end{itemize}
 Diese Ziele geben jetzt schon zahlreiche Einsatzmöglichkeiten und lassen Raum für weitere \cite{murtezajPublicSecurityUser2025}.
 
-\section{Existing technologies}
-\subsection{Creation of deepfake technology}
+\section{Bestehende Technologien}
+\subsection{Erzeugung von Deepfakes}
 Nachdem nun bekannt ist, was Deepfakes eigentlich sind und wo diese ihren Ursprung haben, wollen wir nun klären wie diese erzeugt werden.
 Die ersten Deepfake Videos wurden wie schon beschrieben 2017 von einem anonymen Reddit User erstellt, 
 der mit verschiedenen Open-Source Programmen frühe face-swapping Algorithmen aus der Forschung angewandt hat \cite{kernerPornDiscreditationEpistemic2021}. 
@@ -141,11 +118,11 @@ lässt man das Model in einem "lower-dimensional latent space" \cite{guptaPhotor
 Hierfür lässt man einen Autoencoder Bilder in kleinere räumliche Repräsentationen komprimieren und das diffusion model auf diesen räumlichen Repräsentationen trainieren. 
 Einige Beispiele zu was Veo 3 fähig ist, sieht man auf Googles Deepmind Youtube Channel \cite{Veo3Our}.
 
-\subsection{technical countermeasures against deepfake technology}
+\subsection{Technische Gegenmaßnahmen für Deepfakes}
 Je besser das Erzeugen von Deepfakes wird, desto schwieriger werden auch die Gegenmaßnahmen zu Deepfakes. 
 Hierzu gibt es auf der technischen Seite unterschiedliche Herangehensweisen, welche in aktive und passive Maßnahmen eingeteilt werden können, 
 wobei sich diese generell noch in frühen Stadien befinden \cite{abbasUnmaskingDeepfakesSystematic2024}.
-\subsubsection{automated detection methods}
+\subsubsection{Erkennung}
 Die passive Herangehensweise ist das klassische Erkennen von deepfakes durch Technologien die selbst auf machine learning oder sogar deep learning basieren. 
 Das Literature Review von Abbas und Taeihagh zeigt hier eine Vielzahl von deep learning Technologien, 
 darunter eine Menge Varianten die auf CNNs basieren, aber auch eine einige Varianten die auf den oben vorgestellten GANs basieren. 
@@ -155,7 +132,7 @@ In einem Fall wurde dafür eine Kombination aus einem convolutional neural netwo
 ein einem anderen Fall wurden auch wieder die oben genannten GANs verwendet.
 Der andere Ansatz ist die "spatial and temporal features analysis". Bei diesem wird nicht wie bei den meisten anderen Ansätzen mit einzelnen Video Frames gearbeitet. 
 Hier werden zeitliche und räumliche Merkmale über den Verlauf des Videos mit verschiedenen Modellen wie GANs oder CNNs analysiert und damit auf Echtheit geprüft \cite{benaissaOverviewGANDeepFakesDetection2024}.
-\subsubsection{authentification systems}
+\subsubsection{Authentifizierungssysteme}
 Um aktiv gegen Deepfakes vorzugehen, bietet sich die Authentifizierung von echten Videos an, 
 ein sogenanntes "Proof of Authenticity System" \cite{gambinDeepfakesCurrentFuture2024}. 
 Hier konzentriert sich die Forschung vor allem auf blockchain basierte Technologien um echte Videos zu verifizieren. 
@@ -164,8 +141,8 @@ welches durch seine Eigenschaften nahezu fälschungssicher ist und Transaktionen
 Die Idee dahinter ist, Inhalte und im speziellen Videos und Bilder bis zu ihrem Ersteller zurückverfolgen zu können, 
 mitsamt wichtigen Metadaten wie Aufnahmezeitpunkt, Kameramodell und andere Logs. 
 Durch die Möglichkeit, die Inhalte bis zu ihrem Ersteller zurückverfolgen zu können, sollen diese vertrauenswürdig und "authentisch" sein.
-\section{related work and state of the research}
-\subsection{human deepfake detection}
+\section{Verwandte Arbeiten und Stand der Forschung}
+\subsection{Menschliche Deepfake Erkennung}
 Eine nicht zu vernachlässigende Frage ist, ob auch Menschen in der Lage sind, Deepfake Inhalte zuverlässig zu erkennen. 
 \textcite{dielHumanPerformanceDetecting2024} versuchen diese Frage in ihrem Review zu beantworten. 
 Ohne Training liegt die menschliche Erkennung von Deepfake Inhalten auf dem gleichen Level wie Raten. 
@@ -206,9 +183,7 @@ Eine gute Übersicht gibt die Datensatzübersicht von Papers with Code \cite{Pap
 Für diese Arbeit wurde der Celeb-DF Datensatz verwendet. 
 Dieser Datensatz besteht immer aus einem echten Video einer prominenten Person und einen Satz an Deepfake Videos die aus dem echten Video generiert wurden.
 
-
-
-\subsection{public displays as public security user interfaces}
+\subsection{Public Displays als "public security user interfaces"}
 Um die beiden oben beschriebenen Punkte Deepfake Erkennung und Public Displays zu verbinden, 
 bietet sich das oben beschriebene Konzept der public security user interfaces von an. 
 \textcite{murtezajPublicSecurityUser2025} sehen "a strong potential at the intersection of research on interaction in public space and IT security-related behavior change", 
@@ -219,25 +194,78 @@ allerdings nicht interaktive, Ressourcen für public displays entwickelt \cite{v
 Support bei Notfallsituationen, oder personalisierten Informationen zu nutzen. 
 Ein potentielles Szenario mit direkteren Fokus auf die Cybersecurity zeigen \textcite{murtezajPublicSecurityUser2025} anhand des Beispieles einer fiktiven Firma die mithilfe 
 von Public Displays in ihren Räumlichkeiten die Einführung eines Passwortmanagers unterstützen. 
-\chapter{Study Design}
 
-\gls{er}
+\chapter{Methoden}
+Im Folgenden wird beschrieben wie das Spiel entwickelt wurde und welche Anforderungen an das Spiel bestehen.
+\section{Anforderungsanalyse}
+Dazu wird zuerst auf die Anforderungen eingegangen. 
+Es stellen sich die Fragen: Was ist eigentlich das Ziel und der Anwendungskontext? 
+Was sind die funktionalen Anforderungen? Was sind die nicht funktionalen Anforderungen?
+Das Ziel für diese Arbeit war, eine Anwendung zu schreiben die zusammen mit der für den Nutzer nachfolgenden Umfrage die nötigen Daten und Erkenntnisse hervorbringt, 
+um die Forschungsfragen zu beantworten. Dazu wurde ein Spiel benötigt, welches auf einem Public Display läuft, 
+den Nutzer vor die Entscheidung stellt ob ein gezeigtes Video echt oder ein Deepfake ist, 
+und diesem folgend noch Strategien zur Erkennung von Deepfake Videos an die Hand gibt. 
+Dies passiert alles in der Öffentlichkeit bzw. in diesem Fall in einem Durchgangsgebäude der Universität in dem hoher Durchgangsverkehr von Studenten besteht.
+Im Detail muss die Anwendung, im nachfolgenden als Spiel bezeichnet, einen Startbildschirm besitzen, der möglichst die Aufmerksamkeit der Passanten auf sich zieht und diese zum Spielen animiert. 
+Weiter muss natürlich das Video und der Bildschirm zur Entscheidung ob echt oder Deepfake angezeigt werden. 
+Auch von entscheidender Bedeutung ist die Ansicht der oben beschriebenen Strategien zur Erkennung von Deepfake Videos. 
+Da das Spiel auf einem Public Display läuft, gibt es keine Möglichkeit dem Nutzer die Funktionen und Steuerung zu erklären. 
+Diese müssen deshalb den gängigen User-Experience Konventionen folgen um möglichst selbsterklärend zu sein. 
+Außerdem sollte das Spiel zusätzlich zur deutschen Version noch eine Möglichkeit zum Spielen auf Englisch anbieten um auch internationalen Passanten das Spielen zu ermöglichen.
 
-\section{Apparatus}
+\section{Systemdesign}
+Mit Hinblick auf die eben genannten Anforderungen wird nun beschrieben wie das Spiel aufgebaut ist, 
+und auf welcher Softwarearchitektur und Technologie das Spiel basiert.
+Zusätzlich zu den benötigten Hauptfunktionen, also Startbildschirm, Videoansicht, Entscheidungsansicht und Strategieansicht, gibt es noch folgende Funktionen:
+\begin{itemize}
+    \item Videovergleichsansicht: Nach der Entscheidung kann der Nutzer sich nochmals beide Videos, also echt und Deepfake, anschauen.
+    \item Gründe warum das gezeigte Video Deepfake war, bzw. woran man das Deepfake Video erkennen kann (in der Videovergleichsansicht enthalten).
+    \item Statistikansicht: Eine Übersicht mit der Erfolgsrate der Entscheidungen und der Anzahl von schon gesehenen Videos.
+    \item Spiel speichern: Der Nutzer hat die Möglichkeit, sich einen 4-stelligen Pin zu erzeugen mit dem er sich zu einem späteren Zeitpunkt wieder einloggen
+         und mit seinen bestehenden Statistiken weiter spielen kann (in der Strategieansicht enthalten).
+    \item QR-Code Ansicht: Damit wird der Nutzer über einen individuell generierten QR-Code auf die Umfrage weitergeleitet, wodurch sich Spielstatistiken und die Umfrage verknüpfen lassen.
+    \item Die Benutzerführung für die Hauptfunktionen erfolgt nach einem Tap auf den Spiel starten Button im Hauptbildschirm durch eine horizontale Navigation. 
+        Das bedeutet der Nutzer kann mittels "Swipe" Geste oder seitlichen Buttons in Pfeil-Form von links nach recht durch die Ansichten navigieren. 
+        Zu den Zusatzfunktionen Statistik, Spiel speichern und QR-Code gelangt der Nutzer über eine Button Reihe in der Strategieansicht. Für die genaue Benutzerführung siehe Grafik "Userflow".
+\end{itemize}
+Das Spiel wurde mit dem Cross-Platform Framework Flutter entwickelt, ursprünglich als Webanwendung und letztendlich als native Windowsanwendung. 
+Dies zeigt auch eine Stärke von Flutter, die einfache Verwendung auf verschiedenen Plattformen.
+Die darunter liegende Softwarestruktur basiert vor allem auf dem BloC-Pattern (bloclibary Link), vergleichbar mit dem bekannten MVC-Pattern. 
+Hier wird die Logik in drei Ebenen aufgeteilt, die Präsentation, die Geschäfts-Logik und die Datenebene. 
+Die Datenebene ist aufgeteilt in die Data Providers, also die Datenquellen, und die Repositories, die aus den rohen Daten verwendbare Objekte machen. (wieder bloc libary Quelle mit link zu Architektur Seite)
+Zur Kommunikation zwischen den Ebenen wird mit Zuständen und Events gearbeitet.
+\section{Implementierung} 
+Im folgenden wird gezeigt wie das BloC-Pattern und zentrale Funktionen konkret implementiert wurden. 
+Die Logik Ebene wird von der GameBloc Klasse implementiert. 
+In dieser wird definiert wie konkret auf die verschiedenen Events reagiert wird. 
+Die möglichen Events dafür werden in der game event Klasse definiert, die möglichen Spielzustände in der gamestate Klasse.
+Die Präsentationsebene wird konkret von den game screens implementiert. 
+Diese werden abhängig von dem aktuellen game state angezeigt und rufen bei Nutzereingaben wiederum die definierten Events auf. 
+Die Datenebene wird durch die verschiedenen Repositories wie z.b. das user repository oder das video repository koordiniert. 
+Dabei bezieht beispielsweise das video repository mithilfe der storage Klasse die Liste mit vorhandenen Videos aus einer Video Datenbank in Form einer json Datei. 
+Diese Liste wird dann wie im video model beschrieben in eine Liste mit video Objekten umgewandelt. 
+Alles was die Logik Ebene zu sehen bekommt sind dann die generierten Video Objekte. 
+Die restliche Datenverarbeitung funktioniert parallel zu diesem Beispiel.
+Die persistente Datenspeicherung der Spielerstatistiken erfolgt über die Flutter Bibliothek Hive (Quelle Hive). 
+Besonders hilfreich für die Nutzung im Rahmen der Studie und die Auswertung der Ergebnisse ist das QR-Code Feature. 
+Für jeden Spieler wird ein eigener QR-Code generiert, der auf den Link zur Umfrage verweist und zusätzlich eine 6-stellige Referenznummer enthält, 
+die gleichzeitig die interne Session-ID für jeden Spieler ist. 
+Mit dieser Session-ID können also die Ergebnisse der Umfrage mit den geführten internen Statistiken verknüpft werden. 
+Die internen Statistiken beinhalten unter anderem die Anzahl an gespielten Spiele (entspricht der Anzahl an gesehenen Videos), 
+Anzahl der korrekten Entscheidungen, ob überhaupt ein Spiel gespielt wurde, die Spieldauer und das initial confidence rating, auf welches später nochmal genauer eingegangen wird.  
 
-\section{Procedure}
-
-\section{Measurements}
-
-\section{Participants}
-
+Besonders wichtig für die Spieler sind natürlich die Strategien. 
+Jede Strategie wird als eigene Karte in einem horizontalen Karussell dargestellt. 
+Für jede Strategie kann der Nutzer sich jeweils eine simple Abbildung anschauen, einmal wie der reale Inhalt aussehen würde, und einmal wie der Deepfake Inhalt aussehen würde. 
+Die Navigation in dem Karussell erfolgt über horizontale Swipe Gesten. 
+ufgrund von eingeschränkter Swipe Funktionalität auf dem Testgerät wurden noch simple Buttons zur Navigation nach links und rechts implementiert.
 \chapter{Results}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at nunc ut ex aliquam fermentum nec ut orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus sollicitudin pulvinar est, quis porttitor nisi egestas id. Cras et dignissim elit, vitae fringilla arcu. Aliquam rhoncus convallis aliquam. Aliquam erat volutpat. Proin efficitur sapien et velit aliquet imperdiet. Aenean tristique augue ultricies enim venenatis, ut mattis massa fringilla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Duis vitae lobortis nunc. Nulla facilisis leo sed gravida elementum. Integer suscipit scelerisque lacinia. Nulla consectetur maximus purus a varius. Curabitur porta orci nisi, non porttitor lectus hendrerit vitae. Nam rutrum elementum nibh et luctus. Donec nec augue ultrices, ornare mauris non, iaculis nisl.
 
 Morbi faucibus lectus nec est imperdiet, quis placerat ligula pretium. Ut dignissim in orci eu ornare. Aenean id diam nunc. Integer dictum vitae lorem sit amet consectetur. Phasellus ac ipsum eget nisi gravida vehicula ac et metus. Vestibulum ac odio at diam dapibus tristique non quis massa. Praesent nec sollicitudin mauris. Nam elementum dictum est, id lacinia eros finibus quis. Suspendisse potenti. Quisque libero leo, iaculis sed sem quis, euismod tempor tellus. Aenean sit amet ex dapibus, fringilla purus et, sagittis metus. Aenean semper eget erat ac ullamcorper. Suspendisse convallis molestie nisi vitae dignissim.
 
-
+\gls{er}
 
 \chapter{Discussion}
 
