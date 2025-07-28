@@ -467,6 +467,7 @@
 % EN: Code Listings
 % DE: Listings
 \usepackage{listings}
+\usepackage{xcolor}
 \lstset{language=XML,
   showstringspaces=false,
   extendedchars=true,
@@ -475,7 +476,7 @@
   % DE: Original: \rmfamily, damit werden die Strings im Quellcode hervorgehoben. Zusaetzlich evtl.: \scshape oder \rmfamily durch \ttfamily ersetzen. Dann sieht's aus, wie bei fancyvrb
   stringstyle=\ttfamily,
   breaklines=true,
-  breakatwhitespace=true,
+  breakatwhitespace=true,   
   % EN: alternative: fixed
   columns=flexible,
   numbers=left,
@@ -485,6 +486,23 @@
   % aboveskip=0mm, %DE: deaktivieren, falls man lstlistings direkt als floating object benutzt (\begin{lstlisting}[float,...])
   % belowskip=0mm, %DE: deaktivieren, falls man lstlistings direkt als floating object benutzt (\begin{lstlisting}[float,...])
   captionpos=b
+}
+
+% JSON-Syntax-Highlighting definieren
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{blue!5},
+    string=[s]{"}{"},
+    stringstyle=\color{blue},
+    comment=[l]{//},
+    commentstyle=\color{green!60!black},
 }
 
 \ifluatex
