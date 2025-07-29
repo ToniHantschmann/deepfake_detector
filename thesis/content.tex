@@ -15,8 +15,7 @@ Dies führt zwangsweise zu einer immer größer werdenden Diskrepanz zwischen de
 und potentiell gefährlichen Technologien wie Deepfakes.
 
 Gerade die Deepfake Technologie hat sich von ihren Anfängen auf Reddit \cite{seowComprehensiveOverviewDeepfake2022} zu einer allgegenwärtigen Realität entwickelt. 
-Während 2018 die generierten Deepfake Videos noch klar erkennbar waren (Quelle), 
-haben diese bis heute eine unglaubliche Entwicklung genommen und sind für viele kaum noch zu unterscheiden \cite{dielHumanPerformanceDetecting2024}. 
+Die generierten Deepfake Videos haben bis heute eine unglaubliche Entwicklung genommen und sind für viele kaum noch zu unterscheiden \cite{dielHumanPerformanceDetecting2024}. 
 Mittlerweile lassen sich ganze Filmsequenzen über einfache Prompt Eingaben erstellen und mit täuschend echten Stimmen unterlegen \cite{proschofskyGooglesNeueVideoKI2025}. 
 Diese Entwicklung macht die breite Bevölkerung anfällig für Desinformationen, politische Manipulation und Social Engineering-Angriffe, 
 da die meisten Menschen keine Erfahrung mit Strategien zur Deepfake-Erkennung haben.
@@ -48,7 +47,7 @@ Wie nehmen Nutzer Public Displays zur Erkennung von Deepfake-Videos wahr?
 Der wissenschaftliche Beitrag dieser Arbeit liegt dabei in drei Bereichen. 
 Für die Bildung im Bereich Deepfake Inhalten werden erstmalig Public Displays verwendet, was neue Möglichkeiten im Bereich der Medienbildung aufzeigt. 
 Für diesen Ansatz wird eine umfassende empirische Auswertung durchgeführt um die Wirksamkeit der Methode auszuwerten.
- Außerdem gibt die Arbeit ein sofort einsetzbares System mit Potential für Weiterentwicklung für den Einsatz in öffentlichen Räumen.
+Außerdem gibt die Arbeit ein sofort einsetzbares System mit Potential für Weiterentwicklung für den Einsatz in öffentlichen Räumen.
 
 Damit wird eine wichtige Lücke zwischen technischer Deepfake Forschung und praktischer Aufklärungsarbeit geschlossen.
 
@@ -61,17 +60,23 @@ Dies ist nur eines von vielen Beispielen das zeigt,
 dass Deepfakes mittlerweile ein ernstgenommenes Thema in der nicht-technischen Medienwelt und Gesellschaft sind. 
 Doch was genau sind eigentlich Deepfakes? 
 
-\textcite{gambinDeepfakesCurrentFuture2024} beschreiben das Konzept Deepfake als "generation of fake digital content or manipulated of genuine one through the use of DL techniques." \cite[S. ?]{gambinDeepfakesCurrentFuture2024},
+\textcite{gambinDeepfakesCurrentFuture2024} beschreiben das Konzept Deepfake als 
+"generation of fake digital content or manipulated of genuine one through the use of DL techniques." \cite[S.3]{gambinDeepfakesCurrentFuture2024},
 also frei übersetzt als die Erzeugung gefälschter digitaler Inhalte oder die Manipulation echter Inhalte durch den Einsatz von Deep Learning Techniken. 
-Deep Learning ist ein Teilgebiet der Künstlichen Intelligenz, genauer gesagt des Machine Learning, in dem es darum geht, mithilfe einer Reihe von Methoden automatisch Muster in Daten zu erkennen und diese zur Vorhersage zukünftiger Daten oder Entscheidungen zu verwenden \autocite[S. 1]{murphyMachineLearningProbabilistic2012} . 
-Weiter schreiben Gambin et. al "The content includes video, image, audio, and text among other sources." 
-In einer ähnlichen Definition heißt es, dass bei Deepfake Videos in den meisten Fällen in einem schon existierenden Video das Abbild einer Person über den Körper einer anderen Person gelegt wird. 
+Deep Learning ist ein Teilgebiet der Künstlichen Intelligenz, genauer gesagt des Machine Learning, in dem es darum geht, 
+mithilfe einer Reihe von Methoden automatisch Muster in Daten zu erkennen 
+und diese zur Vorhersage zukünftiger Daten oder Entscheidungen zu verwenden \autocite{murphyMachineLearningProbabilistic2012} . 
+Weiter schreiben \textcite{gambinDeepfakesCurrentFuture2024} "The content includes video, image, audio, and text among other sources." \cite[S.3]{gambinDeepfakesCurrentFuture2024} 
+In einer ähnlichen Definition heißt es, 
+dass bei Deepfake Videos in den meisten Fällen in einem schon existierenden Video das Abbild einer Person über den Körper einer anderen Person gelegt wird. 
 Dadurch sieht es aus, als würde die Person dessen Abbild darüber gelegt wurde die Aktivitäten der anderen Person ausführen \autocite{harrisVideoDemandWhat2021}.
-Währenddessen teilen \textcite{juefei-xuCounteringMaliciousDeepFakes2022} Deepfakes in die vier Kategorien "(i) entire face synthesis, (ii) attribute manipulation, (iii) identity swap, and (iv) expression swap (i.e., reenactment)". 
+Währenddessen teilen \textcite{juefei-xuCounteringMaliciousDeepFakes2022} Deepfakes in die vier Kategorien 
+"(i) entire face synthesis, (ii) attribute manipulation, (iii) identity swap, and (iv) expression swap (i.e., reenactment)".\cite[S.2]{juefei-xuCounteringMaliciousDeepFakes2022} 
 Schon an diesen Beispielen lässt sich erkennen, dass Deepfakes in unterschiedlichen Formen vorkommen.
 
 Nachdem nun geklärt ist, was Deepfakes eigentlich sind, fehlt noch, wo Deepfakes ihren Ursprung \cite{AIAssistedFakePorn2017} haben. 
-Dazu schreiben \textcite{kernerPornDiscreditationEpistemic2021} "Deepfakes got started in 2017 [...] when an eponymous Reddit user enlisted open-source software from Google and elsewhere to apply scattered academic research to face-swapping". 
+Dazu schreiben \textcite{kernerPornDiscreditationEpistemic2021} "Deepfakes got started in 2017 [...] 
+when an eponymous Reddit user enlisted open-source software from Google and elsewhere to apply scattered academic research to face-swapping".\cite[S.84]{kernerPornDiscreditationEpistemic2021}
 Die erste mediale Berichterstattung folgte im Dezember 2017 durch den Artikel \textcite{AIAssistedFakePorn2017} im Vice Tech Magazin Motherboard von Samantha Cole.
 Seitdem nimmt die Verbreitung von Deepfakes immer weiter zu, was man unter anderem bei \textcite{ranaDeepfakeDetectionSystematic2022,westerlundEmergenceDeepfakeTechnology2019,gamagePDFEmergenceDeepfakes} sieht. 
 Auch die Google Suchtrends zum Keyword "Deepfake" bestätigen diese Aussage, siehe Grafik \ref{fig:suchtrend-grafik}.
@@ -85,8 +90,10 @@ Auch die Google Suchtrends zum Keyword "Deepfake" bestätigen diese Aussage, sie
 Seitdem werden Deepfakes allerdings auch immer wieder für negative Zwecke eingesetzt. 
 Ein großer Einsatzbereich und auch der Ursprung von Deepfakes ist die Pornographie \autocite{ajderDeeptraceLabReport}. 
 Aber auch abseits von Pornographie gibt es noch mehr kriminelle oder bösartige Einsatzbereiche von Deepfakes. 
-Darunter sind unter anderem "spreading misinformation, creating political instability, or various cybercrimes" \cite{ranaDeepfakeDetectionSystematic2022} 
-oder wie \textcite{gambinDeepfakesCurrentFuture2024} die Konsequenzen von Deepfakes als "far reaching, including the potential to ignite political or religous tensions between nations, decieve the public, disrupt financial markets, perpetrate acts of sabotage, fraud, scams, obstruct justice, and much more" beschreiben.
+Darunter sind unter anderem "spreading misinformation, creating political instability, or various cybercrimes" \cite[S.2]{ranaDeepfakeDetectionSystematic2022} 
+oder wie \textcite{gambinDeepfakesCurrentFuture2024} die Konsequenzen von Deepfakes als "far-reaching, 
+including the potential to ignite political or religous tensions between nations, decieve the public, disrupt financial markets, 
+perpetrate acts of sabotage, fraud, scams, obstruct justice, and much more"\cite[S.3]{gambinDeepfakesCurrentFuture2024} beschreiben.
 Im Folgenden einige Beispiele aus der Praxis von Fällen in denen Deepfakes mit krimineller oder bösartiger Absicht eingesetzt wurden.
 \begin{itemize}
     \item Manipulation in der Politik: Ein Audio-Deepfake in dem der slowakische Spitzenkandidat Michal Šimečka scheinbar mit einer 
@@ -114,7 +121,7 @@ Diese Beispiele zeigen, dass die Deepfake Technologie jetzt schon in der Gesells
 In Krankenhäusern, Universitäten, Bahnhöfen oder Shopping Center. 
 An immer mehr öffentlichen oder halböffentlichen Orten findet man mittlerweile interaktive Bildschirme, 
 nachfolgend auch "Public Displays" genannt. Nach \textcite{parkerDoesPublicStill2018} ist ein Public Display 
-ein "medium that brings digital content into the real world and into the eyes of the general public." \cite{parkerDoesPublicStill2018} 
+ein "medium that brings digital content into the real world and into the eyes of the general public." \cite[S.1]{parkerDoesPublicStill2018} 
 Waren es früher noch nur große Bildschirme die Werbung, Videos oder andere Informationen ohne Möglichkeit zur Interaktion angezeigt haben \cite{PDFEnticingPeople}, 
 werden diese heute immer mehr eingesetzt um Informationen visuell und vor allem oft interaktiv darzustellen \cite{hinrichsInteractivePublicDisplays2013}. 
 Beispiele aus eigener aktueller (Mai 2025) Erfahrung von Public Displays sind die interaktiven Bildschirme im Münchner Olympia-Einkaufszentrum, 
@@ -123,14 +130,14 @@ Ein weiteres Beispiel sind Public Displays in Hauseingängen von Mehrparteienhä
 die von den Hausbewohnern zum Informationsaustausch genutzt werden, aber auch um Informationen von der Hausverwaltung an die Bewohner weitergeben zu können.
 Einen Schritt weiter geht die Forschung zu sogenannten "public security user interfaces". 
 Diese sind definiert als "any type of interface positioned in shared, 
-non-personal areas that offers information or the opportunity to interact with security-related topics" \cite{murtezajPublicSecurityUser2025}. 
+non-personal areas that offers information or the opportunity to interact with security-related topics" \cite[S.57]{murtezajPublicSecurityUser2025}. 
 Durch die zunehmende Bedrohung von Cyber Angriffen ist die Idee entstanden, mithilfe von Public Displays die öffentliche Wahrnehmung von Sicherheitsthemen zu erhöhen. 
 Eingesetzt werden diese Interfaces, um bestimmte Ziele zu erreichen, die im folgenden kurz vorgestellt werden.
 \begin{itemize}
     \item Creating Awareness: Das Ziel ist, die Nutzer auf mögliche Sicherheitsrisiken aufmerksam zu machen, wie z.B. die Verwendung desselben Passworts für verschiedene Plattformen.
     \item Triggering Actions: Der Nutzer soll dazu gebracht werden, direkt eine Aufgabe in Bezug auf einen Sicherheitsaspekt anzugehen. 
         Ein Beispiel wäre, den Nutzer aufzufordern, verfügbare Sicherheitsupdates für sein Gerät zu installieren.
-    \item Sparking Conversation: Hier ist das Ziel, durch das Public security user interface eine Diskussion über bestimmte Sicherheitsthemen anzustoßen, 
+    \item Sparking Conversation: Hier ist das Ziel, durch das Public Security User Interface eine Diskussion über bestimmte Sicherheitsthemen anzustoßen, 
         beispielsweise durch fun facts oder andere gesprächsanregende Informationen. 
         Dadurch soll das Thema der Cyber Security noch mehr in den Alltag integriert werden.
 \end{itemize}
@@ -146,21 +153,26 @@ Demnach hat der Reddit User "deepfakes" mithilfe von verschiedenen Open-Source B
 Stock Fotos und Youtube Videos einen Algorithmus trainiert, der dann in die entsprechenden Vorlagen Videos die Gesichter der Prominenten Personen einfügt \cite{AIAssistedFakePorn2017}.
 Eine Technologie mit großen Fortschritten in der Erzeugung von Deepfake Inhalten ist das Modell der sogenannten "generative adversarial networks", 
 eingeführt durch \textcite{goodfellowGenerativeAdversarialNetworks2014}, nachfolgend auch GANs genannt. 
-Diese GANs bestehen aus zwei neuronalen Netzwerken, dem Generator und dem Discriminator. 
-Diese zwei Teile werden gleichzeitig trainiert, wobei der Generator das Ziel hat, den Discriminator mit möglichst echt wirkenden Bildern zu täuschen, 
-und der Discriminator das Ziel hat, sich nicht von dem Generator täuschen zu lassen \cite{benaissaOverviewGANDeepFakesDetection2024}. 
+Diese GANs bestehen aus zwei neuronalen Netzwerken: Dem Generator und dem Discriminator. 
+Diese zwei Teile werden gleichzeitig trainiert. Der Generator versucht, den Discriminator mit möglichst echt wirkenden Bildern zu täuschen, 
+während der Discriminator versucht, diese Täuschung zu erkennen \cite{benaissaOverviewGANDeepFakesDetection2024}. 
 Weiterhin gibt es mittlerweile eine Menge von verschiedenen GAN Modellen die zur Erzeugung von Deepfakes genutzt werden. 
 Eine Auswahl davon stellt \textcite{benaissaOverviewGANDeepFakesDetection2024}vor, darunter sind DCGAN, CycleGAN, PGGAN und einige mehr.
 
 Im Bereich der Bilderzeugung ist mittlerweile das Modell der Diffusion Modells zum Standard geworden \cite{guptaPhotorealisticVideoGeneration} 
 und hat die vorher beschriebenen GANs übertroffen \cite{williampeeblesScalableDiffusionModels}. 
 Ein Modell zur vollständig künstlichen Erzeugung von Deepfakes, das zum Zeitpunkt des Schreibens für einige Schlagzeilen \cite{proschofskyGooglesNeueVideoKI2025} gesorgt hat, 
-ist das video generation Model Veo 3 von Googles Deepmind. Dieses verwendet ein latent diffusion model (veo 3 tech report). 
+ist das video generation Model Veo 3 von Googles Deepmind. Dieses verwendet ein latent diffusion model \footnote{Google Deepmind:
+ Veo3 Tech Report
+ \url{https://storage.googleapis.com/deepmind-media/veo/Veo-3-Tech-Report.pdf}}.
 Ein Diffusion Model lernt Bilder zu erstellen, indem es aus einem Bildrauschen schrittweise das Rauschen immer weiter entfernt \cite{guptaPhotorealisticVideoGeneration}. 
 Dieses wird außerdem in einem latent space angewendet. Statt direkt auf den Pixeln zu arbeiten, 
-lässt man das Model in einem "lower-dimensional latent space" \cite{guptaPhotorealisticVideoGeneration} arbeiten, was den Rechenaufwand deutlich reduziert. 
+lässt man das Model in einem "lower-dimensional latent space" \cite[S.2]{guptaPhotorealisticVideoGeneration} arbeiten, was den Rechenaufwand deutlich reduziert. 
 Hierfür lässt man einen Autoencoder Bilder in kleinere räumliche Repräsentationen komprimieren und das diffusion model auf diesen räumlichen Repräsentationen trainieren. 
-Einige Beispiele zu was Veo 3 fähig ist, sieht man auf Googles Deepmind Youtube Channel \cite{Veo3Our}.
+Einige Beispiele zu was Veo 3 fähig ist, sieht man auf Googles Deepmind Youtube Channel \footnote{
+    Google Deepmind Youtube-Channel
+    \url{https://www.youtube.com/@googledeepmind/videos}
+}.
 
 \subsection{Technische Gegenmaßnahmen für Deepfakes}
 Je besser das Erzeugen von Deepfakes wird, desto schwieriger werden auch die Gegenmaßnahmen zu Deepfakes. 
@@ -170,7 +182,7 @@ wobei sich diese generell noch in frühen Stadien befinden \cite{abbasUnmaskingD
 Die passive Herangehensweise ist das klassische Erkennen von deepfakes durch Technologien die selbst auf machine learning oder sogar deep learning basieren. 
 Das Literature Review von Abbas und Taeihagh zeigt hier eine Vielzahl von deep learning Technologien, 
 darunter eine Menge Varianten die auf CNNs basieren, aber auch eine einige Varianten die auf den oben vorgestellten GANs basieren. 
-\textcite{benaissaOverviewGANDeepFakesDetection2024} zeigen noch zwei weitere interessante Ansätze speziell für die Erkennung von deepfake Videos. 
+\textcite{benaissaOverviewGANDeepFakesDetection2024} zeigen noch zwei weitere interessante Ansätze speziell für die Erkennung von Deepfake Videos. 
 Der eine ist die "biological signal analysis". Bei diesem werden physiologische Signale wie Blinzeln, Augenbewegung oder Herzschlag analysiert und damit die Videos auf Echtheit überprüft. 
 In einem Fall wurde dafür eine Kombination aus einem convolutional neural network und einem recursive neural network verwendet, 
 ein einem anderen Fall wurden auch wieder die oben genannten GANs verwendet.
@@ -184,7 +196,7 @@ Diese funktionieren durch ein dezentrales Transaktionssystem,
 welches durch seine Eigenschaften nahezu fälschungssicher ist und Transaktionen allgemein sicherer und transparenter macht \cite{gambinDeepfakesCurrentFuture2024}. 
 Die Idee dahinter ist, Inhalte und im speziellen Videos und Bilder bis zu ihrem Ersteller zurückverfolgen zu können, 
 mitsamt wichtigen Metadaten wie Aufnahmezeitpunkt, Kameramodell und andere Logs. 
-Durch die Möglichkeit, die Inhalte bis zu ihrem Ersteller zurückverfolgen zu können, sollen diese vertrauenswürdig und "authentisch" sein.
+Durch die Möglichkeit, die Inhalte bis zu ihrem Ersteller zurückverfolgen zu können, sollen diese vertrauenswürdig und authentisch sein.
 \section{Verwandte Arbeiten und Stand der Forschung}
 \subsection{Menschliche Deepfake Erkennung}
 Eine nicht zu vernachlässigende Frage ist, ob Menschen in der Lage sind, Deepfake Inhalte zuverlässig zu erkennen. 
@@ -203,7 +215,7 @@ Sowohl "raising awareness" als auch "providing advice" bringen nur in manchen St
 während hingegen "feedback training", "caricaturization" und "support based strategies" sehr konstant die menschliche Erkennung von Deepfake Inhalten verbessern. 
 Aber gerade die Kombination aus mehreren Ansätzen, wie zum Beispiel "feedback training" und "providing advice" könnten noch weitere Verbesserungen bringen \cite{dielHumanPerformanceDetecting2024}. 
 Allerdings sollte man Diels Bemerkung, "caution should be taken when attempting to generalize the present results 
-as deepfake detection performance may depend on various factors (e.g., deepfake qualitiy)." \cite{dielHumanPerformanceDetecting2024} nicht unerwähnt lassen.
+as deepfake detection performance may depend on various factors (e.g., deepfake qualitiy)." \cite[S.9]{dielHumanPerformanceDetecting2024} nicht unerwähnt lassen.
 Eine hilfreiche Anleitung zum Erkennen von Deepfake Videos gibt das MIT\cite{ProjectOverviewDetect}.
 Basierend auf diesen und mit Eindrücken des Politifact \cite{settlesPolitiFactDemystifiesDeepfake} Artikels sind folgend die Strategien 
 die in der Anwendung den Nutzern näher gebracht werden:
@@ -223,7 +235,11 @@ die in der Anwendung den Nutzern näher gebracht werden:
 Diese wurde allerdings aufgrund des nicht vorhandenen Audio der Videos bewusst entfernt.}
 Um diese Strategien überhaupt testen zu können bedarf es auch entsprechenden Videos. 
 Hierfür gibt es in der Forschung vorgefertigte Datensätze. 
-Eine gute Übersicht gibt die Datensatzübersicht von Papers with Code \cite{PapersCodeMachine}. 
+Eine gute Übersicht gibt die Datensatzübersicht von Papers with Code \footnote{
+    PapersWithCode
+    \url{https://paperswithcode.com/datasets?task=deepfake-detection&mod=videos}
+    Anmerkung: kurz vor Veröffentlichung dieser Arbeit scheint die Seite offline gegangen zu sein, verwiesen wird auf einen Nachfolger \url{https://huggingface.co/papers/trending}
+}. 
 Für diese Arbeit wurde der Celeb-DF Datensatz verwendet. 
 Dieser Datensatz besteht immer aus einem echten Video einer prominenten Person und einen Satz an Deepfake Videos die aus dem echten Video generiert wurden.
 
@@ -244,15 +260,16 @@ Obwohl die Ergebnisse noch nicht verfügbar sind, zeigt diese Arbeit das Potenzi
 \subsection{Public Displays als "public security user interfaces"}
 Um die beiden oben beschriebenen Punkte Deepfake Erkennung und Public Displays zu verbinden, 
 bietet sich das oben beschriebene Konzept der public security user interfaces von an. 
-\textcite{murtezajPublicSecurityUser2025} sehen "a strong potential at the intersection of research on interaction in public space and IT security-related behavior change", 
+\textcite{murtezajPublicSecurityUser2025} sehen "a strong potential at the intersection of research on interaction 
+in public space and IT security-related behavior change"\cite[S.59]{murtezajPublicSecurityUser2025}, 
 also in der Kombination von public displays und sicherheitsrelevanten Themen wie in unserem Fall Deepfake Inhalten. 
-Andere Fälle wo dies in der Praxis bereits angewandt wird sind eher selten. Die Universität Toronto sowie die Firma Rise Vision haben zum cybersecurity awareness Monat spezielle, 
+Andere Fälle wo dies in der Praxis bereits angewandt wird sind eher selten. 
+Die Universität Toronto sowie die Firma Rise Vision haben zum cybersecurity awareness Monat spezielle, 
 allerdings nicht interaktive, Ressourcen für public displays entwickelt \cite{visionCyberSecurityAwareness,CyberSecurityAwareness}. 
 \textcite{daviesOpenDisplayNetworks2012} schlagen vor, public displays zur Unterstützung von Verhaltensänderungen (z.b. "walk-to-school program), 
 Support bei Notfallsituationen, oder personalisierten Informationen zu nutzen. 
-Ein potentielles Szenario mit direkteren Fokus auf die Cybersecurity zeigen \textcite{murtezajPublicSecurityUser2025} anhand des Beispieles einer fiktiven Firma die mithilfe 
-von Public Displays in ihren Räumlichkeiten die Einführung eines Passwortmanagers unterstützen. 
-
+Ein potentielles Szenario mit direkteren Fokus auf die Cybersecurity zeigen \textcite{murtezajPublicSecurityUser2025} 
+anhand des Beispieles einer fiktiven Firma die mithilfe von Public Displays in ihren Räumlichkeiten die Einführung eines Passwortmanagers unterstützen. 
 
 
 
@@ -297,9 +314,15 @@ Die genaue Benutzerführung wird in der Grafik "Userflow" gezeigt.
 
 Das Spiel wurde mit dem Cross-Platform Framework Flutter entwickelt, ursprünglich als Webanwendung und letztendlich als native Windowsanwendung. 
 Dies zeigt eine Stärke von Flutter, die einfache Verwendung auf verschiedenen Plattformen.
-Die darunter liegende Softwarestruktur basiert vor allem auf dem BloC-Pattern \cite{BlocStateManagement}, vergleichbar mit dem bekannten MVC-Pattern. 
+Die darunter liegende Softwarestruktur basiert vor allem auf dem BloC-Pattern \footnote{
+    BloC Library
+    \url{https://bloclibrary.dev/de/}
+}, vergleichbar mit dem bekannten MVC-Pattern. 
 Hier wird die Logik in drei Ebenen aufgeteilt, die Präsentation, die Geschäfts-Logik und die Datenebene. 
-Die Datenebene ist aufgeteilt in die Data Providers, also die Datenquellen, und die Repositories, die aus den Rohdaten verwendbare Objekte machen. \cite{Architecture}
+Die Datenebene ist aufgeteilt in die Data Providers, also die Datenquellen, und die Repositories, die aus den Rohdaten verwendbare Objekte machen. \footnote{
+    BloC Architecture
+    \url{https://bloclibrary.dev/de/architecture/}
+}
 Zur Kommunikation zwischen den Ebenen wird mit Zuständen und Events gearbeitet.
 Die Videodatenbank besteht immer aus einem Videopaar, einem  Deepfake und einem realen Video. Die Anwendung liest die videos\_db.json ein, die Struktur ist in folgendem Beispiel zu sehen: 
 
@@ -337,7 +360,10 @@ Dabei bezieht beispielsweise das \textit{video repository} mithilfe der \textit{
 Diese Liste wird dann wie im \textit{video model} beschrieben in eine Liste mit Video Objekten umgewandelt. 
 Alles was die Logik Ebene zu sehen bekommt sind dann die generierten Video Objekte. 
 Die restliche Datenverarbeitung funktioniert parallel zu diesem Beispiel.
-Die persistente Datenspeicherung der Spielerstatistiken erfolgt über die Flutter Bibliothek Hive \cite{IsarHive2025}. 
+Die persistente Datenspeicherung der Spielerstatistiken erfolgt über die Flutter Bibliothek Hive \footnote{
+Hive Bibliothek
+\url{https://github.com/isar/hive}
+}. 
 Besonders hilfreich für die Nutzung im Rahmen der Studie und der Ergebnisauswertung ist die QR-Code Funktion. 
 Für jeden Spieler wird ein eigener QR-Code generiert, der auf den Link zur Umfrage verweist. 
 Zusätzlich enthält dieser Link eine 6-stellige Referenznummer, die gleichzeitig die interne Session-ID für jeden Spieler ist.
@@ -352,7 +378,37 @@ Aufgrund einer eingeschränkter Swipe-Funktionalität auf dem Testgerät wurden 
 \chapter{Studiendesign}
 \section{Hypothesen}
 Um die in der Einführung beschriebenen Forschungsfragen zu beantworten, werden folgende Hypothesen aufgestellt:
-...
+\subsection{Hypothesen H1}
+H1a-0: Es gibt keinen Unterschied in der Erkennungsgenauigkeit zwischen Erstspielern (<3 angesehene Videos) und Nutzern die mehr Spiele 
+H1a-1: Nutzer, die das Spiel mehrmals spielen, zeigen eine höhere Erkennungsgenauigkeit als Erstnutzer
+Operationalisierung: Vergleich der Erkennungsrate (Verhältnis an erfolgreichen Deepfake Entscheidungen) zwischen Nutzern mit <3 vs. >=5 angesehenen Videos
+H1b-0: Die spielerische Form hat keinen Effekt auf die Lernmotivation
+H1b-1: Die spielerische Form erhöht signifikant die Motivation zum Lernen der Deepfake-Erkennung
+Operationalisierung: Einstichproben-t-Test gegen neutralen Wert (4) für Frage: "Die spielerische Form hat meine Motivation zum Lernen der Deepfake-Erkennung erhöht"
+H1c-0: Es gibt keinen Unterschied zwischen vor- und nachgelagerter Selbsteinschätzung
+H1c-1: Die Selbsteinschätzung der Deepfake Erkennungsfähigkeit ist nach dem Spiel signifikant verändert
+Operationalisierung: T-Test für gepaarte Stichproben zwischen Pre- und Post-Game Selbsteinschätzung
+\subsection{Hypothesen H2}
+H2a-0: Es gibt keinen Unterschied in der Erkennungsgenauigkeit zwischen Nutzern, die Strategien gelesen haben, und solchen, die sie nicht gelesen haben
+H2a-1: Nutzer, die die Strategien zur Erkennung von Deepfake Videos gelesen haben, zeigen eine höhere Erkennungsgenauigkeit als Nutzer, die diese nicht gelesen haben
+Operationalisierung: Vergleich der Erkennungsrate zwischen Nutzern, die nach eigener Aussage die Strategien angesehen haben vs. die sie nicht gesehen haben.
+H2b-0: Strategien werden nicht als neuartig empfunden
+H2b-1: Nutzer, die Strategien gelesen haben, bewerten diese als neuartig.
+Operationalisierung: Einstichproben-t-Test gegen neutralen Wert (4) für Frage: "Die Strategien waren für mich neu".
+H2c-0: Es gibt keinen Unterschied im berichteten Lernzuwachs zwischen Nutzern, die Strategien gelesen haben, und solchen, die sie nicht gelesen haben.
+H2c-1: Nutzer, die Strategien gelesen haben, berichten signifikant häufiger von neuen Informationen als Nutzer, die sie nicht gelesen haben.
+Operationalisierung: T-Test zwischen Gruppen (Frage: Strategien gelesen ja/nein) für Frage "neue Informationen gewonnen"
+\subsection{Hypothesen H3}
+H3a-0: Es gibt keinen Unterschied zwischen der Häufigkeit von Public Display-spezifischen Aufmerksamkeitsfaktoren und anderen Aufmerksamkeitsfaktoren.
+H3a-1: Public Display-spezifische Elemente (auffällige Animation, spielerische Form) werden signifikant häufiger 
+als Grund für die Aufmerksamkeit auf das Spiel genannt als andere Faktoren (Interesse an Deepfakes, wurde angesprochen). 
+Operationalisierung: Proportionstest zwischen PD-spezifischen Faktoren vs. anderen Faktoren
+H3b-0: Es gibt keinen Unterschied zwischen der Häufigkeit struktureller Abbruchgründe und anderen Abbruchgründen.
+H3b-1: Strukturelle Abbruchgründe (zeitliche Beschränkungen, alle Videos angesehen) werden signifikant häufiger genannt als andere Abbruchgründe (Interessensverlust, unspezifische Gründe).
+Operationalisierung: Proportionstest zwischen strukturellen Gründen vs. anderen Gründen
+H3c-0: Die Strategien werden am Public Display kaum gelesen ($<=50\%$ der Nutzer).
+H3d-1: Die Strategien werden am Public Display häufig gelesen ($>=70\%$ der Nutzer).
+Operationalisierung: Binomialtest der beobachteten Proportion gegen Schwellenwerte 50\% und 70\% basierend auf Variable Strategien gelesen ja/nein
 \section{Aufbau der Studie}
 Grundsätzlich ist die Studie so aufgebaut, dass Nutzer zuerst das Spiel aktiv spielen und anschließend die Möglichkeit haben, die Online-Umfrage auszufüllen.
 Die Studie erfolgt als empirische Feldstudie aufgeteilt in zwei Phasen.
@@ -417,95 +473,333 @@ wenn sich in der zweiten Phase nennenswerte Abweichungen davon gezeigt haben wir
 \section{Deskriptive Statistik}
 
 \subsection{Stichprobenbeschreibung}
-Die Stichprobe umfasste N = 42 Teilnehmer welche das Deepfake Detection Spiel gespielt und die Umfrage ausgefüllt haben. 
+Die Stichprobe umfasste N = 42 Teilnehmer, die das Deepfake Detection Spiel gespielt und anschließend die Umfrage ausgefüllt haben. 
 Das Durchschnittsalter lag bei M=26.1 Jahren (SD=10.2, Range: 18-59 Jahre). 
 Die Teilnehmer waren zu 73.8\% (n=31) weiblich und 26.2\% (n=11) männlich. 
-69\% (n=29) der Teilnehmer verfügten über ein Abitur oder niedriger, 14.3\% (n=6) über einen Bachelorabschluss oder vergleichbar, 
-7.1\% (n=3) über einen Masterabschluss oder vergleichbar, 4.8\% (n=2) über einen Doktortitel sowie dieselbe Zahl gab Sonstiges an. 
+69\% (n=29) der Teilnehmer verfügten über ein Abitur oder niedriger, 14.3\% (n=6) über einen Bachelor oder vergleichbaren Abschluss, 
+7.1\% (n=3) über einen Masterabschluss oder vergleichbar. Jeweils 4.8\% (n=2) gaben einen Doktortitel sowie "Sonstiges" an. 
 Die drei häufigsten Fachgebiete der Teilnehmer waren Geisteswissenschaften \& Sprachen mit 40.5\% (n=17), 
-Sozial- \& Bildungswissenschaften mit 21.4\% (n=9) und Rechtswissenschaften \& Wirtschaft mit 16.7\% (n=7).
+dahinter Sozial- \& Bildungswissenschaften mit 21.4\% (n=9) und darauf folgten Rechtswissenschaften \& Wirtschaft mit 16.7\% (n=7).
+\begin{figure} [htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{3_stichprobendemografie_updated.png}
+    \caption{Stichprobendemografie der ersten Phase}
+    \label{fig:stichprobendemografie}
+\end{figure}
+Die zweite Phase der Studie umfasste N=30 Teilnehmer.
 
-Die zweite Phase der Studie umfasste N=30 Teilnehmer, diese haben allerdings keine Umfrage ausgefüllt. 
-"Grafik Stichprobendemografie kompakt"
 
 \subsection{Spielverhalten}
-Die Teilnehmer absolvierten durchschnittlich M=6.24 Spiele (Mdn=5, SD=3.92, Range: 1-13) in einer durchschnittlichen Zeit von M=5.45 Minuten (Mdn=5, SD=3.69, Range: 0-20.1). In Phase 2 wurden durchschnittlich M=4.4 (Mdn=3, SD=3.84, Range: 1-13) Spiele pro Teilnehmer in einer durchschnittlichen Zeit von 3.12 Minuten (Mdn=2.2, SD=3.56, Range: 0-15.9) absolviert.
+Die Teilnehmer absolvierten durchschnittlich M=6.24 Spiele (Mdn=5, SD=3.92, Range: 1-13) in einer durchschnittlichen 
+Zeit von M=5.45 Minuten (Mdn=5, SD=3.69, Range: 0-20.1). In Phase 2 wurden durchschnittlich M=4.4 (Mdn=3, SD=3.84, Range: 1-13) Spiele pro Teilnehmer 
+in einer durchschnittlichen Zeit von 3.12 Minuten (Mdn=2.2, SD=3.56, Range: 0-15.9) absolviert.
 
-Ein Durchgang eines Spieles dauerte durchschnittlich M=0.98 Minuten (Mdn=0.96, SD=0.38, Range: 0.38-2.02) in Phase 1 und M=0.6 (Mdn=0.53, SD=0.57, Range: 0-2.52) in Phase 2. Bei einer Kategorisierung der Nutzer in Intensiv- (>5 Min. Spielzeit), Standard- (3-5 Min. Spielzeit) und Schnell-Spieler (<3 Min. Spielzeit) haben wir folgende Einteilung:
+Ein Durchgang eines Spieles dauerte durchschnittlich M=0.98 Minuten (Mdn=0.96, SD=0.38, Range: 0.38-2.02) 
+in Phase 1 und M=0.6 Minuten (Mdn=0.53, SD=0.57, Range: 0-2.52) in Phase 2. 
+Bei einer Kategorisierung der Nutzer in Intensiv- (>5 Min. Spielzeit), Standard- (3-5 Min. Spielzeit) und Schnell-Spieler (<3 Min. Spielzeit) 
+zeigt sich folgende Einteilung:
 "Tabelle mit Spieldauer-Kategorien"
-Die Zeiten der höchsten Nutzung pro Stunde sieht folgend aus:
-"Grafik mit Peak Nutzung"
-ToDo: Grafik weglassen, stattdessen in einem kurzen Satz beschreiben wann am häufigsten gespielt wurde.
+Bei einer Laufzeit von jeweils 10:00 - 16:00 Uhr liegt die Peak Nutzungszeit zwischen 13:00 - 14:00 Uhr mit 31\% (n=13). 
+Auf die anderen Stunden verteilt sich die Nutzung sehr gleichmäßig.
 
-\footnote{Anmerkung: Die minimale Spieldauer von 0 Minuten entsteht durch die Messmethodik, wodurch bei nur einem gespielten Spiel eine Dauer von 0 Minuten aufgezeichnet wurde.}
+\footnote{Anmerkung: Die minimale Spieldauer von 0 Minuten ist auf die Messmethodik zurückzuführen, so dass bei nur einem gespielten Spiel eine Dauer von 0 Minuten erfasst wird.}
 
-Die Erfolgsrate der Spieler in ihren Entscheidungen ob das gesehene Video real oder ein Deepfake war, lag in Phase 1 durchschnittlich bei M=75.2\% (Mdn=78.5\%, SD=24.5, Range: 0-100\%). 
-In Phase 2 lag diese bei M=69.2\% (Mdn=76.4\%, SD=34.3, Range: 0-100\%). Die Funktion zum Speichern des Spielstandes wurde nur von einer Person (2.4\%) genutzt. 
-Zurückgekehrt, und mit diesem Spielstand weitergespielt, ist niemand, genauso wie in Phase 2 (n=1 gespeichert, niemand zurückgekehrt). 
-In Phase 2 gab es auch n=1 (3.3\%) Teilnehmer die ein Spiel angefangen aber nicht abgeschlossen haben. Dies kam in Phase 1 nicht vor.
+Die Erfolgsrate der Spieler in ihren Entscheidungen, ob das gesehene Video real oder ein Deepfake war, lag in Phase 1 durchschnittlich bei M=75.2\% (Mdn=78.5\%, SD=24.5, Range: 0-100\%). 
+In Phase 2 lag diese bei M=69.2\% (Mdn=76.4\%, SD=34.3, Range: 0-100\%). Die Funktion zum Speichern des Spielstandes wurde in beiden Phase jeweils nur von einer Person genutzt. 
+Sowhol in Phase 1 als auch in Phase 2 ist niemand zurückgekehrt, um mit dem gespeicherten Spielstand weiterzuspielen. 
+In Phase 2 gab es n=1 (3.3\%) Teilnehmer die ein Spiel angefangen aber nicht abgeschlossen haben. Dies kam in Phase 1 nicht vor.
 
 \subsection{Vorerfahrungen}
-Die Verteilung der Vorerfahrungen der Nutzer zu Deepfakes und Public Displays sind in dieser Tabelle zu sehen: 
-"Tabellen"
+Die Verteilung der Vorerfahrungen der Nutzer zu Deepfakes und Public Displays sind in den Tabellen \ref{tab:deepfake_experience} und \ref{tab:pd_experience} zu sehen. 
+\input{tables/deepfake_vorerfahrungen.tex}
+\input{tables/pd_vorerfahrungen.tex}
 
-\begin{table}[htbp]
-\centering
-\caption{Verteilung der Deepfake-Vorerfahrungen der Studienteilnehmer (N = 42, Mehrfachnennungen möglich)} 
-\label{tab:deepfake_experience}
-\begin{tabular}{lrr}
-  \toprule
-Erfahrungstyp & Anzahl & Prozent (\%) \\ 
-  \midrule
-Bereits Deepfakes gesehen\\(soziale Medien, Nachrichten) & 33 & 78.6 \\ 
-  Noch keine Erfahrung\\mit Deepfakes & 9 & 21.4 \\ 
-  Bereits Spiele zur Erkennung\\von Deepfakes gespielt & 3 & 7.1 \\ 
-  Bereits Deepfakes erstellt & 1 & 2.4 \\ 
-  Sonstiges & 0 & 0.0 \\ 
-   \bottomrule
-\end{tabular}
-\end{table}
 
-Eine Überschneidungsanalyse zeigt, die Anzahl der Personen ohne Deepfake-Erfahrung liegt bei 21.4\% (n=9), 
-die Anzahl ohne Public Display-Erfahrung liegt bei 42.9\% (n=18). Davon haben nur 9.5\% (n=4) weder Deepfake- noch Public Display-Erfahrung.
+Eine Überschneidungsanalyse zeigt, dass die Anzahl der Personen ohne Deepfake-Erfahrung bei 21.4\% (n=9) und 
+die Anzahl der Teilnehmer ohne Public Display-Erfahrung bei 42.9\% (n=18) liegt. Davon haben nur 9.5\% (n=4) weder Deepfake- noch Public Display-Erfahrung.
 
 \subsection{Selbsteinschätzung}
 Die erste Selbsteinschätzung vor dem Spielen über die eigene Fähigkeit, Deepfake Videos zu erkennen, lag durchschnittlich bei M=2.98 von 5 (Mdn=3, SD=0.81, Range: 1-4). 
 Dagegen lag die Selbsteinschätzung nach dem Spielen bei durchschnittlich M=3.79 (Mdn=4, SD=0.87, Range: 2-5). 
-Dies ergibt eine Differenz von 0.81 zwischen vor und nach dem Spielen. Bei 61.9\% (n=26) ist der Wert gestiegen, bei 11.9\% (n=5) gefallen und bei 26.2\% (n=11) war er unverändert. 
-Interessant ist auch die Grafik zur detaillierten Differenz Verteilung.
-"Grafik Differenz Verteilung"
-"Grafik Confidence Entwicklung"
+Dies ergibt eine Differenz von 0.81 zwischen der Einschätzung vor und nach dem Speieln. Bei 61.9\% (n=26) ist die Selbsteinschätzung gestiegen, bei 11.9\% (n=5) gefallen und bei 26.2\% (n=11) war er unverändert. 
+Einen guten Überblick gibt die Grafik zur Selbsteinschätzungsentwicklung \ref{fig:confidence-veränderung}.
+\begin{figure} [htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{5_confidence_differenz_detailverteilung.png}
+    \caption{Detaillierte Veränderung der Selbsteinschätzung}
+    \label{fig:confidence-veränderung}
+\end{figure}
+
 
 \subsection{Strategieengagement}
 Die Strategien zur Erkennung von Deepfake Videos wurden von 85.7\% (n=36) der Nutzer gelesen. Von den Nutzern, die die Strategien gelesen haben, 
 wurde die Neuheit der Strategien im Durchschnitt mit M=5.72 (Mdn=6, SD=1.14) von 7 bewertet. 
 Durch das Spiel neue Informationen gewonnen zu haben, bewerteten die Nutzer (n=42) mit M=6.17 (Mdn = 6.5, SD=1.12) von 7. 
- "kombinierte Grafik mit beiden Werten?"
 
  \subsection{Gamification}
- Die Aussage, die spielerische Form habe die Lernmotivation erhöht, wurde von den Nutzern mit M=5.93 (Mdn=6, SD=1.07) bewertet. 
- Die beliebtesten Spielfunktionen (multiple-choice) sind mit 61.9\% (n=26) die Strategien, und mit 57.1\% (n=24) die Videos von prominenten Personen wie in der Grafik zu erkennen. 
-"Grafik Gaming Features"
+ Die Aussage "die spielerische Form habe die Lernmotivation erhöht" wurde von den Nutzern mit M=5.93 (Mdn=6, SD=1.07) von 7 bewertet. 
+ Die beliebtesten Spielfunktionen sind mit 61.9\% (n=26) die Strategien und mit 57.1\% (n=24) 
+ die Videos von prominenten Personen, wie in der Grafik \ref{fig:gaming-features} zu erkennen ist. 
+
+\begin{figure} [htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{4_gaming_features.png}
+    \caption{Die Spielfunktionen nach Beliebtheit}
+    \label{fig:gaming-features}
+\end{figure}
 
 \subsection{Public Displays}
-Die Gründe für die Aufmerksamkeit auf das Spiel und warum die Nutzer mit dem Spielen aufgehört haben (multiple-choice) sind in der Tabelle zu sehen:
-"Tabelle/Grafik Gründe"
+Die Gründe für die Aufmerksamkeit der Passanten auf das Spiel und warum die Nutzer mit dem Spielen aufgehört haben, 
+sind in den Tabellen \ref{tab:attention_factors} und \ref{tab:stop_reasons} zu sehen
+\input{tables/aufmerksamkeitsfaktoren.tex}
+\input{tables/gruende_aufhoeren.tex}
 
 \subsection{Umfrage}
-Wie oben schon genannt haben 97.6\% (n=41) der Nutzer die die Umfrage begonnen haben diese auch abgeschlossen. 
+Wie oben bereits genannt haben 97.6\% (n=41) der Nutzer, die die Umfrage begonnen haben, diese auch abgeschlossen. 
 Allerdings muss auch erwähnt werden, dass in dieser Phase der Studie insgesamt 48 Datensätze von internen Statistiken erfasst wurden. 
-Das bedeutet, 6 Nutzer haben das Spiel gespielt ohne die Umfrage abzuschließen. Diese Datensätze wurden für die Auswertung nicht berücksichtigt. 
+Das bedeutet, 6 Nutzer haben das Spiel gespielt, ohne die Umfrage abzuschließen. Diese Datensätze wurden für die Auswertung nicht berücksichtigt. 
 Die durchschnittliche Umfragedauer betrug M=3.92 Minuten (Mdn=3.45, SD=1.34, Range: 2.17-7.1).
 
 \section{Hypothesen}
-\subsection{}
+Im Folgenden werden die im Kapitel Studiendesign aufgestellten Hypothesen beantwortet. 
+Zu beachten ist, dass bei kleinen Stichprobengrößen zusätzlich zu dem p-Wert auch die Effektstärke Cohen's d für die praktische Relevanz angegeben wird.
+\subsection{Hypothesen H1}
+H1a: "Nutzer, die das Spiel mehrmals spielen, zeigen eine höhere Erkennungsgenauigkeit als Erstnutzer":
+Für diesen Test wurden die Nutzer in zwei Gruppen aufgeteilt. 
+Gruppe A mit mindestens fünf gespielten Durchgängen und Gruppe B mit drei oder weniger gespielten Durchgängen. 
+Gruppe A (n=25) hatte eine durchschnittliche Erfolgsrate von M=82\% (SD=0.155), Gruppe B (n=7) hatte M=50\% (SD=0.408). 
+Der einseitige T-Test zeigte einen statistisch signifikanten Unterschied (t(32)=2.031, p=0.0425) mit einer großen Effektstärke (Cohen's d=1.394).
+H1b: "Die spielerische Form erhöht signifikant die Motivation zum Lernen der Deepfake-Erkennung": 
+Die Nutzer (n=42) haben die Aussage "Die spielerische Form hat meine Motivation zum Lernen der Deepfake Erkennung erhöht." 
+durchschnittlich mit M=5.93 (SD=1.07), gegenüber dem neutralen Wert 4, bewertet. 
+Der Einstichproben t-Test gegen $\mu=4$ bestätigt mit t=11.7, p=0 die Hypothese und zeigt einen großen praktischen Effekt (Cohen's d=1.8).
+H1c: "Die Selbsteinschätzung der Deepfake Erkennungsfähigkeit ist nach dem Spiel signifikant verändert": 
+Der gepaarte t-Test zur Selbsteinschätzung, bei einer mittleren Differenz von 0.81, zeigt mit t=4.637 und 
+p<0.001 eine signifikante Veränderung der Selbsteinschätzung mit einem mittleren praktischen Effekt (Cohen's d=0.72).
+
+Damit werden alle drei Hypothesen zum ersten Teil der Forschungsfrage 1 bestätigt. 
+
+\subsection{Hypothesen H2}
+H2a: "Nutzer, die die Strategien zur Erkennung von Deepfake Videos gelesen haben, zeigen eine höhere Erkennungsgenauigkeit als Nutzer, die diese nicht gelesen haben":
+Die n=36 Nutzern, die die Strategien gelesen haben, haben eine Erkennungsgenauigkeit von M=72.9\% (SD=0.254). 
+Die n=6 Nutzern, die diese nicht gelesen haben, haben eine Erkennungsgenauigkeitvon M=89.1\% (SD=0.109). 
+Damit zeigt der Zweistichproben t-Test mit t=2.638 und p=0.991 keine signifikant höhere Erkennungsgenauigkeit. 
+Die Effektstärke Cohen's d liegt bei einem mittleren praktischen Effekt von -0.673. 
+Zu beachten ist hier die kleine Stichprobengröße von n=6. 
+Aufgrund von diesem Ergebnis wurde noch eine Analyse der Vorerfahrungen dieser Stichprobe erstellt. 
+Diese hat gezeigt, dass von den n=6 Nutzern 100\% schon Vorerfahrung mit Deepfakes haben, 
+während in der anderen Gruppe nur 75\% (n=27) bereits Vorerfahrung mit Deepfakes haben. 
+Dagegen gibt es bei den Vorerfahrungen mit Public Displays keine nennenswerten Unterschiede.
+H2b: "Nutzer, die Strategien gelesen haben, bewerten diese als neuartig.":
+Von den n=36 Nutzern, die die Strategien gelesen haben, wurde die Aussage "Die Strategien waren für mich neu." 
+mit M=5.72 (SD=1.14) gegenüber dem neutralen Wert 4 bewertet. 
+Der Einstichproben t-Test gegen $\mu=4$ zeigt mit t=9.09 und p=0 einen signifikanten Unterschied 
+und bestätigt damit mit einem großen praktischen Effekt (cohen's d=1.56) die Hypothese.
+H2c: "Nutzer, die Strategien gelesen haben, berichten signifikant häufiger von neuen Informationen als Nutzer, die sie nicht gelesen haben":
+Die Aussage "Ich habe durch das Spiel neue Informationen über die Erkennung von Deepfakes gewonnen." 
+wurde von den n=36 Nutzern, die die Strategien gelesen haben, mit M=6.5 (SD=0.65) gegenüber dem neutralen Wert 4 berichtet. 
+Nutzer, die diese nicht gelesen haben, haben die Aussage mit M=4.17 (SD=1.33) bewertet. 
+Der Zweistichproben t-Test bestätigt die Hypothese (t=-4.216, p=0.004) mit einem großen praktischen Effekt (cohen's d=3.023).
+
+\subsection{Hypothesen H3}
+H3a: "Public Display-spezifische Elemente (auffällige Animation, spielerische Form) werden signifikant häufiger als Grund für die Aufmerksamkeit auf das Spiel genannt": 
+Die Nutzer gaben bei der Multiple-Choice-Frage nach den Gründen für die Aufmerksamkeit auf das Spiel die auffällige Animation 
+und die spielerische Form mit jeweils 23,8\% (n=10) an. Im Vergleich dazu nannten 21,4\% (n=9) das Interesse an Deepfakes, 57,1\% (n=24) dass sie Zeit hatten, 
+19\% (n=8) dass sie angesprochen wurden, 4,8\% (n=2) dass sie auf jemanden warteten und 4,8\% (n=2) sonstige Gründe.
+Die beiden Public Display-spezifischen Elemente "auffällige Animation" und "spielerische Form" wurden damit von 40,5\% (n=17) der Nutzer genannt, 
+während alle anderen Gründe zusammen von 78,6\% (n=33) der Nutzer genannt wurden. 
+Der Proportionstest zeigt mit $x^2=11,118$, p = 0,9996 bei einem mittleren praktischen Effekt (Cohen's h = -0,8) keine statistische Signifikanz. 
+Die Hypothese H3a wird somit nicht bestätigt. 
+Andere Faktoren, insbesondere verfügbare Zeit, waren deutlich wichtigere Aufmerksamkeitsfaktoren als die Public Display-spezifischen Elemente.
+H3b: "Strukturelle Abbruchgründe ("zeitliche Beschränkungen", "alle Videos angesehen") 
+werden signifikant häufiger genannt als andere Abbruchgründe ("Interessensverlust", "unspezifische Gründe")": 
+Die Nutzer gaben bei der Multiple-Choice Frage nach den Abbruchgründen "begrenzte Zeit" mit 40.5\% (n=17), 
+"kein besonderer Grund" mit 31\% (n=13), "Spiel durchgespielt" mit 21.4\% (n=9), "alle Videos gesehen" mit 21.4\% (n=9), und "Interesse verloren" mit 7.1\% (n=3) an. 
+Der Proportionstest zeigt keine statistische Signifikanz ($x^2=1.193$, p=0.1373) mit einem kleinen praktischen Effekt (cohen's h=0.287).
+H3c: "Die Strategien wurden am Public Display häufig gelesen (>=70\%)":
+Der Anteil der Nutzer, die die Strategien gelesen haben, liegt bei 85.7\% (n=36). 
+Der Binomialtest zeigt, dass der Anteil statistisch signifikant über der 70\%-Schwelle liegt (p=0.0155, 95\%KI [71.5\%, 94.6\%]).
+
+\chapter{Diskussion}
+\section{Zusammenfassung der wichtigsten Erkenntnisse}
+Die Studie untersuchte die Wirksamkeit eines spielbasierten Ansatzes zur Deepfake-Erkennung auf einem Public Display. 
+Dabei lieferte sie mit N=42 Teilnehmern in Phase 1 und N=30 Teilnehmern in Phase 2 mehrere bedeutsame Erkenntnisse über das Nutzerverhalten und die Lerneffekte. 
+Die Teilnehmer zeigten in beiden Phasen hohes Engagement mit dem Spiel. 
+In Phase 1 wurden durchschnittlich M=6.24 Spiele in M=5.45 Minuten, in Phase 2 waren es M=4.4 Spiele in M=3.12 Minuten. 
+Die Abbruchrate war mit einer einzigen Person (3.8\%) in Phase 2 minimal, was die hohe Akzeptanz des Spiels belegt.
+Die Erkennungsgenauigkeit lag in Phase 1 bei durchschnittlich M=75.2\% und in Phase 2 bei M=69.2\%. 
+Interessant ist, dass Nutzer mit höherer Spielanzahl signifikant bessere Leistungen erzielten (82\% Erkennungsgenauigkeit bei >= 5 Spielen vs. 50\% bei <=3 Spielen), 
+was einen klaren Lerneffekt durch Wiederholung belegt.
+Die Selbsteinschätzung verbesserte sich signifikant von M=2.98 auf M=3.79. Bei 61.9\% der Teilnehmer stieg das Vertrauen in die eigenen Fähigkeiten. 
+Besonders bemerkenswert ist der hohe berichtete Informationsgewinn von M=6.17 auf einer 7-Punkt-Skala, 
+was das Potential des Ansatzes zur Sensibilisierung unterstreicht.
+Die Erkennungsstrategien wurden hervorragend angenommen: 85.7\% der Nutzer haben sie gelesen und bewerteten sie als sehr neuartig (M=5.72 von 7). 
+Die Strategien wurden außerdem von 61.9\% als besonders gute Funktion genannt. 
+Die spielerische Form erhöhte die Lernmotivation signifikant (M=5.93 von 7), was das Potential von Spielen für das Training von Deepfake Erkennung zeigt.
+\section{Interpretation der Ergebnisse und Vergleich mit den Erwartungen}
+\subsection{Forschungsfrage 1}
+\textit{Inwieweit hilft ein spielbasierter Ansatz auf einem Public Display bei der Erkennung von Deepfake-Videos, 
+und wie tragen die vorgestellten Erkennungsstrategien zur Sensibilisierung der Menschen bei?} 
+Die Ergebnisse zu Forschungsfrage 1 zeigen ein differenziertes Bild der Wirksamkeit des spielbasierten Ansatzes und der implementierten Erkennungsstrategien. 
+Spielbasierter Ansatz (H1): 
+Alle drei Hypothesen konnten eindeutig bestätigt werden. Die spielerische Form wird nicht nur gut angenommen, 
+sondern erhöht die Lernmotivation signifikant (M=5.93 von 7-Punkt Skala, p<0.001, Cohen's d=1.8). 
+Die Erkennungsgenauigkeit ist bei einer größeren Anzahl von Spielen (>=5) signifikant höher 
+(82\% bei 5 oder mehr Spielen vs. 50\% bei 3 oder weniger Spielen, Cohen's d=1.4). 
+Die Selbsteinschätzung steigt nach dem Spielen signifikant um durchschnittlich 0.81 Punkte (5-Punkt Skala), 
+was zeigt, dass die Nutzer sowohl objektiv besser werden als auch subjektiv mehr Vertrauen entwickeln. 
+Erkennungsstrategien (H2): 
+Die Ergebnisse zu den Strategien zeigen ein komplexes Bild mit einem überraschenden Befund. 
+Bei Hypothese H2a zeigte sich entgegen den Erwartungen, dass Nutzer, die die Strategien nicht gelesen haben, 
+eine höhere Erkennungsgenauigkeit aufweisen (89.1\% vs. 72.9\%). 
+Allerdings ist diese Gruppe sehr klein (n=6) und weist eine wichtige Besonderheit auf: 
+100\% dieser Nutzer haben bereits Vorerfahrung mit Deepfakes, während in der anderen Gruppe nur 75\% Vorerfahrung haben. 
+Dies legt nahe, dass bereits erfahrene Nutzer die Strategien eher nicht lesen, aber aufgrund ihrer Vorerfahrung dennoch bessere Leistungen erzielen.
+Die anderen Hypothesen zu den Strategien werden stark bestätigt: 
+Die Strategien werden als sehr neuartig empfunden (M=5.72 von 7-Punkt Skala, p<0.001, Cohen's d=1.56) und führen zu deutlich mehr berichteten Informationen. 
+Nutzer, die die Strategien gelesen haben, bewerten den Informationsgewinn mit M=6.5, während Nutzer, die die Strategien nicht gelesen haben, 
+den Informationsgewinn nur mit M=4.17 angeben (p=0.004, Cohen's d=3.02). 
+Zudem wurden die Strategien von 85.7\% der Nutzer gelesen, was ihre hohe Akzeptanz unterstreicht.
+Die Veränderung der Selbsteinschätzung zeigt deutlich, das der spielbasierte Ansatz zur Sensibilisierung beiträgt. 
+Die hohe Beliebtheit der Strategien, ihre Wahrnehmung als neuartig und ihr starker Beitrag dazu, dass Nutzer neue Informationen aus dem Spiel mitnehmen, 
+unterstreicht deren Einfluss auf die Nutzer. 
+Die spielerische Form erhöht nachweislich die Motivation der Nutzer, sich mit dem Thema Deepfake-Erkennung auseinanderzusetzen. 
+
+\subsection{Forschungsfrage 2}
+\textit{Wie nehmen Nutzer Public Displays zur Erkennung von Deepfake-Videos wahr?}
+Die Ergebnisse zu Forschungsfrage 2 zeigen eine grundsätzlich positive Wahrnehmung des Public Display-Ansatzes, 
+wobei die Hypothesen teils differenzierte Ergebnisse lieferten. Die Hypothesen H3a und H3b konnten nicht bestätigt werden: 
+Public Display spezifische Elemente (40.5\%) wurden seltener als Aufmerksamkeitsfaktor genannt als andere Gründe (78.6\%). 
+Besonders auffällig ist, dass "verfügbare Zeit" mit 57.1\% der dominierende Faktor war. 
+Dies deutet darauf hin, dass der Faktor "Zeit zur Verfügung" möglicherweise entscheidender als visuelle Attraktivität ist, 
+wenn es darum geht, ob ein interaktives Public Display gut angenommen wird. 
+Auch strukturelle Abbruchgründe überwogen nicht signifikant gegenüber anderen Gründen. 
+Bemerkenswert ist jedoch, dass nur 7.1\% Interessensverlust als Abbruchgrund angaben.
+Hypothese H3c konnte stark bestätigt werden: 85.7\% der Nutzer lasen die Strategien, deutlich mehr als die angestrebten 70\% (p=0.016). 
+Die belegt die hohe Akzeptanz des Lernmaterials am Public Display und die Bereitschaft auch komplexere Themen an einem Public Display zu lernen.
+
+Eine wichtige Beobachtung ist, dass das Public Display Menschen dazu motiviert, in Gruppen zu spielen. 
+Dies ist besonders wertvoll, da nachweislich das Spielen in Gruppen die Erkennungsfähigkeit verbessert \cite{dielHumanPerformanceDetecting2024}. 
+Darüber hinaus regte das Spiel weiterführende Diskussionen zwischen den Nutzern über die Deepfake-Problematik an, 
+was die gesellschaftliche Relevanz und das Potential zur Sensibilisierung unterstreicht.
+Die durchschnittliche Spieldauer in beiden Phasen zeigt, dass das Public Display als auch die Steuerung gut verstanden und akzeptiert wurden. 
+Dies deutet auf eine gute Eignung von Public Displays auch für komplexere technische Themen hin.
+\section{Unterschiede zwischen den Studienphasen}
+Ein interessanter Befund ergibt sich aus dem Vergleich zwischen Phase 1 (mit Umfrage, N=42) und Phase 2 (ohne Umfrage, N=30). 
+Die Teilnehmer zeigten in Phase 1 ein deutlich intensiveres Engagement: 
+Sie spielten durchschnittlich 6.24 Spiele in 5.45 Minuten, während in Phase 2 nur 4.4 Spiele in 3.12 Minuten gespielt wurden. 
+Auch die Zeit pro Spiel war in Phase 1 länger (0.98 vs. 0.6 Minuten).
+Diese Unterschiede lassen sich am plausibelsten durch die fehlende Umfrage-Motivation in Phase 2 erklären. 
+In Phase 1 wussten die Nutzer, dass sie anschließend eine Umfrage ausfüllen würden, was zu einem Engagement mit dem Spiel führen könnte.
+Dieser Befund hat wichtige Implikationen für die Gestaltung von Public Display-Studien: 
+Die Ankündigung einer Befragung kann das Nutzerverhalten erheblich beeinflussen. 
+Gleichzeitig zeigt Phase 2 möglicherweise das "natürlichere" Nutzungsverhalten.
+\section{Limitationen der Software und der Studie}
+Die vorliegende Studie weißt mehrere Limitationen auf, die bei der Interpretation der Ergebnisse berücksichtigt werden müssen.
+
+\textbf{Stichprobenprobleme:}
+Ein kritisches Problem zeigt sich bei der Analyse der Strategien-Nutzung: 
+Nur 6 von 42 Nutzern lasen die Strategien nicht, was zu einer sehr ungleichen Gruppenverteilung führt. 
+Aus dieser kleinen Gruppen hatten zudem 100\% schon Deepfake Vorerfahrung gegenüber 75\% der größeren Gruppe, 
+was die Interpretation der Ergebnisse zu H2a erschwert. 
+Solche Asymmetrien in der Stichprobe können die statistischen Aussagen verzerren und sollten in zukünftigen Studien durch gezieltes Studiendesign vermieden werden.
+
+\textbf{Datenerfassung und Gruppendynamik:}
+Ein weiteres wesentliches Problem besteht darin, dass das Spielen in Gruppen nicht systematisch erfasst wurde. 
+Da beobachtet werden konnte, dass viele Nutzer gemeinsam spielten, 
+können Gruppen die Erkennungsgenauigkeit der Studie sowohl positiv als auch negativ verfälschen. 
+Die Erkennungsgenauigkeit sollte daher nicht isoliert betrachtet werden, sondern in einen Kontext mit den anderen Beobachtungen gesetzt werden. 
+
+\textbf{Technische Aspekte:}
+Manche Nutzer gaben das Feedback, dass der fehlende Sound irritieren könnte. 
+Dies könnte die Nutzererfahrung beeinträchtigt haben. 
+Allerdings stellt dies eine technische Limitation dar und wurde bewusst so umgesetzt, 
+da eine Soundausgabe in öffentlichen Räumen häufig stören oder gar nicht gehört werden könnte.
+
+\textbf{Videoauswahl:}
+Die Verwendung von Videos prominenter Personen animiert zwar zum Spielen (57.1\%), kann aber auch die Erkennungsgenauigkeit künstlich erhöhen, 
+wenn die Nutzer die Schauspieler bereits gut kennen. 
+Andererseits ist dies auch ein realistischer Einsatz, 
+da Deepfakes in der Vergangenheit häufig von bekannten Personen erstellt wurden (einfach schon aufgrund der technischen Notwendigkeit von sehr viel benötigten Videomaterials).
+
+\textbf{Nicht genutzte Features:}
+Die Spiel-Speichern Funktion wurde überhaupt nicht genutzt (phasenübergreifend n=2), was Fragen aufwirft, 
+ob kein Interesse bestand oder die Funktion schlecht platziert war. 
+Möglicherweise wird diese Funktion in anderen Einsatzorten wie Firmen oder halböffentlichen Orten besser angenommen.
+
+\textbf{Externe Störfaktoren:}
+Mögliche Störfaktoren während der Studienzeit waren vor allem zwei temporäre Verkaufsstände von Studentenzeitungen und Magazinen in der Nähe des Public Displays. 
+Diese könnten potentiell die Aufmerksamkeit der Passanten auf sich und damit weg von dem Public Display gezogen haben, was die Nutzungsfrequenz beeinflusst haben könnte.
+\section{Implikationen und Verbesserungsmöglichkeiten}
+Die Erkenntnisse der Studie haben wichtige Implikationen für die Weiterentwicklung des Spiels und ähnlicher Public Display-Anwendungen. 
+Um wiederholte Nutzung zu fördern könnten tageweiße wechselnde Videosets implementiert werden. 
+Die neue Herausforderung könnte Nutzer eher zum Wiederkehren bringen und langfristige Lerneffekte verstärken.
+Die wichtigste Verbesserung wäre die Implementierung einer Gruppenfunktion. 
+Da beobachtet wurde, dass Gruppen häufig länger spielen und die Benutzeroberfläche schneller verstehen, 
+würde eine explizite Unterstützung für Gruppen das Lernerlebnis nochmal verbessern. 
+Dies könnte Funktionen wie gemeinsame Entscheidungsfindung, Diskussionszeit zwischen den Videos oder geteilte Statistiken umfassen.
+Zukünftige Studien sollten Gruppendynamiken systematisch erfassen und in die Analyse einbeziehen. 
+Auch könnten noch genauere Spielstatistiken, wie eine exakte Aufzeichnung wie viel Zeit der Nutzer mit welcher Funktion verbracht hat, erfasst werden.
+
+Die Studie zeigt, dass spielbasierte Ansätze auf Public Displays ein vielversprechender Weg zur Sensibilisierung für komplexere Themen wie Deepfake Erkennung sind, 
+auch wenn noch Raum für technische und methodische Verbesserungen besteht.
+\chapter{Fazit und Ausblick}
+\section{Zusammenfassung der Arbeit}
+Diese Bachelorarbeit befasste sich mit der Entwicklung und Evaluation eines spielbasierten Ansatzes zur Schulung von Deepfake-Erkennungsfähigkeiten 
+mittels Public Displays. 
+Im Zentrum der Arbeit stand die Entwicklung eines interaktiven Lernspiels, das es Nutzern ermöglicht, 
+ihre Fähigkeiten zur Identifizierung von Deepfake Videos in einem öffentlichen oder halböffentlichen Umgebung zu trainieren.
+Das Spiel kombinierte mehrere zentrale Komponenten: 
+Zum einen wurde eine Sammlung von Deepfake- und echten Videos gesucht und in den Rahmen des Spiels eingepflegt, die als Grundlage für das Lernspiel diente. 
+Zum anderen wurden Erkennungsstrategien in das Spiel integriert, die den Nutzern konkrete Hilfestellungen zur Identifizierung manipulierter Inhalte boten. 
+Die technische Implementierung erfolgte als Touch-fähige Anwendung für Public Displays, 
+wobei Elemente wie ein PIN-System, Fortschrittsverfolgung und Performance-Statistiken das Nutzerengagement fördern sollten. 
+
+Die durchgeführte Feldstudie zeigte mehrere wichtige Erkenntnisse: 
+Erstens erwies sich der spielbasierte Ansatz als sehr effektiv für die Vermittlung komplexer sicherheitskritischer Themen. 
+Die Nutzer zeigten eine hohe Bereitschaft, sich mit der Thematik Deepfake Erkennung auseinander zu setzen. 
+Zweitens konnte gezeigt werden, dass Public Displays als Medium für solche Bildungsanwendungen große Akzeptanz finden 
+und Nutzer erfolgreich zur Interaktion motivieren können. 
+Besonders bemerkenswert war die soziale Komponente des Spiels. 
+Die öffentliche Platzierung führte nicht nur zu individueller Lernmotivation, sondern regte auch Diskussionen zwischen Nutzern an. 
+Während und nach dem Spielen kamen einige Nutzer mit anderen Passanten über die Deepfake-Problematik ins Gespräch. 
+Damit zeigt sich, dass der Ansatz nicht nur das von \textcite{murtezajPublicSecurityUser2025} vorgestellte Ziel "creating awareness" erfüllt, 
+sondern auch noch einen Schritt weiter geht und Diskussionen über Sicherheitsthemen anregen kann.
+\section{Handlungsempfehlungen für zukünftige Entwicklungen}
+Basierend auf den Erkenntnissen dieser Arbeit lassen sich mehrere konkrete Empfehlungen für die Weiterentwicklung des Spiels ableiten: 
+
+\textbf{Implementierung von Gruppenfunktionen:}
+Die Beobachtungen während der Studie zeigten, dass viele Nutzer das Spiel gemeinsam spielten und sich währenddessen ausgetauscht haben. 
+Eine Unterstützung solcher kollaborativen Elemente könnte die Wirksamkeit weiter erhöhen. 
+
+\textbf{Erweiterung des Videosets:}
+Um Nutzer zu häufigerem Spielen zu motivieren, sollte dem Spiel mehrere Videosets hinzugefügt werden. 
+Diese könnten thematisch oder nach Schwierigkeitsgraden sortiert sein und regelmäßig (eventuell auch mittels Over-The-Air Update) aktualisiert werden. 
+Auch könnte man damit eine personalisierte Inhaltsauswahl basierend auf dem Nutzerfortschritt und Können ermöglichen.
+Darauf aufbauend sollte auch eine kontinuierliche Aktualisierung des Trainingsmaterials erfolgen. 
+Insbesondere neuere Technologien wie Googles Veo3, die möglicherweise nochmals anderen Schwierigkeiten mit sich bringen, 
+sollten in das Spiel integriert werden, um die Relevanz und Aktualität der Lernumgebung zu gewährleisten.
+
+\section{Weiterführende Forschung und Erweiterungsmöglichkeiten}
+Die Arbeit öffnet mehrere vielversprechende Forschungsrichtungen für zukünftige Studien: 
+
+\textbf{Andere Umgebungen:}
+Eine wichtige Erweiterung wäre die Erprobung des Spiels in verschiedenen öffentlichen Räumen außerhalb des Universitätsumfeldes. 
+Besonders vielversprechend wären Standorte mit natürlichen Wartezeiten wie Behörden oder Arztpraxen. 
+Ebenso könnten belebte Orte wie Einkaufszentren oder Bibliotheken interessante Einsatzfelder darstellen. 
+Besonders interessant wäre die Untersuchung, wie verschiedene demografische Gruppen und Altersschichten auf das Spiel reagieren.
+
+\textbf{Langzeitstudie zur Nachhaltigkeit der Lerneffekte:}
+Während diese Arbeit vor allem die kurzfristigen Effekte untersuchte, könnte eine Langzeitstudie Aufschluss darüber geben, 
+inwieweit die durch das Spiel erworbenen Erkennungsstrategien in realen Situationen angewendet werden und wie lange sie im Gedächtnis verbleiben.
+
+\textbf{Anpassung an andere Manipulationstechniken:}
+Der Erfolg des spielbasierten Ansatzes für die Deepfake-Erkennung legt nahe, 
+dass ähnliche Methoden auch für anderen Formen von Manipulationstechniken effektiv sein könnten. 
+Zukünftige Forschung könnte untersuchen, wie das Konzept auf andere Bereiche wie manipulierte Texte, Bilder oder verfälschte Statistiken übertragen werden kann.
+
+Abschließend unterstreicht diese Arbeit das Potential spielbasierter Bildungsansätze auf Public Displays für die Vermittlung von sicherheitskritischen Kompetenzen. 
+In einer Zeit, in der die Verbreitung manipulierter Medieninhalte eine wachsende gesellschaftliche Herausforderung darstellt, 
+bieten solche niedrigschwelligen und leicht zugänglichen Lernumgebungen einen vielversprechenden Weg zur Behandlung sicherheitsrelevanter Themen.
+
 \gls{er}
-
-\chapter{Discussion}
-Mögliche Störfaktoren sind vor allem die zwei temporären Verkaufsstände von Studentenzeitungen und Magazinen. 
-Diese könnten potentiell die Aufmerksamkeit der Passanten auf sich und damit weg von dem Public Display ziehen.
-\chapter{Conclusion}
-
-\label{sec:conclusion}
-
-\todo{Outlook}
