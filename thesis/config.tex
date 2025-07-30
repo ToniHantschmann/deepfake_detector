@@ -691,6 +691,8 @@
   }
 \fi
 
+
+
 % Note: This breaks Overleaf word count. Just use \citet
 % EN: enable hyperlinked author names when using \citeauthor
 %     source: http://tex.stackexchange.com/a/75916/9075
@@ -1168,3 +1170,16 @@
 
 % DE: Für mehr Kontrolle bei verschachtelten Aufzählungen
 \usepackage{enumitem}
+
+%possible workaround for languague problem
+\addto\captionsenglish{%
+  \renewcommand\listfigurename{Abbildungsverzeichnis}%
+  \renewcommand\listtablename{Tabellenverzeichnis}%
+  \renewcommand\contentsname{Inhaltsverzeichnis}
+}
+
+\DefineBibliographyStrings{english}{%
+  bibliography = {Literaturverzeichnis}%
+}
+% Für das Abkürzungsverzeichnis (Glossaries)
+\renewcommand{\glossaryname}{Abkürzungsverzeichnis}

@@ -9,24 +9,24 @@
 
 \usepackage[
   title={
-Ein Spiel zur Erkennung von Deepfakes zur Sensibilisierung der Nutzer durch öffentliche Displays}, % Do not forget to capitalize your title correctly, you may use the following page to help you: https://capitalizemytitle.com/
+Ein Spiel Zur Erkennung von Deepfakes Zur Sensibilisierung Der Nutzer Durch Öffentliche Displays}, % Do not forget to capitalize your title correctly, you may use the following page to help you: https://capitalizemytitle.com/
   author={Anton Hantschmann},
-  orcid=0000-0000-0000-0000, % get your own ORCID via https://orcid.org/
+  orcid=0009-0000-6440-2891, % get your own ORCID via https://orcid.org/
   email={anton.hantschmann@campus.lmu.de},
   type=bachelor,
   institute={Institut für Informatik},
   course={Medieninformatik},
   examiner={Prof.\ Dr.\ Florian Alt},
   supervisor={Doruntina Murtezaj,\ M.Sc.},
-  startdate={July 5, 2018},
-  enddate={January 5, 2019},
-  copyright=ccbysa, % ccbysa, ccbynosa, cc0, nda, none
+  startdate={May 13, 2025},
+  enddate={August 5, 2025},
+  copyright=ccbysa
   language=german,
   aids=true, % Spefici if you used any aids in the crated of the thesis, if yes [true] if no adis were used [false]
   % Next, enter which tools were used and how according to the following taxonomy (https://ceur-ws.org/GenAI/Taxonomy.html). If no aid was used, the next three values can be ignored.
-  aidstools={Gammerly, ChatGPT}, 
-  adiscontributions={Grammar and spelling check, Paraphrase and reword},
-  aidsextracontributions={Dall-E 2 was used to generate Figure X. }
+  aidstools={Claude}, 
+  adiscontributions={Grammar and spelling check, Paraphrase and reword, Peer review simulation},
+  aidsextracontributions={Claude was used to debug the code and find errors}
 ]{lmu-thesis-cover}
 
 \input{acronyms}
@@ -51,24 +51,34 @@ Ein Spiel zur Erkennung von Deepfakes zur Sensibilisierung der Nutzer durch öff
 %Kurzfassung / abstract
 %auch im Stil vom Inhaltsverzeichnis
 \section*{Kurzfassung}
-
-\todo{Short summary of the thesis. Here, the following questions should be answered:}
-\todo{What is the specific problem addressed?}
-\todo{What have you done?}
-\todo{What did you find out?}
-\todo{What are the implications on a larger scale?}
-\todo{Should be around 0.5 pages. Not longer than 1 page.}
+Die zunehmende Verbreitung und Verbesserung von Deepfake-Technologien stellt ein wachsendes gesellschaftliches Risiko dar, 
+während der Bevölkerung gleichzeitig die notwendigen Fähigkeiten zur Erkennung manipulierter Medien fehlen.
+Diese Bachelorarbeit entwickelte daher ein interaktives Lernspiel für Public Displays zur Schulung von Deepfake-Erkennungsfähigkeiten. 
+Die Anwendung kombinierte echte und manipulierte Videos mit Erkennungsstrategien sowie spielerischen Elementen wie Fortschrittsverfolgung und Performance-Statistiken.
+Eine zweiphasige Feldstudie evaluierte die Wirksamkeit in öffentlicher Umgebung. 
+Der spielbasierte Ansatz erwies sich als effektiv für die Vermittlung sicherheitskritischer Themen, 
+wobei die Teilnehmer Verbesserungen ihrer Selbsteinschätzung zur Deepfake Erkennung und hohe Lernmotivation zeigten. 
+Public Displays als Lernplattform fanden große Akzeptanz.
+Besonders bemerkenswert war die soziale Komponente: 
+Das öffentliche Setting regte spontane Diskussionen zwischen Nutzern über Deepfake-Problematiken an.
+Die Studie zeigt, dass Public Display-basierte Spiele nicht nur Bewusstsein für Sicherheitsthemen schaffen, sondern auch gesellschaftliche Diskurse anstoßen.
+Dies eröffnet neue Perspektiven für öffentliche Bildungsmaßnahmen im Bereich sicherheitskritischer Themen.
 
 \cleardoublepage
 
 \section*{Abstract}
-
-\todo{Short summary of the thesis. Here, the following questions should be answered:}
-\todo{What is the specific problem addressed?}
-\todo{What have you done?}
-\todo{What did you find out?}
-\todo{What are the implications on a larger scale?}
-\todo{Should be around 0.5 pages. Not longer than 1 page.}
+The increasing spread and improvement of deepfake technologies poses a growing social risk, 
+while at the same time the population lacks the necessary skills to recognize manipulated media.
+This bachelor's thesis therefore developed an interactive educational game for public displays to train deepfake recognition skills. 
+The application combined real and manipulated videos with recognition strategies and playful elements such as progress tracking and performance statistics.
+A two-phase field study evaluated its effectiveness in public settings. 
+The game-based approach proved effective for teaching security-critical topics, 
+with participants showing improvements in their self-assessment of deepfake detection and high learning motivation. 
+Public displays as a learning platform were well accepted.
+Particularly noteworthy was the social component: 
+the public setting stimulated spontaneous discussions among users about deepfake issues.
+The study shows that public display-based games not only raise awareness of security issues, but also spark social discourse.
+This opens up new perspectives for public education measures in the area of security-critical topics.
 
 \cleardoublepage
 
@@ -134,7 +144,7 @@ Ein Spiel zur Erkennung von Deepfakes zur Sensibilisierung der Nutzer durch öff
 \fi
 
 % Control Glossary
-\let\ifglossary\iftrue
+\let\ifglossary\iffalse
 \ifglossary
     \ifdeutsch
         \printnoidxglossary[type=\acronymtype, title=Abkürzungsverzeichnis]
