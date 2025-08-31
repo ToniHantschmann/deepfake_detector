@@ -1,0 +1,454 @@
+%!TEX TS-program = pdflatex
+%!TEX encoding = UTF-8 Unicode
+
+\documentclass[aspectratio=169,t,xcolor=dvipsnames]{beamer}
+
+% ============================================================================
+% LMU CORPORATE DESIGN SETUP
+% ============================================================================
+\usetheme{Madrid}
+\usecolortheme[named=NavyBlue]{structure}
+
+% LMU Farben
+\definecolor{LMUBlue}{RGB}{0,40,165}
+\definecolor{LMUGreen}{RGB}{0,156,130}
+\definecolor{LMUGray}{RGB}{156,157,159}
+\definecolor{LMULightGray}{RGB}{242,242,242}
+
+\setbeamercolor{structure}{fg=LMUBlue}
+\setbeamercolor{palette primary}{bg=LMUBlue,fg=white}
+\setbeamercolor{palette secondary}{bg=LMUGreen,fg=white}
+\setbeamercolor{palette tertiary}{bg=LMUGray,fg=white}
+\setbeamercolor{block title}{bg=LMUBlue,fg=white}
+\setbeamercolor{block body}{bg=LMULightGray,fg=black}
+
+% ============================================================================
+% PACKAGES
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman,english]{babel}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+% ============================================================================
+% TITLEPAGE INFORMATION
+% ============================================================================
+\title[Deepfake Detection Game]{Ein Spiel zur Erkennung von Deepfakes zur Sensibilisierung der Nutzer durch Öffentliche Displays}
+
+\subtitle{Bachelorarbeit Verteidigung}
+
+\author[A. Hantschmann]{Anton Hantschmann}
+
+\institute[LMU München]{
+    Institut für Informatik\\
+    Ludwig-Maximilians-Universität München\\[0.5em]
+    \textbf{Betreuer:} Prof. Dr. Florian Alt\\
+    \textbf{Betreuerin:} Doruntina Murtezaj, M.Sc.
+}
+
+\date{\today}
+
+% ============================================================================
+% CUSTOM COMMANDS
+% ============================================================================
+\newcommand{\highlight}[1]{\textcolor{LMUBlue}{\textbf{#1}}}
+\newcommand{\researchq}[1]{\textcolor{LMUGreen}{\textit{#1}}}
+
+% Frame numbering
+\setbeamertemplate{footline}[frame number]
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% ============================================================================
+% DOCUMENT START
+% ============================================================================
+\begin{document}
+
+% ============================================================================
+% TITLE SLIDE
+% ============================================================================
+\begin{frame}
+\titlepage
+\end{frame}
+
+% ============================================================================
+% OVERVIEW
+% ============================================================================
+\begin{frame}
+\frametitle{Agenda}
+\tableofcontents[hideallsubsections]
+\end{frame}
+
+% ============================================================================
+% SECTION 1: PROBLEM & MOTIVATION
+% ============================================================================
+\section{Problem \& Motivation}
+
+\begin{frame}
+\frametitle{Das Deepfake-Problem}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\begin{itemize}
+\item \highlight{Deepfakes} werden immer raffinierter und verbreiteter
+\item \highlight{Gesellschaftliche Risiken:}
+\begin{itemize}
+\item Desinformation \& Fake News
+\item Manipulation der öffentlichen Meinung
+\item Verlust des Vertrauens in Medien
+\end{itemize}
+\item \highlight{Herausforderung:} Wie können wir die Öffentlichkeit sensibilisieren?
+\end{itemize}
+\end{column}
+\begin{column}{0.35\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{graphics/deepfake_example.png}\\
+\tiny Beispiel eines Deepfake-Videos
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Public Displays als Lösungsansatz}
+\begin{itemize}
+\item \highlight{Public Displays} erreichen breite Bevölkerungsschichten
+\item \highlight{Gaming-Ansatz} erhöht Engagement und Motivation
+\item \highlight{Niedrigschwellige Bildung} im öffentlichen Raum
+\item \highlight{Incidental Learning} für Passanten möglich
+\end{itemize}
+
+\vspace{1em}
+\begin{center}
+\highlight{Forschungslücke:} Wenig Forschung zu Deepfake-Bildung durch Public Display Games
+\end{center}
+\end{frame}
+
+% ============================================================================
+% SECTION 2: FORSCHUNGSFRAGEN & HYPOTHESEN
+% ============================================================================
+\section{Forschungsfragen \& Hypothesen}
+
+\begin{frame}
+\frametitle{Drei Hauptforschungsfragen}
+\begin{enumerate}
+\item[\textcolor{LMUBlue}{\textbf{RQ1}}] \researchq{To what extent does a game-based approach on a public display help deepfake recognition?}
+
+\item[\textcolor{LMUGreen}{\textbf{RQ2}}] \researchq{How do presented detection strategies contribute to raising awareness?}
+
+\item[\textcolor{LMUGray}{\textbf{RQ3}}] \researchq{How do users perceive public displays for recognizing deepfake videos?}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Zentrale Hypothesen (Auswahl)}
+\begin{block}{H1b: Gamification erhöht Lernmotivation}
+Die spielerische Form erhöht signifikant die Motivation zum Lernen der Deepfake-Erkennung
+\end{block}
+
+\begin{block}{H2b: Strategien erhöhen Selbstvertrauen}
+Die Selbsteinschätzung der Deepfake-Erkennungsfähigkeit ist nach dem Spiel signifikant höher als vorher
+\end{block}
+
+\begin{block}{H3b: Public Display erreicht diverse Nutzergruppen}
+Nutzer mit unterschiedlicher Public Display Erfahrung nutzen das System gleichermaßen
+\end{block}
+\end{frame}
+
+% ============================================================================
+% SECTION 3: METHODIK
+% ============================================================================
+\section{Methodik}
+
+\begin{frame}
+\frametitle{Studiendesign}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\begin{itemize}
+\item \highlight{Mixed-Methods Field Study}
+\item \highlight{Setting:} Öffentlicher Raum mit High-Traffic
+\item \highlight{Dauer:} 4 Wochen kontinuierlicher Deployment
+\item \highlight{Teilnahme:} Freiwillig, naturalistisch
+\end{itemize}
+
+\vspace{1em}
+\begin{block}{Datensammlung}
+\begin{itemize}
+\item Automatische Spiellogs
+\item Post-Game Umfrage (7-Punkt Likert)
+\item Demografische Daten
+\end{itemize}
+\end{block}
+\end{column}
+\begin{column}{0.35\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{graphics/public_display_setup.png}\\
+\tiny Public Display Setup
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Das Deepfake Detection Game}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\highlight{Spielmechanik:}
+\begin{itemize}
+\item Videos als Real oder Fake klassifizieren
+\item Sofortiges Feedback
+\item PIN-System für Wiederholung
+\item Statistiken \& Fortschritt
+\end{itemize}
+
+\highlight{Lernkomponente:}
+\begin{itemize}
+\item 9 Erkennungsstrategien
+\item Interaktive Animationen
+\item Vor jedem Video abrufbar
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{graphics/game_interface.png}\\
+\tiny Game Interface Design
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ============================================================================
+% SECTION 4: ERGEBNISSE
+% ============================================================================
+\section{Ergebnisse}
+
+\begin{frame}
+\frametitle{Stichprobe (N = 44)}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item \highlight{Alter:} M = 25.1 Jahre (SD = 8.2)
+\item \highlight{Bildung:}
+\begin{itemize}
+\item Bachelor: 45.5\%
+\item Master: 31.8\%
+\item PhD: 13.6\%
+\end{itemize}
+\item \highlight{Fachgebiet:}
+\begin{itemize}
+\item Informatik: 40.9\%
+\item Psychologie: 18.2\%
+\item Diverse andere: 40.9\%
+\end{itemize}
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{center}
+% Hier würde eine Demografiegrafik eingefügt
+\includegraphics[width=\textwidth]{plots/3_stichprobendemografie_updated.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hauptergebnis: Starker Lerneffekt}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{plots/2_confidence_entwicklung.png}
+\end{center}
+
+\begin{itemize}
+\item \highlight{Confidence-Steigerung:} 42\% Verbesserung (p < 0.001)
+\item \highlight{Effektstärke:} Cohen's d = 1.23 (sehr groß)
+\item \highlight{H2b bestätigt:} Strategien erhöhen Selbstvertrauen signifikant
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Public Display Aufmerksamkeit}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{plots/1_aufmerksamkeitsfaktoren_public_display_updated.png}
+\end{center}
+
+\begin{itemize}
+\item \highlight{Visuelle Aufmerksamkeit} dominiert (Animation 43.2\%)
+\item \highlight{Spielerische Form} zweitwichtigster Faktor (27.3\%)
+\item \highlight{H3b teilweise bestätigt:} Diverse Aufmerksamkeitsmechanismen
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Gamification-Erfolg}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{plots/4_gaming_features.png}
+\end{center}
+
+\begin{itemize}
+\item \highlight{Strategien \& Videos} besonders motivierend
+\item \highlight{H1b bestätigt:} 68.2\% berichten erhöhte Lernmotivation
+\item \highlight{Engagement:} Hohe Completion Rate (84.1\%)
+\end{itemize}
+\end{frame}
+
+% ============================================================================
+% SECTION 5: DISKUSSION
+% ============================================================================
+\section{Diskussion \& Fazit}
+
+\begin{frame}
+\frametitle{Zentrale Erkenntnisse}
+\begin{enumerate}
+\item \highlight{Gaming-Ansatz hocheffektiv}
+\begin{itemize}
+\item 42\% Confidence-Steigerung
+\item Hohe Motivation und Engagement
+\end{itemize}
+
+\item \highlight{Strategien vermitteln Wissen erfolgreich}
+\begin{itemize}
+\item Signifikante Wissensvermittlung
+\item Nachhaltiger Lerneffekt bei Wiederholungsspielern
+\end{itemize}
+
+\item \highlight{Public Displays erreichen Zielgruppen}
+\begin{itemize}
+\item Diverse Nutzergruppen angesprochen
+\item Verschiedene Aufmerksamkeitsmechanismen wirksam
+\end{itemize}
+\end{enumerate}
+</frame>
+
+\begin{frame}
+\frametitle{Beitrag zur Forschung}
+\begin{block}{Theoretische Beiträge}
+\begin{itemize}
+\item Erster empirischer Nachweis für Deepfake-Bildung via Public Display Gaming
+\item Validierung von Gamification-Ansätzen für Digital Literacy
+\item Erkenntnisse zu incidental Learning im öffentlichen Raum
+\end{itemize}
+\end{block}
+
+\begin{block}{Praktische Implikationen}
+\begin{itemize}
+\item \highlight{Design-Guidelines} für Public Display Educational Games
+\item \highlight{Skalierbarkeit} für öffentliche Bildungsmaßnahmen
+\item \highlight{Policy Relevanz} für Medienkompetenz-Initiativen
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Limitationen \& Future Work}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\highlight{Limitationen:}
+\begin{itemize}
+\item Stichprobengröße (N=44)
+\item Convenience Sampling
+\item Kurzzeiteffekte gemessen
+\item Ein Standort
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\highlight{Zukünftige Forschung:}
+\begin{itemize}
+\item Longitudinale Studien
+\item Multi-Location Deployment
+\item Advanced Analytics
+\item KI-basierte Personalisierung
+\end{itemize}
+\end{column}
+\end{columns}
+
+\vspace{1em}
+\begin{center}
+\highlight{Dennoch:} Proof-of-Concept erfolgreich demonstriert
+\end{center}
+\end{frame}
+
+% ============================================================================
+% CONCLUSION
+% ============================================================================
+\begin{frame}
+\frametitle{Fazit}
+\begin{center}
+{\Large \highlight{Public Display Games können erfolgreich zur Deepfake-Sensibilisierung beitragen}}
+\end{center}
+
+\vspace{1em}
+\begin{itemize}
+\item \highlight{Hypothesen größtenteils bestätigt}
+\item \highlight{Starke Lerneffekte} nachgewiesen
+\item \highlight{Hohe praktische Relevanz} für Digital Literacy
+\item \highlight{Skalierungspotenzial} für öffentliche Bildung
+\end{itemize}
+
+\vspace{2em}
+\begin{center}
+\Large \textcolor{LMUBlue}{\textbf{Vielen Dank für Ihre Aufmerksamkeit!}}\\
+\vspace{0.5em}
+\large Fragen \& Diskussion
+\end{center}
+\end{frame}
+
+% ============================================================================
+% APPENDIX FOR DETAILED RESULTS
+% ============================================================================
+\appendix
+
+\begin{frame}
+\frametitle{Detaillierte Hypothesentests}
+\tiny
+\begin{table}
+\centering
+\begin{tabular}{p{2cm}p{3cm}p{2cm}p{1.5cm}p{2cm}}
+\toprule
+\textbf{Hypothese} & \textbf{Test} & \textbf{Ergebnis} & \textbf{p-Wert} & \textbf{Status} \\
+\midrule
+H1b & t-Test (μ > 4) & M = 5.12 & < 0.001 & Bestätigt \\
+H2b & Paired t-Test & Δ = +0.85 & < 0.001 & Bestätigt \\
+H2c & t-Test (μ > 4) & M = 4.67 & < 0.01 & Bestätigt \\
+H3b & Chi²-Test & χ² = 12.4 & < 0.05 & Bestätigt \\
+H3c & Proportionstest & 31.8\% & > 0.05 & Nicht bestätigt \\
+\bottomrule
+\end{tabular}
+\caption{Statistische Testergebnisse (Auswahl)}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Technische Spezifikationen}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\highlight{Hardware:}
+\begin{itemize}
+\item 55" Touch Display (4K)
+\item Intel NUC Computing Unit
+\item Integrierte Audio
+\item Stabile Internetverbindung
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\highlight{Software:}
+\begin{itemize}
+\item Flutter Framework
+\item SQLite Datenbank
+\item RESTful API Backend
+\item Real-time Analytics
+\end{itemize}
+\end{column}
+\end{columns}
+
+\vspace{1em}
+\highlight{Videos:} 20 Videos (10 Real, 10 Deepfake)\\
+\highlight{Strategien:} 9 interaktive Erkennungsstrategien\\
+\highlight{Sprachen:} Deutsch \& Englisch
+\end{frame}
+
+\end{document}
